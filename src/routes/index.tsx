@@ -97,21 +97,22 @@ function TodayPage() {
           ))}
         </h1>
 
-        <div className="mt-6 divide-y divide-border border-t border-border [@media(max-height:780px)]:mt-4">
+        <div className="mt-4 divide-y divide-border border-t border-border">
           {primaryLines.map((line) => (
-            <NarrativeBlock key={line.label} line={line} />
+            <NarrativeBlock key={line.label} line={line} compact />
           ))}
 
-          <div className="py-5 [@media(max-height:780px)]:py-3.5">
+          <div className="py-3">
             <p className="label-caps">Guidance</p>
-            <p className="mt-1.5 font-serif text-[24px] leading-[1.25] font-light [@media(max-height:780px)]:text-[21px]">
+            <p className="mt-1 font-serif text-[18px] leading-[1.3] font-light whitespace-nowrap">
               <span className="text-accent">{narrative.guidance.lead}</span>{" "}
               {narrative.guidance.rest}
             </p>
-            <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">
+            <p className="mt-1.5 text-[13px] leading-[1.5] whitespace-nowrap text-muted-foreground">
               {narrative.guidance.support}
             </p>
           </div>
+
 
         </div>
       </section>
@@ -138,17 +139,23 @@ function TodayPage() {
   );
 }
 
-function NarrativeBlock({ line }: { line: NarrativeLine }) {
+function NarrativeBlock({ line, compact }: { line: NarrativeLine; compact?: boolean }) {
   return (
-    <div className="py-5 [@media(max-height:780px)]:py-3.5">
+    <div className={compact ? "py-3" : "py-5 [@media(max-height:780px)]:py-3.5"}>
       <p className="label-caps">{line.label}</p>
-      <p className="mt-1.5 text-[16px] leading-[1.5]">
+      <p
+        className={
+          compact
+            ? "mt-1 truncate text-[13px] leading-[1.5] tracking-[-0.01em] whitespace-nowrap"
+            : "mt-1.5 text-[16px] leading-[1.5]"
+        }
+      >
         {line.parts.map((part, i) => (
           <span
             key={i}
             className={
               part.accent
-                ? "align-baseline font-serif text-[22px] leading-[1] text-accent"
+                ? `align-baseline font-serif leading-[1] text-accent ${compact ? "text-[17px]" : "text-[22px]"}`
                 : undefined
             }
           >
@@ -158,5 +165,6 @@ function NarrativeBlock({ line }: { line: NarrativeLine }) {
       </p>
     </div>
   );
+
 }
 
