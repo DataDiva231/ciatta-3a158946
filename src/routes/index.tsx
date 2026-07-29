@@ -131,7 +131,7 @@ function TodayPage() {
 
 function NarrativeBlock({ line }: { line: NarrativeLine }) {
   return (
-    <div className="py-5">
+    <div className="py-5 [@media(max-height:780px)]:py-3.5">
       <p className="label-caps">{line.label}</p>
       <p className="mt-1.5 text-[16px] leading-[1.5]">
         {line.parts.map((part, i) => (
