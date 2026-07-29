@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import figureAsset from "@/assets/ciatta-figure.png.asset.json";
+import figureAsset from "@/assets/ciatta-figure-cut.png.asset.json";
 import { formatLongDate, today } from "@/lib/ciatta-data";
 import { useCheckIns } from "@/lib/ciatta-store";
 import { buildNarrative } from "@/lib/narrative";
@@ -27,6 +27,9 @@ export const Route = createFileRoute("/")({
 function TodayPage() {
   const { latest } = useCheckIns();
   const narrative = buildNarrative(latest);
+  const primaryLabels = ["Sleep quality", "Resting heart rate"];
+  const primaryLines = narrative.lines.filter((l) => primaryLabels.includes(l.label));
+  const restLines = narrative.lines.filter((l) => !primaryLabels.includes(l.label));
 
   return (
     <div className="flex min-h-full flex-col">
@@ -50,25 +53,22 @@ function TodayPage() {
         <p className="mt-1 text-sm text-muted-foreground">{formatLongDate(today.date)}</p>
       </header>
 
-      <div className="relative -mt-6 overflow-hidden">
+      <div className="relative -mt-10 overflow-hidden">
         <img
           src={figureAsset.url}
           alt="Ciatta's rendering of your body, lit from within"
-          width={1242}
-          height={1242}
-          className="ml-auto -mr-10 w-[86%] max-w-[420px] translate-x-4"
+          width={1024}
+          height={1024}
+          className="ml-auto -mr-4 w-[78%] max-w-[360px]"
           style={{
-            maskImage:
-              "radial-gradient(66% 60% at 46% 50%, black 46%, transparent 88%)",
-            WebkitMaskImage:
-              "radial-gradient(66% 60% at 46% 50%, black 46%, transparent 88%)",
+            maskImage: "linear-gradient(to bottom, black 72%, transparent 98%)",
+            WebkitMaskImage: "linear-gradient(to bottom, black 72%, transparent 98%)",
           }}
         />
       </div>
 
-
-      <section className="mt-auto px-6 pb-2">
-        <h1 className="font-serif text-[32px] leading-[1.15] font-light tracking-[-0.01em]">
+      <section className="-mt-8 px-6 pb-2">
+        <h1 className="font-serif text-[30px] leading-[1.15] font-light tracking-[-0.01em]">
           {narrative.headline.map((part, i) => (
             <span key={i} className={part.accent ? "text-accent" : undefined}>
               {part.text}
@@ -76,8 +76,8 @@ function TodayPage() {
           ))}
         </h1>
 
-        <div className="mt-6 space-y-4">
-          {narrative.lines.map((line) => (
+        <div className="mt-5 space-y-4">
+          {primaryLines.map((line) => (
             <div key={line.label} className="border-t border-border pt-4 first:border-t-0 first:pt-0">
               <p className="label-caps">{line.label}</p>
               <p className="mt-1.5 text-[16px] leading-snug">
@@ -96,7 +96,7 @@ function TodayPage() {
           ))}
         </div>
 
-        <div className="mt-6 border-t border-border pt-5">
+        <div className="mt-5 border-t border-border pt-5">
           <p className="font-serif text-[24px] leading-tight font-light">
             <span className="text-accent">{narrative.guidance.lead}</span>{" "}
             {narrative.guidance.rest}
@@ -104,6 +104,26 @@ function TodayPage() {
           <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">
             {narrative.guidance.support}
           </p>
+        </div>
+
+        <div className="mt-8 space-y-4">
+          {restLines.map((line) => (
+            <div key={line.label} className="border-t border-border pt-4">
+              <p className="label-caps">{line.label}</p>
+              <p className="mt-1.5 text-[16px] leading-snug">
+                {line.parts.map((part, i) => (
+                  <span
+                    key={i}
+                    className={
+                      part.accent ? "font-serif text-[22px] leading-none text-accent" : undefined
+                    }
+                  >
+                    {part.text}
+                  </span>
+                ))}
+              </p>
+            </div>
+          ))}
         </div>
 
         {!latest && (
