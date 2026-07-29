@@ -242,6 +242,20 @@ function CheckIcon({ className }: { className?: string }) {
   );
 }
 
+const LOGGED_LABEL: Record<string, string> = {
+  category: "Category logged",
+  product: "Product logged",
+  absorbency: "Absorbency logged",
+  intensity: "Flow intensity logged",
+  timing: "Timeline updated",
+  symptom: "Symptom logged",
+  sleep: "Sleep logged",
+  medication: "Medication logged",
+  nutrition: "Nutrition logged",
+  activity: "Activity logged",
+  other: "Context logged",
+};
+
 function QuickAddPage() {
   const navigate = useNavigate();
   const { addFact } = useLearnedFacts();
