@@ -58,7 +58,7 @@ function TodayPage() {
           alt="Ciatta's rendering of your body, lit from within"
           width={1240}
           height={1240}
-          className="mx-auto w-full max-w-[190px]"
+          className="mx-auto w-full max-w-[150px]"
           style={{
             maskImage:
               "radial-gradient(58% 52% at 50% 44%, black 35%, transparent 82%)",
@@ -69,7 +69,7 @@ function TodayPage() {
       </div>
 
       <section className="-mt-3 px-6">
-        <h1 className="font-serif text-[24px] leading-[1.2] font-light tracking-[-0.01em]">
+        <h1 className="font-serif text-[21px] leading-[1.2] font-light tracking-[-0.01em]">
           {narrative.headline.map((part, i) => (
             <span key={i} className={part.accent ? "text-accent" : undefined}>
               {part.text}
@@ -77,16 +77,16 @@ function TodayPage() {
           ))}
         </h1>
 
-        <div className="mt-3 space-y-2">
+        <div className="mt-2 space-y-1.5">
           {narrative.lines.map((line) => (
-            <div key={line.label} className="border-t border-border pt-2 first:border-t-0 first:pt-0">
+            <div key={line.label} className="border-t border-border pt-1.5 first:border-t-0 first:pt-0">
               <p className="label-caps text-[9px]">{line.label}</p>
-              <p className="mt-0.5 text-[13px] leading-snug">
+              <p className="mt-0.5 text-[12.5px] leading-snug">
                 {line.parts.map((part, i) => (
                   <span
                     key={i}
                     className={
-                      part.accent ? "font-serif text-[17px] leading-none text-accent" : undefined
+                      part.accent ? "font-serif text-[15px] leading-none text-accent" : undefined
                     }
                   >
                     {part.text}
@@ -97,8 +97,8 @@ function TodayPage() {
           ))}
         </div>
 
-        <div className="mt-3 border-t border-border pt-3">
-          <p className="font-serif text-[19px] leading-tight font-light">
+        <div className="mt-2 border-t border-border pt-2">
+          <p className="font-serif text-[17px] leading-tight font-light">
             <span className="text-accent">{narrative.guidance.lead}</span>{" "}
             {narrative.guidance.rest}
           </p>
