@@ -43,9 +43,8 @@ function TodayPage() {
   const primaryLines = narrative.lines.filter((l) => primaryLabels.includes(l.label));
 
   return (
-    <div className="flex min-h-full flex-col">
-      <div className="flex min-h-[calc(100svh-76px)] flex-col">
-      <header className="px-6 pt-8 [@media(max-height:780px)]:pt-4">
+    <div className="flex h-[calc(100svh-76px)] min-h-[calc(100svh-76px)] flex-col">
+      <header className="shrink-0 px-6 pt-6 [@media(max-height:780px)]:pt-4">
         <button
           type="button"
           aria-label="Back"
@@ -67,7 +66,7 @@ function TodayPage() {
         <p className="mt-1 text-sm text-muted-foreground">{formatLongDate(today.date)}</p>
       </header>
 
-      <div className="relative -mt-8 flex justify-center overflow-hidden [@media(max-height:780px)]:-mt-5">
+      <div className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden">
         <picture className="contents">
           <source srcSet={figureWebp.url} type="image/webp" />
           <img
@@ -77,7 +76,7 @@ function TodayPage() {
             height={1024}
             decoding="async"
             fetchPriority="high"
-            className="mx-auto w-[94%] max-w-[430px] [@media(max-height:780px)]:w-[70%] [@media(max-height:780px)]:max-w-[300px] [@media(max-height:660px)]:w-[56%] [@media(max-height:660px)]:max-w-[240px]"
+            className="mx-auto h-full w-auto max-w-[94%] object-contain"
             style={{
               maskImage: "linear-gradient(to bottom, black 74%, transparent 98%)",
               WebkitMaskImage: "linear-gradient(to bottom, black 74%, transparent 98%)",
@@ -86,8 +85,7 @@ function TodayPage() {
         </picture>
       </div>
 
-
-      <section className="mt-auto px-6 pb-2">
+      <section className="shrink-0 px-6 pb-1">
         <h1 className="font-serif text-[30px] leading-[1.15] font-light tracking-[-0.01em] [@media(max-height:780px)]:text-[26px]">
           {narrative.headline.map((part, i) => (
             <span key={i} className={part.accent ? "text-accent" : undefined}>
@@ -96,7 +94,7 @@ function TodayPage() {
           ))}
         </h1>
 
-        <div className="mt-4 divide-y divide-border border-t border-border">
+        <div className="mt-4 divide-y divide-border border-t border-border [@media(max-height:780px)]:mt-3">
           {primaryLines.map((line) => (
             <NarrativeBlock key={line.label} line={line} compact />
           ))}
@@ -111,12 +109,8 @@ function TodayPage() {
               {narrative.guidance.support}
             </p>
           </div>
-
-
         </div>
       </section>
-      </div>
-
     </div>
   );
 }
