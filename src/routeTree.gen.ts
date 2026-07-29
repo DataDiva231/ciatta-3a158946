@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TeachRouteImport } from './routes/teach'
+import { Route as TalkRouteImport } from './routes/talk'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as JourneyRouteImport } from './routes/journey'
 import { Route as IndexRouteImport } from './routes/index'
@@ -17,6 +18,11 @@ import { Route as IndexRouteImport } from './routes/index'
 const TeachRoute = TeachRouteImport.update({
   id: '/teach',
   path: '/teach',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TalkRoute = TalkRouteImport.update({
+  id: '/talk',
+  path: '/talk',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProfileRoute = ProfileRouteImport.update({
@@ -39,12 +45,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/journey': typeof JourneyRoute
   '/profile': typeof ProfileRoute
+  '/talk': typeof TalkRoute
   '/teach': typeof TeachRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/journey': typeof JourneyRoute
   '/profile': typeof ProfileRoute
+  '/talk': typeof TalkRoute
   '/teach': typeof TeachRoute
 }
 export interface FileRoutesById {
@@ -52,20 +60,22 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/journey': typeof JourneyRoute
   '/profile': typeof ProfileRoute
+  '/talk': typeof TalkRoute
   '/teach': typeof TeachRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/journey' | '/profile' | '/teach'
+  fullPaths: '/' | '/journey' | '/profile' | '/talk' | '/teach'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/journey' | '/profile' | '/teach'
-  id: '__root__' | '/' | '/journey' | '/profile' | '/teach'
+  to: '/' | '/journey' | '/profile' | '/talk' | '/teach'
+  id: '__root__' | '/' | '/journey' | '/profile' | '/talk' | '/teach'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   JourneyRoute: typeof JourneyRoute
   ProfileRoute: typeof ProfileRoute
+  TalkRoute: typeof TalkRoute
   TeachRoute: typeof TeachRoute
 }
 
@@ -76,6 +86,13 @@ declare module '@tanstack/react-router' {
       path: '/teach'
       fullPath: '/teach'
       preLoaderRoute: typeof TeachRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/talk': {
+      id: '/talk'
+      path: '/talk'
+      fullPath: '/talk'
+      preLoaderRoute: typeof TalkRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/profile': {
@@ -106,18 +123,9 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   JourneyRoute: JourneyRoute,
   ProfileRoute: ProfileRoute,
+  TalkRoute: TalkRoute,
   TeachRoute: TeachRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
