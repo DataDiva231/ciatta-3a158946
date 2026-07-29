@@ -29,7 +29,7 @@ function TodayPage() {
   const narrative = buildNarrative(latest);
 
   return (
-    <div className="aura flex min-h-[calc(100dvh-4.5rem)] flex-col pb-2">
+    <div className="aura flex flex-col pb-0">
       <header className="px-6 pt-3">
         <button
           type="button"
@@ -58,7 +58,7 @@ function TodayPage() {
           alt="Ciatta's rendering of your body, lit from within"
           width={1240}
           height={1240}
-          className="mx-auto w-full max-w-[110px]"
+          className="mx-auto w-full max-w-[132px]"
           style={{
             maskImage:
               "radial-gradient(58% 52% at 50% 44%, black 35%, transparent 82%)",
