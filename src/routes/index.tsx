@@ -85,7 +85,7 @@ function TodayPage() {
                   <span
                     key={i}
                     className={
-                      part.accent ? "font-serif text-[19px] text-accent" : undefined
+                      part.accent ? "font-serif text-[26px] leading-none text-accent" : undefined
                     }
                   >
                     {part.text}
