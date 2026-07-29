@@ -166,7 +166,7 @@ function NarrativeBlock({
             key={i}
             className={
               part.accent
-                ? `align-baseline font-serif leading-[1] text-accent ${compact ? "text-[17px]" : "text-[22px]"}`
+                ? `align-baseline font-serif leading-[1] text-accent ${small ? "text-[17px]" : "text-[22px]"}`
                 : undefined
             }
           >
