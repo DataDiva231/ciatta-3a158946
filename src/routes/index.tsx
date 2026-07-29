@@ -123,7 +123,7 @@ function TodayPage() {
       <section className="px-6 pb-2">
         <div className="divide-y divide-border border-t border-border">
           {restLines.map((line) => (
-            <NarrativeBlock key={line.label} line={line} />
+            <NarrativeBlock key={line.label} line={line} wrap />
           ))}
         </div>
 
@@ -139,15 +139,26 @@ function TodayPage() {
   );
 }
 
-function NarrativeBlock({ line, compact }: { line: NarrativeLine; compact?: boolean }) {
+function NarrativeBlock({
+  line,
+  compact,
+  wrap,
+}: {
+  line: NarrativeLine;
+  compact?: boolean;
+  wrap?: boolean;
+}) {
+  const small = compact || wrap;
   return (
-    <div className={compact ? "py-3" : "py-5 [@media(max-height:780px)]:py-3.5"}>
+    <div className={small ? "py-3" : "py-5 [@media(max-height:780px)]:py-3.5"}>
       <p className="label-caps">{line.label}</p>
       <p
         className={
           compact
             ? "mt-1 truncate text-[13px] leading-[1.5] tracking-[-0.01em] whitespace-nowrap"
-            : "mt-1.5 text-[16px] leading-[1.5]"
+            : wrap
+              ? "mt-1 text-[13px] leading-[1.5] tracking-[-0.01em]"
+              : "mt-1.5 text-[16px] leading-[1.5]"
         }
       >
         {line.parts.map((part, i) => (
@@ -155,7 +166,7 @@ function NarrativeBlock({ line, compact }: { line: NarrativeLine; compact?: bool
             key={i}
             className={
               part.accent
-                ? `align-baseline font-serif leading-[1] text-accent ${compact ? "text-[17px]" : "text-[22px]"}`
+                ? `align-baseline font-serif leading-[1] text-accent ${small ? "text-[17px]" : "text-[22px]"}`
                 : undefined
             }
           >
