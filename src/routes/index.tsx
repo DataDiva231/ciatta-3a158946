@@ -22,7 +22,17 @@ export const Route = createFileRoute("/")({
         content: "Ciatta reads your sleep, recovery and cycle signals and tells you what your body is asking for today.",
       },
     ],
+    links: [
+      {
+        rel: "preload",
+        as: "image",
+        href: figureWebp.url,
+        type: "image/webp",
+        fetchpriority: "high",
+      },
+    ],
   }),
+
   component: TodayPage,
 });
 
