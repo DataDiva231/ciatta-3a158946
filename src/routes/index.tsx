@@ -123,7 +123,7 @@ function TodayPage() {
       <section className="px-6 pb-2">
         <div className="divide-y divide-border border-t border-border">
           {restLines.map((line) => (
-            <NarrativeBlock key={line.label} line={line} />
+            <NarrativeBlock key={line.label} line={line} wrap />
           ))}
         </div>
 
