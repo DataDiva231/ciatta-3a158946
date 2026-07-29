@@ -114,7 +114,7 @@ function TeachPage() {
   };
 
   return (
-    <div className="flex h-full min-h-[calc(100vh-84px)] flex-col">
+    <div className="flex flex-col pt-0">
       <header className="px-6 pb-4 pt-10">
         <h1 className="font-serif text-[30px] leading-tight font-light">Teach Ciatta</h1>
         <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">
@@ -122,7 +122,7 @@ function TeachPage() {
         </p>
       </header>
 
-      <Conversation className="flex-1">
+      <Conversation className="max-h-[52vh] min-h-[180px]">
         <ConversationContent className="gap-5 px-6 pb-2">
           {messages.map((m) => (
             <Message key={m.id} from={m.role}>

@@ -35,18 +35,18 @@ function TodayPage() {
         <p className="mt-1 text-sm text-muted-foreground">{formatLongDate(today.date)}</p>
       </header>
 
-      <div className="relative -mt-6">
+      <div className="relative -mt-4">
         <img
           src={figure}
           alt="Ciatta's rendering of your body, lit from within"
           width={1024}
           height={1024}
-          className="mx-auto w-full max-w-[380px] mix-blend-multiply"
+          className="mx-auto w-full max-w-[380px]"
           style={{
             maskImage:
-              "radial-gradient(75% 70% at 50% 45%, black 55%, transparent 92%)",
+              "radial-gradient(58% 52% at 50% 44%, black 35%, transparent 82%)",
             WebkitMaskImage:
-              "radial-gradient(75% 70% at 50% 45%, black 55%, transparent 92%)",
+              "radial-gradient(58% 52% at 50% 44%, black 35%, transparent 82%)",
           }}
         />
       </div>
