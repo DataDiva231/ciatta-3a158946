@@ -45,75 +45,81 @@ function TodayPage() {
 
   return (
     <div className="flex min-h-full flex-col">
-      <header className="px-6 pt-8">
-        <button
-          type="button"
-          aria-label="Back"
-          className="grid h-10 w-10 place-items-center rounded-full bg-secondary text-foreground"
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path
-              d="M15 5 8 12l7 7"
-              stroke="currentColor"
-              strokeWidth="1.6"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+      {/* Fold: everything below fits in one screen above the tab bar */}
+      <section className="flex min-h-full flex-col">
+        <header className="shrink-0 px-6 pt-8">
+          <button
+            type="button"
+            aria-label="Back"
+            className="grid h-10 w-10 place-items-center rounded-full bg-secondary text-foreground"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M15 5 8 12l7 7"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+          <p className="mt-4 text-[15px] font-medium text-accent">Good morning, Jenny</p>
+          <p className="mt-1 text-sm text-muted-foreground">{formatLongDate(today.date)}</p>
+        </header>
+
+        <div className="relative -mt-6 min-h-[150px] flex-1 overflow-hidden">
+          <picture>
+            <source srcSet={figureWebp.url} type="image/webp" />
+            <img
+              src={figureAsset.url}
+              alt="Ciatta's rendering of your body, lit from within"
+              width={1024}
+              height={1024}
+              decoding="async"
+              fetchPriority="high"
+              className="ml-auto -mr-4 h-full w-auto max-w-[78%] object-contain object-right-top"
+              style={{
+                maskImage: "linear-gradient(to bottom, black 72%, transparent 98%)",
+                WebkitMaskImage: "linear-gradient(to bottom, black 72%, transparent 98%)",
+              }}
             />
-          </svg>
-        </button>
-        <p className="mt-4 text-[15px] font-medium text-accent">Good morning, Jenny</p>
-        <p className="mt-1 text-sm text-muted-foreground">{formatLongDate(today.date)}</p>
-      </header>
+          </picture>
+        </div>
 
-      <div className="relative -mt-10 overflow-hidden">
-        <picture>
-          <source srcSet={figureWebp.url} type="image/webp" />
-          <img
-            src={figureAsset.url}
-            alt="Ciatta's rendering of your body, lit from within"
-            width={1024}
-            height={1024}
-            decoding="async"
-            fetchPriority="high"
-            className="ml-auto -mr-4 w-[78%] max-w-[360px]"
-            style={{
-              maskImage: "linear-gradient(to bottom, black 72%, transparent 98%)",
-              WebkitMaskImage: "linear-gradient(to bottom, black 72%, transparent 98%)",
-            }}
-          />
-        </picture>
-      </div>
+        <div className="shrink-0 px-6 pb-3">
+          <h1 className="font-serif text-[30px] leading-[1.15] font-light tracking-[-0.01em]">
+            {narrative.headline.map((part, i) => (
+              <span key={i} className={part.accent ? "text-accent" : undefined}>
+                {part.text}
+              </span>
+            ))}
+          </h1>
 
-      <section className="-mt-8 px-6 pb-2">
-        <h1 className="font-serif text-[30px] leading-[1.15] font-light tracking-[-0.01em]">
-          {narrative.headline.map((part, i) => (
-            <span key={i} className={part.accent ? "text-accent" : undefined}>
-              {part.text}
-            </span>
-          ))}
-        </h1>
+          <div className="mt-5 divide-y divide-border border-t border-border">
+            {primaryLines.map((line) => (
+              <NarrativeBlock key={line.label} line={line} />
+            ))}
 
-        <div className="mt-6 divide-y divide-border border-t border-border">
-          {primaryLines.map((line) => (
-            <NarrativeBlock key={line.label} line={line} />
-          ))}
-
-          <div className="py-5">
-            <p className="label-caps">Guidance</p>
-            <p className="mt-1.5 font-serif text-[24px] leading-[1.25] font-light">
-              <span className="text-accent">{narrative.guidance.lead}</span>{" "}
-              {narrative.guidance.rest}
-            </p>
-            <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">
-              {narrative.guidance.support}
-            </p>
+            <div className="py-5">
+              <p className="label-caps">Guidance</p>
+              <p className="mt-1.5 font-serif text-[24px] leading-[1.25] font-light">
+                <span className="text-accent">{narrative.guidance.lead}</span>{" "}
+                {narrative.guidance.rest}
+              </p>
+              <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">
+                {narrative.guidance.support}
+              </p>
+            </div>
           </div>
+        </div>
+      </section>
 
+      <section className="px-6 pb-2">
+        <div className="divide-y divide-border border-t border-border">
           {restLines.map((line) => (
             <NarrativeBlock key={line.label} line={line} />
           ))}
         </div>
-
 
         {!latest && (
           <p className="mt-5 rounded-2xl bg-secondary px-4 py-3 text-[13px] leading-relaxed text-muted-foreground">
@@ -125,6 +131,7 @@ function TodayPage() {
     </div>
   );
 }
+
 
 function NarrativeBlock({ line }: { line: NarrativeLine }) {
   return (
