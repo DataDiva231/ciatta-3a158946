@@ -27,6 +27,9 @@ export const Route = createFileRoute("/")({
 function TodayPage() {
   const { latest } = useCheckIns();
   const narrative = buildNarrative(latest);
+  const primaryLabels = ["Sleep quality", "Resting heart rate"];
+  const primaryLines = narrative.lines.filter((l) => primaryLabels.includes(l.label));
+  const restLines = narrative.lines.filter((l) => !primaryLabels.includes(l.label));
 
   return (
     <div className="flex min-h-full flex-col">
