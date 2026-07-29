@@ -67,7 +67,7 @@ function TodayPage() {
           <p className="mt-1 text-sm text-muted-foreground">{formatLongDate(today.date)}</p>
         </header>
 
-        <div className="relative -mt-6 min-h-[120px] flex-1 overflow-hidden">
+        <div className="relative -mt-6 min-h-[140px] shrink grow basis-0 overflow-hidden">
           <picture>
             <source srcSet={figureWebp.url} type="image/webp" />
             <img
@@ -77,14 +77,16 @@ function TodayPage() {
               height={1024}
               decoding="async"
               fetchPriority="high"
-              className="ml-auto -mr-4 h-full w-auto max-w-[78%] object-contain object-right-top"
+              className="absolute inset-0 h-full w-full object-contain object-right-bottom"
               style={{
-                maskImage: "linear-gradient(to bottom, black 72%, transparent 98%)",
-                WebkitMaskImage: "linear-gradient(to bottom, black 72%, transparent 98%)",
+                maskImage: "linear-gradient(to bottom, black 74%, transparent 99%)",
+                WebkitMaskImage: "linear-gradient(to bottom, black 74%, transparent 99%)",
+                objectPosition: "115% 100%",
               }}
             />
           </picture>
         </div>
+
 
         <div className="shrink-0 px-6 pb-3">
           <h1 className="font-serif text-[27px] leading-[1.15] font-light tracking-[-0.01em]">
