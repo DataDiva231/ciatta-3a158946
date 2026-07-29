@@ -45,11 +45,11 @@ function TodayPage() {
 
   return (
     <div className="flex min-h-full flex-col">
-      <header className="px-6 pt-8">
+      <header className="px-6 pt-8 [@media(max-height:780px)]:pt-4">
         <button
           type="button"
           aria-label="Back"
-          className="grid h-10 w-10 place-items-center rounded-full bg-secondary text-foreground"
+          className="grid h-10 w-10 place-items-center rounded-full bg-secondary text-foreground [@media(max-height:780px)]:h-9 [@media(max-height:780px)]:w-9"
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path
@@ -61,11 +61,13 @@ function TodayPage() {
             />
           </svg>
         </button>
-        <p className="mt-4 text-[15px] font-medium text-accent">Good morning, Jenny</p>
+        <p className="mt-4 text-[15px] font-medium text-accent [@media(max-height:780px)]:mt-3">
+          Good morning, Jenny
+        </p>
         <p className="mt-1 text-sm text-muted-foreground">{formatLongDate(today.date)}</p>
       </header>
 
-      <div className="relative -mt-10 overflow-hidden">
+      <div className="relative -mt-10 overflow-hidden [@media(max-height:780px)]:-mt-6">
         <picture>
           <source srcSet={figureWebp.url} type="image/webp" />
           <img
@@ -75,7 +77,7 @@ function TodayPage() {
             height={1024}
             decoding="async"
             fetchPriority="high"
-            className="ml-auto -mr-4 w-[78%] max-w-[360px]"
+            className="ml-auto -mr-4 w-[78%] max-w-[360px] [@media(max-height:780px)]:w-[58%] [@media(max-height:780px)]:max-w-[260px] [@media(max-height:660px)]:w-[48%] [@media(max-height:660px)]:max-w-[210px]"
             style={{
               maskImage: "linear-gradient(to bottom, black 72%, transparent 98%)",
               WebkitMaskImage: "linear-gradient(to bottom, black 72%, transparent 98%)",
@@ -84,8 +86,8 @@ function TodayPage() {
         </picture>
       </div>
 
-      <section className="-mt-8 px-6 pb-2">
-        <h1 className="font-serif text-[30px] leading-[1.15] font-light tracking-[-0.01em]">
+      <section className="-mt-8 px-6 pb-2 [@media(max-height:780px)]:-mt-5">
+        <h1 className="font-serif text-[30px] leading-[1.15] font-light tracking-[-0.01em] [@media(max-height:780px)]:text-[26px]">
           {narrative.headline.map((part, i) => (
             <span key={i} className={part.accent ? "text-accent" : undefined}>
               {part.text}
@@ -93,14 +95,14 @@ function TodayPage() {
           ))}
         </h1>
 
-        <div className="mt-6 divide-y divide-border border-t border-border">
+        <div className="mt-6 divide-y divide-border border-t border-border [@media(max-height:780px)]:mt-4">
           {primaryLines.map((line) => (
             <NarrativeBlock key={line.label} line={line} />
           ))}
 
-          <div className="py-5">
+          <div className="py-5 [@media(max-height:780px)]:py-3.5">
             <p className="label-caps">Guidance</p>
-            <p className="mt-1.5 font-serif text-[24px] leading-[1.25] font-light">
+            <p className="mt-1.5 font-serif text-[24px] leading-[1.25] font-light [@media(max-height:780px)]:text-[21px]">
               <span className="text-accent">{narrative.guidance.lead}</span>{" "}
               {narrative.guidance.rest}
             </p>
@@ -113,6 +115,7 @@ function TodayPage() {
             <NarrativeBlock key={line.label} line={line} />
           ))}
         </div>
+
 
 
         {!latest && (
