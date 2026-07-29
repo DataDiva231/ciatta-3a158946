@@ -29,7 +29,7 @@ function TodayPage() {
   const narrative = buildNarrative(latest);
 
   return (
-    <div className="aura pb-4">
+    <div className="flex min-h-full flex-col">
       <header className="px-6 pt-8">
         <button
           type="button"
@@ -67,8 +67,8 @@ function TodayPage() {
         />
       </div>
 
-      <section className="px-6">
-        <h1 className="font-serif text-[34px] leading-[1.15] font-light tracking-[-0.01em]">
+      <section className="mt-auto px-6 pb-2">
+        <h1 className="font-serif text-[32px] leading-[1.15] font-light tracking-[-0.01em]">
           {narrative.headline.map((part, i) => (
             <span key={i} className={part.accent ? "text-accent" : undefined}>
               {part.text}
@@ -76,16 +76,16 @@ function TodayPage() {
           ))}
         </h1>
 
-        <div className="mt-9 space-y-6">
+        <div className="mt-6 space-y-4">
           {narrative.lines.map((line) => (
-            <div key={line.label} className="border-t border-border pt-5 first:border-t-0 first:pt-0">
+            <div key={line.label} className="border-t border-border pt-4 first:border-t-0 first:pt-0">
               <p className="label-caps">{line.label}</p>
-              <p className="mt-2 text-[17px] leading-snug">
+              <p className="mt-1.5 text-[16px] leading-snug">
                 {line.parts.map((part, i) => (
                   <span
                     key={i}
                     className={
-                      part.accent ? "font-serif text-[26px] leading-none text-accent" : undefined
+                      part.accent ? "font-serif text-[22px] leading-none text-accent" : undefined
                     }
                   >
                     {part.text}
@@ -96,18 +96,18 @@ function TodayPage() {
           ))}
         </div>
 
-        <div className="mt-9 border-t border-border pt-7">
-          <p className="font-serif text-[26px] leading-tight font-light">
+        <div className="mt-6 border-t border-border pt-5">
+          <p className="font-serif text-[24px] leading-tight font-light">
             <span className="text-accent">{narrative.guidance.lead}</span>{" "}
             {narrative.guidance.rest}
           </p>
-          <p className="mt-3 text-[15px] leading-relaxed text-muted-foreground">
+          <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">
             {narrative.guidance.support}
           </p>
         </div>
 
         {!latest && (
-          <p className="mt-8 rounded-2xl bg-secondary px-4 py-3 text-[13px] leading-relaxed text-muted-foreground">
+          <p className="mt-5 rounded-2xl bg-secondary px-4 py-3 text-[13px] leading-relaxed text-muted-foreground">
             Ciatta is reading your earring and tampon signals. Add a check-in from Profile
             and today's read will shift with it.
           </p>
