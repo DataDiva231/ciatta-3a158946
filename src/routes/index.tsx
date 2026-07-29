@@ -67,8 +67,8 @@ function TodayPage() {
         <p className="mt-1 text-sm text-muted-foreground">{formatLongDate(today.date)}</p>
       </header>
 
-      <div className="relative -mt-10 overflow-hidden [@media(max-height:780px)]:-mt-6">
-        <picture>
+      <div className="relative -mt-8 flex justify-center overflow-hidden [@media(max-height:780px)]:-mt-5">
+        <picture className="contents">
           <source srcSet={figureWebp.url} type="image/webp" />
           <img
             src={figureAsset.url}
@@ -77,14 +77,15 @@ function TodayPage() {
             height={1024}
             decoding="async"
             fetchPriority="high"
-            className="ml-auto -mr-4 w-[78%] max-w-[360px] [@media(max-height:780px)]:w-[58%] [@media(max-height:780px)]:max-w-[260px] [@media(max-height:660px)]:w-[48%] [@media(max-height:660px)]:max-w-[210px]"
+            className="mx-auto w-[94%] max-w-[430px] [@media(max-height:780px)]:w-[70%] [@media(max-height:780px)]:max-w-[300px] [@media(max-height:660px)]:w-[56%] [@media(max-height:660px)]:max-w-[240px]"
             style={{
-              maskImage: "linear-gradient(to bottom, black 72%, transparent 98%)",
-              WebkitMaskImage: "linear-gradient(to bottom, black 72%, transparent 98%)",
+              maskImage: "linear-gradient(to bottom, black 74%, transparent 98%)",
+              WebkitMaskImage: "linear-gradient(to bottom, black 74%, transparent 98%)",
             }}
           />
         </picture>
       </div>
+
 
       <section className="-mt-8 px-6 pb-2 [@media(max-height:780px)]:-mt-5">
         <h1 className="font-serif text-[30px] leading-[1.15] font-light tracking-[-0.01em] [@media(max-height:780px)]:text-[26px]">
