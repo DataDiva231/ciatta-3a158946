@@ -46,7 +46,7 @@ function TodayPage() {
   return (
     <div className="flex min-h-full flex-col">
       {/* Fold: everything below fits in one screen above the tab bar */}
-      <section className="flex min-h-full flex-col">
+      <section className="flex min-h-[calc(100svh-78px)] flex-col">
         <header className="shrink-0 px-6 pt-8">
           <button
             type="button"
