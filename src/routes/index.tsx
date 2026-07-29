@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import figure from "@/assets/ciatta-figure.jpg";
+import figureAsset from "@/assets/ciatta-figure.png.asset.json";
 import { formatLongDate, today } from "@/lib/ciatta-data";
 import { useCheckIns } from "@/lib/ciatta-store";
 import { buildNarrative } from "@/lib/narrative";
