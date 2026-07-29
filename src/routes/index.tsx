@@ -45,6 +45,7 @@ function TodayPage() {
 
   return (
     <div className="flex min-h-full flex-col">
+      <div className="flex min-h-[calc(100svh-76px)] flex-col">
       <header className="px-6 pt-8 [@media(max-height:780px)]:pt-4">
         <button
           type="button"
@@ -112,12 +113,18 @@ function TodayPage() {
             </p>
           </div>
 
+        </div>
+      </section>
+      </div>
+
+
+
+      <section className="px-6 pb-2">
+        <div className="divide-y divide-border border-t border-border">
           {restLines.map((line) => (
             <NarrativeBlock key={line.label} line={line} />
           ))}
         </div>
-
-
 
         {!latest && (
           <p className="mt-5 rounded-2xl bg-secondary px-4 py-3 text-[13px] leading-relaxed text-muted-foreground">
@@ -126,6 +133,7 @@ function TodayPage() {
           </p>
         )}
       </section>
+
     </div>
   );
 }
