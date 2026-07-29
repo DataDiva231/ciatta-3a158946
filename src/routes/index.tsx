@@ -81,7 +81,7 @@ function TodayPage() {
               style={{
                 maskImage: "linear-gradient(to bottom, black 74%, transparent 99%)",
                 WebkitMaskImage: "linear-gradient(to bottom, black 74%, transparent 99%)",
-                objectPosition: "115% 100%",
+                objectPosition: "104% 100%",
               }}
             />
           </picture>
