@@ -112,12 +112,15 @@ function TodayPage() {
             </p>
           </div>
 
+        </div>
+      </section>
+
+      <section className="px-6 pb-2">
+        <div className="divide-y divide-border border-t border-border">
           {restLines.map((line) => (
             <NarrativeBlock key={line.label} line={line} />
           ))}
         </div>
-
-
 
         {!latest && (
           <p className="mt-5 rounded-2xl bg-secondary px-4 py-3 text-[13px] leading-relaxed text-muted-foreground">
@@ -126,6 +129,7 @@ function TodayPage() {
           </p>
         )}
       </section>
+
     </div>
   );
 }
