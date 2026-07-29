@@ -87,7 +87,7 @@ function TodayPage() {
       </div>
 
 
-      <section className="-mt-6 px-6 pb-2 [@media(max-height:780px)]:-mt-4">
+      <section className="mt-auto px-6 pb-2">
         <h1 className="font-serif text-[30px] leading-[1.15] font-light tracking-[-0.01em] [@media(max-height:780px)]:text-[26px]">
           {narrative.headline.map((part, i) => (
             <span key={i} className={part.accent ? "text-accent" : undefined}>
