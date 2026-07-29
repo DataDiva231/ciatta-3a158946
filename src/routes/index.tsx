@@ -115,6 +115,9 @@ function TodayPage() {
 
         </div>
       </section>
+      </div>
+
+
 
       <section className="px-6 pb-2">
         <div className="divide-y divide-border border-t border-border">
