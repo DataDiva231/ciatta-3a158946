@@ -30,7 +30,7 @@ function TodayPage() {
 
   return (
     <div className="aura flex min-h-[calc(100dvh-4.5rem)] flex-col pb-2">
-      <header className="px-6 pt-4">
+      <header className="px-6 pt-3">
         <button
           type="button"
           aria-label="Back"
@@ -46,7 +46,7 @@ function TodayPage() {
             />
           </svg>
         </button>
-        <div className="mt-2 flex items-baseline justify-between gap-3">
+        <div className="mt-1.5 flex items-baseline justify-between gap-3">
           <p className="text-[14px] font-medium text-accent">Good morning, Jenny</p>
           <p className="text-[12px] text-muted-foreground">{formatLongDate(today.date)}</p>
         </div>
@@ -58,7 +58,7 @@ function TodayPage() {
           alt="Ciatta's rendering of your body, lit from within"
           width={1240}
           height={1240}
-          className="mx-auto w-full max-w-[150px]"
+          className="mx-auto w-full max-w-[128px]"
           style={{
             maskImage:
               "radial-gradient(58% 52% at 50% 44%, black 35%, transparent 82%)",
