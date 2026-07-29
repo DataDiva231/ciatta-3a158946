@@ -17,7 +17,7 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: "Today — Ciatta" },
       {
         property: "og:description",
-        content: "Continuous women's health intelligence, written in plain language.",
+        content: "Ciatta reads your sleep, recovery and cycle signals and tells you what your body is asking for today.",
       },
     ],
   }),
