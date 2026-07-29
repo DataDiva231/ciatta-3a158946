@@ -265,7 +265,7 @@ function QuickAddPage() {
     return [CATEGORY_STEP, GENERIC_FLOW[category] ?? PRODUCT_FLOW[2]];
   }, [answers]);
 
-  const total = steps.length + 1;
+  const total = answers[0] ? steps.length + 1 : 6;
   const done = index >= steps.length;
   const step = steps[Math.min(index, steps.length - 1)];
 
@@ -313,7 +313,7 @@ function QuickAddPage() {
               </span>
               <span className="min-w-0">
                 <span className="block text-[14px] text-foreground">
-                  {steps[i]?.key === "category" ? "Category logged" : `${steps[i]?.key ?? "Detail"} logged`}
+                  {LOGGED_LABEL[steps[i]?.key ?? ""] ?? "Detail logged"}
                 </span>
                 <span className="block text-[12px] text-muted-foreground">{a}</span>
               </span>
