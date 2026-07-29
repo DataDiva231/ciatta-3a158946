@@ -9,8 +9,26 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TeachRouteImport } from './routes/teach'
+import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as JourneyRouteImport } from './routes/journey'
 import { Route as IndexRouteImport } from './routes/index'
 
+const TeachRoute = TeachRouteImport.update({
+  id: '/teach',
+  path: '/teach',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JourneyRoute = JourneyRouteImport.update({
+  id: '/journey',
+  path: '/journey',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -19,28 +37,61 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/journey': typeof JourneyRoute
+  '/profile': typeof ProfileRoute
+  '/teach': typeof TeachRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/journey': typeof JourneyRoute
+  '/profile': typeof ProfileRoute
+  '/teach': typeof TeachRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/journey': typeof JourneyRoute
+  '/profile': typeof ProfileRoute
+  '/teach': typeof TeachRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/journey' | '/profile' | '/teach'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/journey' | '/profile' | '/teach'
+  id: '__root__' | '/' | '/journey' | '/profile' | '/teach'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  JourneyRoute: typeof JourneyRoute
+  ProfileRoute: typeof ProfileRoute
+  TeachRoute: typeof TeachRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/teach': {
+      id: '/teach'
+      path: '/teach'
+      fullPath: '/teach'
+      preLoaderRoute: typeof TeachRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/journey': {
+      id: '/journey'
+      path: '/journey'
+      fullPath: '/journey'
+      preLoaderRoute: typeof JourneyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -53,17 +104,10 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  JourneyRoute: JourneyRoute,
+  ProfileRoute: ProfileRoute,
+  TeachRoute: TeachRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
