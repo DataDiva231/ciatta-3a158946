@@ -41,7 +41,6 @@ function TodayPage() {
   const narrative = buildNarrative(latest);
   const primaryLabels = ["Sleep quality", "Resting heart rate"];
   const primaryLines = narrative.lines.filter((l) => primaryLabels.includes(l.label));
-  const restLines = narrative.lines.filter((l) => !primaryLabels.includes(l.label));
 
   return (
     <div className="flex min-h-full flex-col">
@@ -117,23 +116,6 @@ function TodayPage() {
         </div>
       </section>
       </div>
-
-
-
-      <section className="px-6 pb-2">
-        <div className="divide-y divide-border border-t border-border">
-          {restLines.map((line) => (
-            <NarrativeBlock key={line.label} line={line} compact />
-          ))}
-        </div>
-
-        {!latest && (
-          <p className="mt-5 rounded-2xl bg-secondary px-4 py-3 text-[13px] leading-relaxed text-muted-foreground">
-            Ciatta is reading your earring and tampon signals. Add a check-in from Profile
-            and today's read will shift with it.
-          </p>
-        )}
-      </section>
 
     </div>
   );
