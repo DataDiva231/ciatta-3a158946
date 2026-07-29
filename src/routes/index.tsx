@@ -46,7 +46,7 @@ function TodayPage() {
   return (
     <div className="flex min-h-full flex-col">
       {/* Fold: everything below fits in one screen above the tab bar */}
-      <section className="flex min-h-[calc(100svh-78px)] flex-col">
+      <section className="flex min-h-[calc(100svh-88px)] flex-col">
         <header className="shrink-0 px-6 pt-8">
           <button
             type="button"
@@ -67,7 +67,7 @@ function TodayPage() {
           <p className="mt-1 text-sm text-muted-foreground">{formatLongDate(today.date)}</p>
         </header>
 
-        <div className="relative -mt-6 min-h-[150px] flex-1 overflow-hidden">
+        <div className="relative -mt-6 min-h-[120px] flex-1 overflow-hidden">
           <picture>
             <source srcSet={figureWebp.url} type="image/webp" />
             <img
@@ -87,7 +87,7 @@ function TodayPage() {
         </div>
 
         <div className="shrink-0 px-6 pb-3">
-          <h1 className="font-serif text-[30px] leading-[1.15] font-light tracking-[-0.01em]">
+          <h1 className="font-serif text-[27px] leading-[1.15] font-light tracking-[-0.01em]">
             {narrative.headline.map((part, i) => (
               <span key={i} className={part.accent ? "text-accent" : undefined}>
                 {part.text}
@@ -95,14 +95,14 @@ function TodayPage() {
             ))}
           </h1>
 
-          <div className="mt-5 divide-y divide-border border-t border-border">
+          <div className="mt-4 divide-y divide-border border-t border-border">
             {primaryLines.map((line) => (
               <NarrativeBlock key={line.label} line={line} />
             ))}
 
-            <div className="py-5">
+            <div className="py-4">
               <p className="label-caps">Guidance</p>
-              <p className="mt-1.5 font-serif text-[24px] leading-[1.25] font-light">
+              <p className="mt-1.5 font-serif text-[22px] leading-[1.25] font-light">
                 <span className="text-accent">{narrative.guidance.lead}</span>{" "}
                 {narrative.guidance.rest}
               </p>
@@ -135,7 +135,7 @@ function TodayPage() {
 
 function NarrativeBlock({ line }: { line: NarrativeLine }) {
   return (
-    <div className="py-5">
+    <div className="py-4">
       <p className="label-caps">{line.label}</p>
       <p className="mt-1.5 text-[16px] leading-[1.5]">
         {line.parts.map((part, i) => (
