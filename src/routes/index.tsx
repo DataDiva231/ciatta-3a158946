@@ -125,3 +125,26 @@ function TodayPage() {
     </div>
   );
 }
+
+function NarrativeBlock({ line }: { line: NarrativeLine }) {
+  return (
+    <div className="py-5">
+      <p className="label-caps">{line.label}</p>
+      <p className="mt-1.5 text-[16px] leading-[1.5]">
+        {line.parts.map((part, i) => (
+          <span
+            key={i}
+            className={
+              part.accent
+                ? "align-baseline font-serif text-[22px] leading-[1] text-accent"
+                : undefined
+            }
+          >
+            {part.text}
+          </span>
+        ))}
+      </p>
+    </div>
+  );
+}
+
