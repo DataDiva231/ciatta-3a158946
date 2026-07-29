@@ -30,12 +30,28 @@ function TodayPage() {
 
   return (
     <div className="aura pb-4">
-      <header className="px-6 pt-10">
-        <p className="text-[15px] font-medium text-accent">Good morning, Jenny</p>
+      <header className="px-6 pt-8">
+        <button
+          type="button"
+          aria-label="Back"
+          className="grid h-10 w-10 place-items-center rounded-full bg-secondary text-foreground"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path
+              d="M15 5 8 12l7 7"
+              stroke="currentColor"
+              strokeWidth="1.6"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </button>
+        <p className="mt-4 text-[15px] font-medium text-accent">Good morning, Jenny</p>
         <p className="mt-1 text-sm text-muted-foreground">{formatLongDate(today.date)}</p>
       </header>
 
-      <div className="relative -mt-4">
+      <div className="relative -mt-10">
+
         <img
           src={figure}
           alt="Ciatta's rendering of your body, lit from within"
