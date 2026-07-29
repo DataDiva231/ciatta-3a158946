@@ -138,17 +138,23 @@ function TodayPage() {
   );
 }
 
-function NarrativeBlock({ line }: { line: NarrativeLine }) {
+function NarrativeBlock({ line, compact }: { line: NarrativeLine; compact?: boolean }) {
   return (
-    <div className="py-5 [@media(max-height:780px)]:py-3.5">
+    <div className={compact ? "py-3" : "py-5 [@media(max-height:780px)]:py-3.5"}>
       <p className="label-caps">{line.label}</p>
-      <p className="mt-1.5 text-[16px] leading-[1.5]">
+      <p
+        className={
+          compact
+            ? "mt-1 truncate text-[13px] leading-[1.5] tracking-[-0.01em] whitespace-nowrap"
+            : "mt-1.5 text-[16px] leading-[1.5]"
+        }
+      >
         {line.parts.map((part, i) => (
           <span
             key={i}
             className={
               part.accent
-                ? "align-baseline font-serif text-[22px] leading-[1] text-accent"
+                ? `align-baseline font-serif leading-[1] text-accent ${compact ? "text-[17px]" : "text-[22px]"}`
                 : undefined
             }
           >
@@ -158,5 +164,6 @@ function NarrativeBlock({ line }: { line: NarrativeLine }) {
       </p>
     </div>
   );
+
 }
 
