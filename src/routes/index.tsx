@@ -1,9 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 import figureAsset from "@/assets/ciatta-figure-cut.png.asset.json";
+import figureWebp from "@/assets/ciatta-figure-cut.webp.asset.json";
 import { formatLongDate, today } from "@/lib/ciatta-data";
 import { useCheckIns } from "@/lib/ciatta-store";
-import { buildNarrative } from "@/lib/narrative";
+import { buildNarrative, type NarrativeLine } from "@/lib/narrative";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -20,7 +22,17 @@ export const Route = createFileRoute("/")({
         content: "Ciatta reads your sleep, recovery and cycle signals and tells you what your body is asking for today.",
       },
     ],
+    links: [
+      {
+        rel: "preload",
+        as: "image",
+        href: figureWebp.url,
+        type: "image/webp",
+        fetchpriority: "high",
+      },
+    ],
   }),
+
   component: TodayPage,
 });
 
@@ -54,17 +66,22 @@ function TodayPage() {
       </header>
 
       <div className="relative -mt-10 overflow-hidden">
-        <img
-          src={figureAsset.url}
-          alt="Ciatta's rendering of your body, lit from within"
-          width={1024}
-          height={1024}
-          className="ml-auto -mr-4 w-[78%] max-w-[360px]"
-          style={{
-            maskImage: "linear-gradient(to bottom, black 72%, transparent 98%)",
-            WebkitMaskImage: "linear-gradient(to bottom, black 72%, transparent 98%)",
-          }}
-        />
+        <picture>
+          <source srcSet={figureWebp.url} type="image/webp" />
+          <img
+            src={figureAsset.url}
+            alt="Ciatta's rendering of your body, lit from within"
+            width={1024}
+            height={1024}
+            decoding="async"
+            fetchPriority="high"
+            className="ml-auto -mr-4 w-[78%] max-w-[360px]"
+            style={{
+              maskImage: "linear-gradient(to bottom, black 72%, transparent 98%)",
+              WebkitMaskImage: "linear-gradient(to bottom, black 72%, transparent 98%)",
+            }}
+          />
+        </picture>
       </div>
 
       <section className="-mt-8 px-6 pb-2">
@@ -76,55 +93,27 @@ function TodayPage() {
           ))}
         </h1>
 
-        <div className="mt-5 space-y-4">
+        <div className="mt-6 divide-y divide-border border-t border-border">
           {primaryLines.map((line) => (
-            <div key={line.label} className="border-t border-border pt-4 first:border-t-0 first:pt-0">
-              <p className="label-caps">{line.label}</p>
-              <p className="mt-1.5 text-[16px] leading-snug">
-                {line.parts.map((part, i) => (
-                  <span
-                    key={i}
-                    className={
-                      part.accent ? "font-serif text-[22px] leading-none text-accent" : undefined
-                    }
-                  >
-                    {part.text}
-                  </span>
-                ))}
-              </p>
-            </div>
+            <NarrativeBlock key={line.label} line={line} />
           ))}
-        </div>
 
-        <div className="mt-5 border-t border-border pt-5">
-          <p className="font-serif text-[24px] leading-tight font-light">
-            <span className="text-accent">{narrative.guidance.lead}</span>{" "}
-            {narrative.guidance.rest}
-          </p>
-          <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">
-            {narrative.guidance.support}
-          </p>
-        </div>
+          <div className="py-5">
+            <p className="label-caps">Guidance</p>
+            <p className="mt-1.5 font-serif text-[24px] leading-[1.25] font-light">
+              <span className="text-accent">{narrative.guidance.lead}</span>{" "}
+              {narrative.guidance.rest}
+            </p>
+            <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">
+              {narrative.guidance.support}
+            </p>
+          </div>
 
-        <div className="mt-8 space-y-4">
           {restLines.map((line) => (
-            <div key={line.label} className="border-t border-border pt-4">
-              <p className="label-caps">{line.label}</p>
-              <p className="mt-1.5 text-[16px] leading-snug">
-                {line.parts.map((part, i) => (
-                  <span
-                    key={i}
-                    className={
-                      part.accent ? "font-serif text-[22px] leading-none text-accent" : undefined
-                    }
-                  >
-                    {part.text}
-                  </span>
-                ))}
-              </p>
-            </div>
+            <NarrativeBlock key={line.label} line={line} />
           ))}
         </div>
+
 
         {!latest && (
           <p className="mt-5 rounded-2xl bg-secondary px-4 py-3 text-[13px] leading-relaxed text-muted-foreground">
@@ -136,3 +125,26 @@ function TodayPage() {
     </div>
   );
 }
+
+function NarrativeBlock({ line }: { line: NarrativeLine }) {
+  return (
+    <div className="py-5">
+      <p className="label-caps">{line.label}</p>
+      <p className="mt-1.5 text-[16px] leading-[1.5]">
+        {line.parts.map((part, i) => (
+          <span
+            key={i}
+            className={
+              part.accent
+                ? "align-baseline font-serif text-[22px] leading-[1] text-accent"
+                : undefined
+            }
+          >
+            {part.text}
+          </span>
+        ))}
+      </p>
+    </div>
+  );
+}
+
