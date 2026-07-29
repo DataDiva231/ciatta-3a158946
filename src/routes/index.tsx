@@ -50,22 +50,22 @@ function TodayPage() {
         <p className="mt-1 text-sm text-muted-foreground">{formatLongDate(today.date)}</p>
       </header>
 
-      <div className="relative -mt-10">
-
+      <div className="relative -mt-6 overflow-hidden">
         <img
-          src={figure}
+          src={figureAsset.url}
           alt="Ciatta's rendering of your body, lit from within"
-          width={1024}
-          height={1024}
-          className="mx-auto w-full max-w-[380px]"
+          width={1242}
+          height={1242}
+          className="ml-auto -mr-10 w-[86%] max-w-[420px] translate-x-4"
           style={{
             maskImage:
-              "radial-gradient(58% 52% at 50% 44%, black 35%, transparent 82%)",
+              "radial-gradient(66% 60% at 46% 50%, black 46%, transparent 88%)",
             WebkitMaskImage:
-              "radial-gradient(58% 52% at 50% 44%, black 35%, transparent 82%)",
+              "radial-gradient(66% 60% at 46% 50%, black 46%, transparent 88%)",
           }}
         />
       </div>
+
 
       <section className="mt-auto px-6 pb-2">
         <h1 className="font-serif text-[32px] leading-[1.15] font-light tracking-[-0.01em]">
