@@ -4,7 +4,7 @@ import figureAsset from "@/assets/ciatta-figure-cut.png.asset.json";
 import figureWebp from "@/assets/ciatta-figure-cut.webp.asset.json";
 import { formatLongDate, today } from "@/lib/ciatta-data";
 import { useCheckIns } from "@/lib/ciatta-store";
-import { buildNarrative } from "@/lib/narrative";
+import { buildNarrative, type NarrativeLine } from "@/lib/narrative";
 
 
 export const Route = createFileRoute("/")({
