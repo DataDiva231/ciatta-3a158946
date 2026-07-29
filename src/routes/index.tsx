@@ -45,6 +45,7 @@ function TodayPage() {
 
   return (
     <div className="flex min-h-full flex-col">
+      <div className="flex min-h-[calc(100svh-76px)] flex-col">
       <header className="px-6 pt-8 [@media(max-height:780px)]:pt-4">
         <button
           type="button"
