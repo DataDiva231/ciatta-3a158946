@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 
 type IconProps = { active: boolean };
 
@@ -69,6 +69,9 @@ const tabs = [
 ] as const;
 
 export function TabBar() {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  if (pathname.startsWith("/quick-add")) return null;
+
   return (
     <nav
       aria-label="Primary"

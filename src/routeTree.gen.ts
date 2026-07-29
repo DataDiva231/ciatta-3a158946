@@ -10,6 +10,8 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TeachRouteImport } from './routes/teach'
+import { Route as TalkRouteImport } from './routes/talk'
+import { Route as QuickAddRouteImport } from './routes/quick-add'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as JourneyRouteImport } from './routes/journey'
 import { Route as IndexRouteImport } from './routes/index'
@@ -17,6 +19,16 @@ import { Route as IndexRouteImport } from './routes/index'
 const TeachRoute = TeachRouteImport.update({
   id: '/teach',
   path: '/teach',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TalkRoute = TalkRouteImport.update({
+  id: '/talk',
+  path: '/talk',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const QuickAddRoute = QuickAddRouteImport.update({
+  id: '/quick-add',
+  path: '/quick-add',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProfileRoute = ProfileRouteImport.update({
@@ -39,12 +51,16 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/journey': typeof JourneyRoute
   '/profile': typeof ProfileRoute
+  '/quick-add': typeof QuickAddRoute
+  '/talk': typeof TalkRoute
   '/teach': typeof TeachRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/journey': typeof JourneyRoute
   '/profile': typeof ProfileRoute
+  '/quick-add': typeof QuickAddRoute
+  '/talk': typeof TalkRoute
   '/teach': typeof TeachRoute
 }
 export interface FileRoutesById {
@@ -52,20 +68,31 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/journey': typeof JourneyRoute
   '/profile': typeof ProfileRoute
+  '/quick-add': typeof QuickAddRoute
+  '/talk': typeof TalkRoute
   '/teach': typeof TeachRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/journey' | '/profile' | '/teach'
+  fullPaths: '/' | '/journey' | '/profile' | '/quick-add' | '/talk' | '/teach'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/journey' | '/profile' | '/teach'
-  id: '__root__' | '/' | '/journey' | '/profile' | '/teach'
+  to: '/' | '/journey' | '/profile' | '/quick-add' | '/talk' | '/teach'
+  id:
+    | '__root__'
+    | '/'
+    | '/journey'
+    | '/profile'
+    | '/quick-add'
+    | '/talk'
+    | '/teach'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   JourneyRoute: typeof JourneyRoute
   ProfileRoute: typeof ProfileRoute
+  QuickAddRoute: typeof QuickAddRoute
+  TalkRoute: typeof TalkRoute
   TeachRoute: typeof TeachRoute
 }
 
@@ -76,6 +103,20 @@ declare module '@tanstack/react-router' {
       path: '/teach'
       fullPath: '/teach'
       preLoaderRoute: typeof TeachRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/talk': {
+      id: '/talk'
+      path: '/talk'
+      fullPath: '/talk'
+      preLoaderRoute: typeof TalkRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/quick-add': {
+      id: '/quick-add'
+      path: '/quick-add'
+      fullPath: '/quick-add'
+      preLoaderRoute: typeof QuickAddRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/profile': {
@@ -106,6 +147,8 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   JourneyRoute: JourneyRoute,
   ProfileRoute: ProfileRoute,
+  QuickAddRoute: QuickAddRoute,
+  TalkRoute: TalkRoute,
   TeachRoute: TeachRoute,
 }
 export const routeTree = rootRouteImport

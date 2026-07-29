@@ -1,25 +1,6 @@
-import { useEffect, useRef, useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 
-import {
-  Conversation,
-  ConversationContent,
-  ConversationScrollButton,
-} from "@/components/ai-elements/conversation";
-import {
-  Message,
-  MessageContent,
-  MessageResponse,
-} from "@/components/ai-elements/message";
-import {
-  PromptInput,
-  PromptInputFooter,
-  PromptInputSubmit,
-  PromptInputTextarea,
-  type PromptInputMessage,
-} from "@/components/ai-elements/prompt-input";
-import { Shimmer } from "@/components/ai-elements/shimmer";
-import { useLearnedFacts } from "@/lib/ciatta-store";
+import orb from "@/assets/ciatta-orb.png";
 
 export const Route = createFileRoute("/teach")({
   head: () => ({
@@ -28,7 +9,7 @@ export const Route = createFileRoute("/teach")({
       {
         name: "description",
         content:
-          "Tell Ciatta what your sensors can't see. It remembers, and folds it into how it reads your body.",
+          "Tell Ciatta what changed since it last checked in. Every update makes tomorrow's understanding more personal.",
       },
       { property: "og:title", content: "Teach Ciatta — Ciatta" },
       {
@@ -40,159 +21,106 @@ export const Route = createFileRoute("/teach")({
   component: TeachPage,
 });
 
-type ChatMessage = { id: string; role: "user" | "assistant"; text: string };
-
-const QUICK_PROMPTS = [
-  "I get migraines before my period",
-  "Coffee after 2pm wrecks my sleep",
-  "I'm training for a half marathon",
-];
-
-const OPENING: ChatMessage = {
-  id: "opening",
-  role: "assistant",
-  text: "Tell me something about your body that my sensors can't see. A pattern you've noticed, a medication, a thing that always throws you off. I'll remember it.",
-};
-
-/** Scripted replies — this preview does not call a model. */
-function replyTo(input: string): string {
-  const t = input.toLowerCase();
-
-  if (/migraine|headache/.test(t)) {
-    return "Noted. I already see your sleep soften in the two days before you bleed — I'll start checking whether your migraines land in that same window, and warn you the day before.";
-  }
-  if (/coffee|caffeine|espresso/.test(t)) {
-    return "That fits. On the nights you fall asleep latest, your temperature is still elevated at 11pm. I'll flag it when your afternoon looks like a late-caffeine day.";
-  }
-  if (/train|run|marathon|gym|lift|workout/.test(t)) {
-    return "Good to know. I'll hold your hard sessions against your recovery, not the calendar — and tell you when your follicular window opens, because that's where your capacity peaks.";
-  }
-  if (/pill|medication|iud|meds|prescription/.test(t)) {
-    return "Logged. Medication changes shift a lot of what I read, so I'll treat the next few weeks as a new baseline rather than a deviation.";
-  }
-  if (/stress|work|anxious|anxiety|burnout/.test(t)) {
-    return "I'll watch for it. Stress usually shows up in your data first as a lower heart rate variability with unchanged sleep hours — I'll name it when I see that shape.";
-  }
-  if (/pain|cramp|bloat|flare/.test(t)) {
-    return "Thank you for telling me. I'll line this up against your cycle day and your temperature, and let you know if it's tracking with something.";
-  }
-  return "I've saved that. I'll look for it in your signals over the next few cycles and tell you when I find something real, not before.";
+function MicIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <rect x="9" y="3" width="6" height="11" rx="3" stroke="currentColor" strokeWidth="1.4" />
+      <path
+        d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
 }
 
-function TeachPage() {
-  const { facts, addFact, removeFact } = useLearnedFacts();
-  const [messages, setMessages] = useState<ChatMessage[]>([OPENING]);
-  const [pending, setPending] = useState(false);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-
-  useEffect(() => {
-    if (!pending) textareaRef.current?.focus();
-  }, [pending, messages.length]);
-
-  const send = (text: string) => {
-    const trimmed = text.trim();
-    if (!trimmed || pending) return;
-
-    setMessages((prev) => [
-      ...prev,
-      { id: `u-${Date.now()}`, role: "user", text: trimmed },
-    ]);
-    setPending(true);
-
-    window.setTimeout(() => {
-      setMessages((prev) => [
-        ...prev,
-        { id: `a-${Date.now()}`, role: "assistant", text: replyTo(trimmed) },
-      ]);
-      addFact(trimmed.charAt(0).toUpperCase() + trimmed.slice(1));
-      setPending(false);
-    }, 700);
-  };
-
-  const handleSubmit = (message: PromptInputMessage) => {
-    send(message.text ?? "");
-  };
-
+function CameraIcon() {
   return (
-    <div className="flex flex-col pt-0">
-      <header className="px-6 pb-4 pt-10">
-        <h1 className="font-serif text-[30px] leading-tight font-light">Teach Ciatta</h1>
-        <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">
-          The more it knows, the less it guesses.
-        </p>
-      </header>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <rect x="3" y="6.5" width="18" height="13" rx="3" stroke="currentColor" strokeWidth="1.4" />
+      <circle cx="12" cy="13" r="3.6" stroke="currentColor" strokeWidth="1.4" />
+      <path d="M8.5 6.5 9.7 4.4h4.6L15.5 6.5" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+    </svg>
+  );
+}
 
-      <Conversation className="max-h-[52vh] min-h-[180px]">
-        <ConversationContent className="gap-5 px-6 pb-2">
-          {messages.map((m) => (
-            <Message key={m.id} from={m.role}>
-              <MessageContent
-                className={
-                  m.role === "assistant"
-                    ? "bg-transparent p-0 text-[16px] leading-relaxed text-foreground"
-                    : "bg-foreground text-[15px] text-background"
-                }
-              >
-                <MessageResponse>{m.text}</MessageResponse>
-              </MessageContent>
-            </Message>
-          ))}
-          {pending && (
-            <Shimmer className="text-[15px] text-muted-foreground">Listening…</Shimmer>
-          )}
-        </ConversationContent>
-        <ConversationScrollButton />
-      </Conversation>
+function ClipIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M18.5 11.5 12 18a4 4 0 0 1-5.7-5.7l7-7a2.8 2.8 0 0 1 4 4l-7 7a1.6 1.6 0 0 1-2.3-2.3l6.4-6.4"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
 
-      {messages.length <= 1 && (
-        <div className="flex flex-wrap gap-2 px-6 pb-3">
-          {QUICK_PROMPTS.map((p) => (
-            <button
-              key={p}
-              type="button"
-              onClick={() => send(p)}
-              className="rounded-full border border-border px-3.5 py-2 text-left text-[13px] text-muted-foreground transition-colors hover:border-accent hover:text-accent"
-            >
-              {p}
-            </button>
-          ))}
-        </div>
-      )}
+const OTHER_WAYS = [
+  { to: "/talk", label: "Talk", Icon: MicIcon },
+  { to: "/talk", label: "Capture", Icon: CameraIcon },
+  { to: "/talk", label: "Attach", Icon: ClipIcon },
+] as const;
 
-      <div className="px-6">
-        <PromptInput onSubmit={handleSubmit} className="rounded-3xl border-border bg-surface">
-          <PromptInputTextarea
-            ref={textareaRef}
-            autoFocus
-            placeholder="Tell Ciatta something about your body…"
-          />
-          <PromptInputFooter className="justify-end">
-            <PromptInputSubmit status={pending ? "submitted" : undefined} disabled={pending} />
-          </PromptInputFooter>
-        </PromptInput>
+function TeachPage() {
+  return (
+    <div className="flex min-h-full flex-col px-6 pb-2 pt-6">
+      <div className="flex flex-1 items-center justify-center py-4">
+        <img
+          src={orb}
+          alt="Ciatta's iridescent understanding of you"
+          width={1024}
+          height={1024}
+          className="w-[70%] max-w-[280px] drop-shadow-[0_30px_60px_rgba(217,106,88,0.18)]"
+        />
       </div>
 
-      <section className="mt-8 px-6">
-        <p className="label-caps">What Ciatta has learned</p>
-        <ul className="mt-4 space-y-3">
-          {facts.map((f) => (
-            <li
-              key={f.id}
-              className="flex items-start justify-between gap-3 border-t border-border pt-3 first:border-t-0 first:pt-0"
-            >
-              <span className="text-[15px] leading-relaxed text-muted-foreground">{f.text}</span>
-              <button
-                type="button"
-                onClick={() => removeFact(f.id)}
-                className="shrink-0 text-[12px] text-fog transition-colors hover:text-accent"
-                aria-label={`Forget: ${f.text}`}
-              >
-                Forget
-              </button>
-            </li>
-          ))}
-        </ul>
-      </section>
+      <h1 className="text-center font-serif text-[30px] leading-tight font-normal tracking-[-0.01em]">
+        What's changed since we last checked in?
+      </h1>
+      <p className="mt-3 text-center text-[14px] leading-relaxed text-muted-foreground">
+        Every update makes tomorrow's understanding more personal.
+      </p>
+
+      <Link
+        to="/quick-add"
+        className="mt-7 flex items-center gap-4 rounded-[26px] px-4 py-4 text-left shadow-[0_16px_30px_-18px_rgba(217,106,88,0.9)]"
+        style={{
+          background: "linear-gradient(100deg, var(--clay), oklch(0.72 0.17 45))",
+        }}
+      >
+        <span className="grid h-14 w-14 shrink-0 place-items-center rounded-full bg-surface text-[26px] leading-none text-accent">
+          +
+        </span>
+        <span className="min-w-0">
+          <span className="block font-serif text-[24px] leading-none text-primary-foreground">
+            Quick Add
+          </span>
+          <span className="mt-1.5 block text-[13px] leading-snug text-primary-foreground/90">
+            The fastest way to update your health understanding.
+          </span>
+        </span>
+      </Link>
+
+      <div className="mt-7 flex items-center gap-3">
+        <span className="h-px flex-1 bg-border" />
+        <span className="text-[13px] text-muted-foreground">Or teach another way</span>
+        <span className="h-px flex-1 bg-border" />
+      </div>
+
+      <div className="mt-5 grid grid-cols-3 divide-x divide-border rounded-3xl border border-border bg-surface py-5">
+        {OTHER_WAYS.map(({ to, label, Icon }) => (
+          <Link key={label} to={to} className="flex flex-col items-center gap-2.5">
+            <span className="grid h-11 w-11 place-items-center rounded-full bg-secondary text-muted-foreground">
+              <Icon />
+            </span>
+            <span className="text-[14px] text-muted-foreground">{label}</span>
+          </Link>
+        ))}
+      </div>
     </div>
   );
 }
