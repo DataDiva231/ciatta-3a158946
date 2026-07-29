@@ -58,7 +58,7 @@ function TodayPage() {
           alt="Ciatta's rendering of your body, lit from within"
           width={1240}
           height={1240}
-          className="mx-auto w-full max-w-[128px]"
+          className="mx-auto w-full max-w-[110px]"
           style={{
             maskImage:
               "radial-gradient(58% 52% at 50% 44%, black 35%, transparent 82%)",
@@ -68,7 +68,7 @@ function TodayPage() {
         />
       </div>
 
-      <section className="-mt-3 px-6">
+      <section className="-mt-4 px-6">
         <h1 className="font-serif text-[21px] leading-[1.2] font-light tracking-[-0.01em]">
           {narrative.headline.map((part, i) => (
             <span key={i} className={part.accent ? "text-accent" : undefined}>
