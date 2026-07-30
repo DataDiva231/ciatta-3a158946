@@ -51,6 +51,7 @@ export function TeachUpload({
   examples,
 }: TeachUploadProps) {
   const router = useRouter();
+  const { goBack } = useBack("/teach");
   const { addEvent } = useQuickAddEvents();
   const input = useRef<HTMLInputElement>(null);
 
