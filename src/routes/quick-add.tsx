@@ -155,6 +155,7 @@ function QuickAddPage() {
       const when = new Date(Date.now() - (option.minutesAgo ?? 0) * 60_000);
       setEventTime(when.toISOString());
     }
+    setDirection("forward");
     setAnswer(index, option.label);
     setIndex(index + 1);
   };
@@ -164,8 +165,14 @@ function QuickAddPage() {
     const when = new Date(value);
     if (Number.isNaN(when.getTime())) return;
     setEventTime(when.toISOString());
+    setDirection("forward");
     setAnswer(index, formatDateTime(when.toISOString()));
     setIndex(index + 1);
+  };
+
+  const goTo = (target: number) => {
+    setDirection(target > index ? "forward" : "back");
+    setIndex(target);
   };
 
   const back = () => {
@@ -174,8 +181,9 @@ function QuickAddPage() {
       return;
     }
     // Previous selections stay in state, so the step shows what was chosen.
-    setIndex(index - 1);
+    goTo(index - 1);
   };
+
 
   /** Builds the structured event and writes it to the shared store. */
   const save = () => {
