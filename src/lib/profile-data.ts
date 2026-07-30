@@ -202,7 +202,10 @@ export function useProfile(): ProfileView {
 
     return {
       hydrated: journey.hydrated,
+      hasData: journey.hasData,
+      observationCount: journey.observationCount,
       understandings,
+
       story,
       areas,
       snapshot,
