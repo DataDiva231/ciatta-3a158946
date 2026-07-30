@@ -81,22 +81,24 @@ function TodayPage() {
   return (
     <div className="flex h-[calc(100svh-76px)] min-h-[calc(100svh-76px)] flex-col">
       <header className="shrink-0 px-6 pt-6 [@media(max-height:780px)]:pt-4">
-        <button
-          type="button"
-          aria-label="Back"
-          onClick={() => router.history.back()}
-          className="grid h-10 w-10 place-items-center rounded-full bg-secondary text-foreground transition-colors hover:bg-secondary/70 active:bg-secondary/70 [@media(max-height:780px)]:h-9 [@media(max-height:780px)]:w-9"
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path
-              d="M15 5 8 12l7 7"
-              stroke="currentColor"
-              strokeWidth="1.6"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </button>
+        {canGoBack && (
+          <button
+            type="button"
+            aria-label="Back"
+            onClick={goBack}
+            className="grid h-10 w-10 place-items-center rounded-full bg-secondary text-foreground transition-colors hover:bg-secondary/70 active:bg-secondary/70 [@media(max-height:780px)]:h-9 [@media(max-height:780px)]:w-9"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M15 5 8 12l7 7"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+        )}
         <p className="mt-4 text-[15px] font-medium text-accent [@media(max-height:780px)]:mt-3">
           Good morning, Jenny
         </p>
