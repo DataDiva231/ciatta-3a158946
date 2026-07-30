@@ -99,7 +99,7 @@ function TodayPage() {
         />
       </div>
 
-      <section className="shrink-0 px-7 pb-2">
+      <section className="shrink-0 px-7 pb-6">
         <p
           key={`conf-${narrative.confidence.value}`}
           className="animate-in fade-in flex items-center gap-2 text-[11px] leading-none text-muted-foreground duration-500"
