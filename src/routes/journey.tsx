@@ -144,18 +144,6 @@ function DiscoveryRow({ d }: { d: Discovery }) {
 function JourneyPage() {
   return (
     <div className="px-6 pt-10 pb-10">
-      <header>
-        <h1 className="font-serif text-[38px] leading-none font-light tracking-[-0.02em]">
-          Journey
-        </h1>
-        <p className="mt-3 text-[15px] font-medium">Where curiosity meets time.</p>
-        <p className="mt-3 max-w-[26ch] text-[13px] leading-[1.7] text-muted-foreground">
-          Every day reveals something new about your body.
-        </p>
-      </header>
-
-      <span className="my-9 block h-px w-full border-t border-dotted border-border" />
-
       <section>
         <DiscoveryDetail d={todaysDiscovery} eyebrow="Today's discovery" />
         <div className="mt-8 border-t border-border pt-5">
