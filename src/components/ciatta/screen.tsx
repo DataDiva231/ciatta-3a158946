@@ -1,5 +1,6 @@
-import { useRouter } from "@tanstack/react-router";
 import type { ReactNode } from "react";
+
+import { useBack } from "@/lib/use-back";
 
 /** Shared chrome for every Profile child screen: back affordance + title. */
 export function Screen({
