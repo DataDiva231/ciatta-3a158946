@@ -84,32 +84,14 @@ const INTENSITY_STEP: QuickAddStep = {
   ],
 };
 
-const TIMING_STEP: QuickAddStep = {
-  key: "timing",
-  title: "When did you insert it?",
-  sub: "This helps Ciatta understand your timeline.",
-  layout: "list",
-  options: [
-    { label: "Just now", note: "0 min ago", minutesAgo: 0 },
-    { label: "30 minutes ago", note: "30 min", minutesAgo: 30 },
-    { label: "1 hour ago", note: "1 hr", minutesAgo: 60 },
-    { label: "2 hours ago", note: "2 hr", minutesAgo: 120 },
-    { label: "Custom time", note: "Choose exact time", custom: true },
-  ],
-};
+/** Preset offsets for the inline time chip (timing is no longer its own step). */
+export const TIME_PRESETS: { label: string; minutesAgo: number }[] = [
+  { label: "Just now", minutesAgo: 0 },
+  { label: "30 min ago", minutesAgo: 30 },
+  { label: "1 hr ago", minutesAgo: 60 },
+  { label: "2 hr ago", minutesAgo: 120 },
+];
 
-const WORN_TIMING_STEP: QuickAddStep = {
-  ...TIMING_STEP,
-  key: "timing",
-  title: "When did you start wearing it?",
-};
-
-const GENERIC_TIMING_STEP: QuickAddStep = {
-  ...TIMING_STEP,
-  key: "timing",
-  title: "When did this happen?",
-  sub: "Ciatta reads timing as closely as the signal itself.",
-};
 
 const GENERIC_STEPS: Record<string, QuickAddStep> = {
   Flow: INTENSITY_STEP,
