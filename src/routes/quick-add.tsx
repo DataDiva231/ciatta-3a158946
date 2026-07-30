@@ -244,8 +244,14 @@ function QuickAddPage() {
           label: CONFIRM_LABEL[s.key] ?? LOGGED_LABEL[s.key] ?? "Logged",
           value: answers[s.key],
         })),
+      {
+        key: "timing",
+        label: "Timeline updated",
+        value: eventTime ? formatDateTime(eventTime) : "Just now",
+      },
       { key: "understanding", label: "Understanding refined", value: "Leak risk updated" },
     ];
+
     return (
       <div className="flex min-h-full flex-col justify-center px-6 pb-12">
         <div className="relative mx-auto grid place-items-center">
