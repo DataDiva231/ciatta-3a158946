@@ -114,7 +114,19 @@ export function usePersistentState<T>(key: string, fallback: T) {
     [key],
   );
 
-  return { value, update, hydrated };
+  /** Merge against the very latest value — safe for rapid successive writes. */
+  const updateWith = useCallback(
+    (fn: (prev: T) => T) => {
+      setValue((prev) => {
+        const next = fn(prev);
+        write(key, next);
+        return next;
+      });
+    },
+    [key],
+  );
+
+  return { value, update, updateWith, hydrated };
 }
 
 

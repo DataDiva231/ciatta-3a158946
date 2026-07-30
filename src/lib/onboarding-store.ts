@@ -22,6 +22,10 @@ export type Onboarding = {
   appleHealth: string[];
   appleHealthConnected: boolean;
   notifications: "allow" | "later" | "";
+  /** Adaptive conversation answers, keyed by question id. */
+  answers: Record<string, string[]>;
+  /** Ordered ids of the questions Ciatta actually asked this user. */
+  path: string[];
 };
 
 export const ONBOARDING_KEY = "ciatta.onboarding.v1";
@@ -45,16 +49,19 @@ export const DEFAULT_ONBOARDING: Onboarding = {
   appleHealth: ["Sleep", "Heart Rate", "Activity", "Workouts", "Recovery"],
   appleHealthConnected: false,
   notifications: "",
+  answers: {},
+  path: [],
 };
 
 export function useOnboarding() {
-  const { value, update, hydrated } = usePersistentState<Onboarding>(
+  const { value, updateWith, hydrated } = usePersistentState<Onboarding>(
     ONBOARDING_KEY,
     DEFAULT_ONBOARDING,
   );
   const save = useCallback(
-    (next: Partial<Onboarding>) => update({ ...DEFAULT_ONBOARDING, ...value, ...next }),
-    [value, update],
+    (next: Partial<Onboarding>) =>
+      updateWith((prev) => ({ ...DEFAULT_ONBOARDING, ...prev, ...next })),
+    [updateWith],
   );
   return { data: { ...DEFAULT_ONBOARDING, ...value }, save, hydrated };
 }
