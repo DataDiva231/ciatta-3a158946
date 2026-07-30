@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { DiscoveryOrb, type OrbTone } from "@/components/ciatta/discovery-orb";
+import type { OrbTone } from "@/components/ciatta/discovery-orb";
 import {
   emergingInsights,
   journeyTimeline,
@@ -72,16 +72,13 @@ function DiscoveryDetail({ d, eyebrow }: { d: Discovery; eyebrow: string }) {
         {d.title}
       </h2>
 
-      <div className="mt-5 flex items-end justify-between gap-6">
-        <div>
-          <p className="text-[13px] leading-relaxed text-muted-foreground">
-            {d.confidenceLabel}
-          </p>
-          <div className="mt-2">
-            <Confidence value={d.confidence} tone={d.tone} />
-          </div>
+      <div className="mt-5">
+        <p className="text-[13px] leading-relaxed text-muted-foreground">
+          {d.confidenceLabel}
+        </p>
+        <div className="mt-2">
+          <Confidence value={d.confidence} tone={d.tone} />
         </div>
-        <DiscoveryOrb tone={d.tone} size={78} />
       </div>
 
       <Rule />
