@@ -636,16 +636,29 @@ function QuestionScreen({
             />
           ))}
         </div>
-        {reflection && <Reflection>{reflection}</Reflection>}
-        {!reflection && node.why?.(data) && <Why>{node.why(data)}</Why>}
+        {node.why?.(data) && <Why>{node.why(data)}</Why>}
       </Body>
-      <Footer
-        onNext={() => onNext(state)}
-        disabled={!node.optional && selected.length === 0}
-        onSkip={node.optional ? () => onNext(state) : undefined}
-        skipLabel="Not sure"
-        variant={selected.length ? "clay" : "outline"}
-      />
+      {multi ? (
+        <Footer
+          onNext={() => onNext(state)}
+          disabled={!node.optional && selected.length === 0}
+          onSkip={node.optional ? () => onNext(state) : undefined}
+          skipLabel="Not sure"
+          variant={selected.length ? "clay" : "outline"}
+        />
+      ) : node.optional ? (
+        <Footer
+          label="Continue"
+          onNext={() => onNext(state)}
+          disabled={selected.length === 0}
+          onSkip={() => onNext(state)}
+          skipLabel="Not sure"
+          variant={selected.length ? "clay" : "outline"}
+        />
+      ) : (
+        <div className="h-9 shrink-0" />
+      )}
+
     </>
   );
 }
