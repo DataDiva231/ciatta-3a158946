@@ -385,10 +385,9 @@ function ProfileHeader({ since }: { since: string }) {
           {NAME}
         </h1>
         <p className="mt-1 truncate text-[13px] text-muted-foreground">
-          {since === "Just started"
-            ? "Understanding begins today"
-            : `Understanding since ${since}`}
+          {since === "Today" ? "Ciatta started learning you today" : `Learning you since ${since}`}
         </p>
+
       </div>
       <button
         type="button"
@@ -413,12 +412,9 @@ function ProfilePage() {
 
   if (!profile.hydrated) return <ProfileSkeleton />;
 
-  const since =
-    profile.snapshot.find((s) => s.label === "Tracking Since")?.value ?? "today";
-  const lifeStage =
-    profile.snapshot.find((s) => s.label === "Current Life Stage")?.value ?? "Cycling";
-  const focus =
-    profile.snapshot.find((s) => s.label === "Current Learning Focus")?.value ?? "Recovery";
+  const since = profile.snapshot.find((s) => s.label === "Learning since")?.value ?? "today";
+  const lifeStage = profile.snapshot.find((s) => s.label === "Life stage")?.value ?? "Cycling";
+  const focus = profile.snapshot.find((s) => s.label === "Looking at next")?.value ?? "Recovery";
 
   return (
     <div className="pb-8">
@@ -429,8 +425,8 @@ function ProfilePage() {
         <SectionTitle>About me</SectionTitle>
         <Group>
           <Row label="Life stage" value={lifeStage} />
-          <Row label="Learning focus" value={focus} />
-          <Row label="Observations" value={String(profile.observationCount)} />
+          <Row label="Paying attention to" value={focus} />
+          <Row label="Where we are" value={profile.observationSummary} />
         </Group>
         <p className="mt-3 px-1 text-[14px] leading-relaxed text-muted-foreground">
           {profile.story[0]}
@@ -439,9 +435,16 @@ function ProfilePage() {
 
       {/* Your understanding — the centerpiece */}
       <section className="mt-9 px-6">
-        <SectionTitle note={`${profile.understandings.length} insights`}>
+        <SectionTitle
+          note={
+            profile.understandings.length === 1
+              ? "1 in progress"
+              : `${profile.understandings.length} in progress`
+          }
+        >
           Your understanding
         </SectionTitle>
+
         {!profile.hasData && (
           <Invitation
             line="Your portrait is still being drawn."
@@ -475,24 +478,31 @@ function ProfilePage() {
       <section className="mt-9 px-6">
         <SectionTitle>Health</SectionTitle>
 
-        <p className="mt-4 mb-0 px-1 text-[13px] text-muted-foreground">Snapshot</p>
+        <p className="mt-4 mb-0 px-1 text-[13px] text-muted-foreground">
+          Where your understanding stands
+        </p>
         <Group>
           {profile.snapshot.map((s) => (
             <Row key={s.label} label={s.label} value={s.value} />
           ))}
         </Group>
         {!profile.hasData && (
-          <ExampleNote>These fill in as Ciatta observes you. Nothing is estimated.</ExampleNote>
+          <ExampleNote>Each line fills in from what you log. Nothing here is estimated.</ExampleNote>
         )}
 
-        <p className="mt-6 px-1 text-[13px] text-muted-foreground">Areas of understanding</p>
+        <p className="mt-6 px-1 text-[13px] text-muted-foreground">
+          What Ciatta is learning, area by area
+        </p>
         <Group>
           {profile.areas.map((a) => (
             <Row key={a.name} label={a.name} value={a.tier} />
           ))}
         </Group>
 
-        <p className="mt-6 px-1 text-[13px] text-muted-foreground">Connected sources</p>
+        <p className="mt-6 px-1 text-[13px] text-muted-foreground">
+          Where the understanding comes from
+        </p>
+
         <Group>
           {profile.sources.map((s) => {
             const open = openSource === s.id;
@@ -531,13 +541,16 @@ function ProfilePage() {
           })}
         </Group>
 
-        <p className="mt-6 px-1 text-[13px] text-muted-foreground">Understanding timeline</p>
+        <p className="mt-6 px-1 text-[13px] text-muted-foreground">
+          How the understanding grew
+        </p>
         {profile.timeline.length <= 1 ? (
           <Invitation
-            line="Your timeline starts with one log."
-            body="As understanding deepens, each milestone Ciatta crosses is recorded here, month by month."
-            action="Add your first entry"
+            line="Nothing to look back on yet."
+            body="Each time Ciatta becomes more certain about something, that moment is recorded here."
+            action="Teach Ciatta something"
           />
+
         ) : (
           <div className="mt-3 rounded-2xl bg-surface px-5 py-5">
             <ol className="space-y-5 border-l border-border pl-5">
@@ -560,10 +573,12 @@ function ProfilePage() {
 
       {/* Preferences */}
       <section className="mt-9 px-6">
-        <SectionTitle>Preferences</SectionTitle>
+        <SectionTitle note="Tap to reorder">Preferences</SectionTitle>
         <p className="mt-3 px-1 text-[14px] leading-relaxed text-muted-foreground">
-          What Ciatta prioritizes when it forms new understanding.
+          Ciatta looks everywhere, but it looks hardest at what's near the top. Move a topic up and
+          future insights will lean toward it.
         </p>
+
         <Group>
           {priorities.map((p, i) => (
             <div key={p} className="flex items-center gap-3 px-4 py-3.5 text-[15px]">
