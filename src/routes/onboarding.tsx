@@ -860,9 +860,10 @@ function SummaryScreen({ data, onFinish }: { data: Onboarding; onFinish: () => v
           <br />
           learned so far
         </h1>
-        <p className="mt-2 text-center text-[13px] text-muted-foreground">
-          {first(data)}, in your own words.
-        </p>
+        <div className="mt-7">
+          <Orb size={104} confidence={92} active />
+        </div>
+
 
         <div className="mx-auto mt-7 max-w-[21rem] rounded-[26px] bg-surface px-5 py-5 shadow-[0_18px_44px_-32px_rgba(60,45,35,0.55)]">
           <div className="space-y-4">
@@ -888,12 +889,9 @@ function SummaryScreen({ data, onFinish }: { data: Onboarding; onFinish: () => v
         </div>
 
         <p className="mx-auto mt-6 max-w-[19rem] text-center text-[13px] leading-relaxed text-muted-foreground">
-          I&apos;ll keep learning and update this as we go.
+          I&apos;ll keep learning and update this as we go, {first(data)}.
         </p>
 
-        <div className="mt-7 opacity-90">
-          <Orb size={128} confidence={92} />
-        </div>
       </div>
       <div className="shrink-0 px-8 pt-3 pb-10">
         <PrimaryButton label="Go to Today" onClick={onFinish} />
