@@ -295,7 +295,7 @@ export const FLOW: FlowNode[] = [
           : undefined,
   },
 
-  /* --- medications ------------------------------------------------------ */
+  /* --- medications: category first, then the specific one --------------- */
   {
     id: "meds_gate",
     kind: "single",
@@ -309,49 +309,66 @@ export const FLOW: FlowNode[] = [
       one(d, "meds_gate") === "Nothing right now" ? "Then I'll leave that alone." : undefined,
   },
   {
+    id: "med_category",
+    kind: "single",
+    key: "med_category",
+    when: takesMeds,
+    ask: () => "What kind of thing, broadly?",
+    lead: () => "Just the category — I'll narrow it from there.",
+    options: (d) => {
+      const out: Choice[] = [];
+      if (isCycling(d) || isTTC(d)) out.push({ value: "Hormonal", hint: "Birth control and similar" });
+      if (isMeno(d)) out.push({ value: "Hormonal", hint: "Hormone therapy and similar" });
+      out.push(
+        { value: "Metabolic or weight" },
+        { value: "Mood or sleep" },
+        { value: "Thyroid" },
+        { value: "Something else" },
+      );
+      return out;
+    },
+    reflect: (d) =>
+      one(d, "med_category") === "Metabolic or weight"
+        ? "That category changes appetite and heart rate, so it's worth one more question."
+        : one(d, "med_category") === "Something else"
+          ? "Fine — I don't need the name to be useful."
+          : undefined,
+  },
+  {
     id: "meds",
     kind: "multi",
     key: "meds",
-    max: 4,
-    when: takesMeds,
-    ask: () => "Which ones?",
+    max: 2,
+    when: (d) => takesMeds(d) && one(d, "med_category") !== "" && one(d, "med_category") !== "Something else",
+    ask: () => "Which one is closest?",
+    optional: true,
     options: (d) => {
-      const base: Choice[] = [{ value: "GLP-1" }, { value: "Thyroid medication" }, { value: "Antidepressant" }];
-      if (isCycling(d) || isTTC(d)) base.unshift({ value: "Birth control" });
-      if (isMeno(d)) base.unshift({ value: "Hormone therapy" });
-      if (has(d, "conditions", "PCOS") || has(d, "conditions", "Type 2 diabetes"))
-        base.push({ value: "Metformin" });
-      return [...base, { value: "Something else" }];
+      const cat = one(d, "med_category");
+      if (cat === "Hormonal")
+        return isMeno(d)
+          ? [{ value: "Hormone therapy" }, { value: "Vaginal estrogen" }, { value: "Something else" }]
+          : [{ value: "Birth control" }, { value: "Progesterone" }, { value: "Something else" }];
+      if (cat === "Metabolic or weight")
+        return [{ value: "GLP-1" }, { value: "Metformin" }, { value: "Something else" }];
+      if (cat === "Mood or sleep")
+        return [{ value: "Antidepressant" }, { value: "Sleep aid" }, { value: "Something else" }];
+      return [{ value: "Thyroid medication" }, { value: "Something else" }];
     },
-  },
-  {
-    id: "glp1_which",
-    kind: "single",
-    key: "glp1_which",
-    when: onGLP1,
-    lead: () => "A GLP-1 shifts appetite, digestion and resting heart rate.",
-    ask: () => "Which one?",
-    options: () => [
-      { value: "Ozempic" },
-      { value: "Wegovy" },
-      { value: "Mounjaro" },
-      { value: "Zepbound" },
-      { value: "Another" },
-    ],
   },
   {
     id: "glp1_purpose",
     kind: "single",
     key: "glp1_purpose",
     when: onGLP1,
-    ask: () => "And what are you using it for?",
+    lead: () => "A GLP-1 shifts appetite, digestion and resting heart rate.",
+    ask: () => "What are you using it for?",
     options: (d) => {
       const opts = [{ value: "Weight management" }, { value: "Type 2 diabetes" }];
       if (has(d, "conditions", "PCOS")) opts.push({ value: "PCOS" });
       return [...opts, { value: "Something else" }];
     },
     reflect: () =>
-      "Noted. I'll separate GLP-1 effects from your own signals so you don't misread them.",
+      "Noted. I'll separate the medication's effects from your own signals so you don't misread them.",
   },
 
   /* --- body basics, only when it matters -------------------------------- */
@@ -380,62 +397,131 @@ export const FLOW: FlowNode[] = [
       { value: "It varies wildly" },
     ],
   },
-  {
-    id: "activity_self",
-    kind: "single",
-    key: "activity_self",
-    when: (d) => !connected(d),
-    ask: () => "And how much do you move in a normal week?",
-    options: () => [
-      { value: "Barely" },
-      { value: "A couple of times" },
-      { value: "Most days" },
-      { value: "Training hard" },
-    ],
-  },
 
-  /* --- what matters to you ----------------------------------------------- */
+  /* --- one broad focus, then goals that belong to it ---------------------- */
   {
-    id: "priorities",
-    kind: "multi",
-    key: "priorities",
-    max: 3,
-    lead: () => "Choose up to three. I'll look here first.",
-    ask: () => "What do you want me to understand first?",
+    id: "focus",
+    kind: "single",
+    key: "focus",
+    ask: () => "What would you most like to understand?",
+    lead: () => "One area. I'll go deep there before anywhere else.",
     options: (d) => {
       const out: Choice[] = [];
-      if (isCycling(d) || isTTC(d)) out.push({ value: "Cycle" });
       if (isTTC(d)) out.push({ value: "Fertility" });
+      if (isCycling(d)) out.push({ value: "My cycle" });
       if (isMeno(d)) out.push({ value: "Menopause symptoms" });
       if (isPregnant(d)) out.push({ value: "Recovery" });
-      if (onGLP1(d) || weightRelevant(d)) out.push({ value: "Metabolic health" });
-      if (a(d, "cycle_symptoms").length || a(d, "meno_symptoms").length)
-        out.push({ value: "Symptoms" });
-      out.push({ value: "Sleep" }, { value: "Energy" }, { value: "Mood" });
-      return out.slice(0, 6);
+      if (weightRelevant(d)) out.push({ value: "Metabolic health" });
+      out.push({ value: "Sleep" }, { value: "Energy and mood" });
+      return out.slice(0, 5);
+    },
+    reflect: (d) => {
+      const f = one(d, "focus");
+      return f ? `${f} it is. Let me narrow that down to one thing.` : undefined;
     },
   },
   {
     id: "goal",
     kind: "single",
     key: "goal",
-    ask: () => "And if one thing changed in three months, what would it be?",
+    ask: () => "If one thing changed in three months, what would it be?",
     options: (d) => {
-      const out: Choice[] = [];
-      if (isTTC(d)) out.push({ value: "Conceive" });
-      if (isMeno(d)) out.push({ value: "Fewer symptoms" });
-      if (weightRelevant(d)) out.push({ value: "Lose weight" });
-      if (a(d, "cycle_symptoms").length) out.push({ value: "Easier periods" });
-      out.push({ value: "Sleep better" }, { value: "Steadier energy" }, { value: "Feel understood" });
-      return out.slice(0, 5);
+      const f = one(d, "focus");
+      const map: Record<string, Choice[]> = {
+        Fertility: [{ value: "Conceive" }, { value: "Know when I ovulate" }, { value: "Steadier cycles" }],
+        "My cycle": [{ value: "Easier periods" }, { value: "Predictable cycles" }, { value: "Fewer symptom days" }],
+        "Menopause symptoms": [
+          { value: "Fewer symptoms" },
+          { value: "Sleep through the night" },
+          { value: "Steadier mood" },
+        ],
+        Recovery: [{ value: "Recover faster" }, { value: "More energy" }, { value: "Sleep better" }],
+        "Metabolic health": [
+          { value: "Lose weight" },
+          { value: "Steadier energy" },
+          { value: "Better blood sugar" },
+        ],
+        Sleep: [{ value: "Sleep better" }, { value: "Wake up rested" }, { value: "Fall asleep faster" }],
+        "Energy and mood": [
+          { value: "Steadier energy" },
+          { value: "Steadier mood" },
+          { value: "Feel understood" },
+        ],
+      };
+      return map[f] ?? [{ value: "Sleep better" }, { value: "Steadier energy" }, { value: "Feel understood" }];
     },
-    reflect: (d) => (d.primaryGoal ? `Then that's what I'll measure everything against.` : undefined),
+  },
+  {
+    id: "goal_blocker",
+    kind: "single",
+    key: "goal_blocker",
+    ask: (d) => `What tends to get in the way of that?`,
+    lead: (d) => (d.primaryGoal ? `Last one about ${d.primaryGoal.toLowerCase()}.` : undefined),
+    optional: true,
+    options: (d) => {
+      const g = d.primaryGoal;
+      if (g === "Sleep better" || g === "Wake up rested" || g === "Fall asleep faster")
+        return [
+          { value: "A racing mind" },
+          { value: "Waking in the night" },
+          { value: "Late nights" },
+          { value: "I don't know yet" },
+        ];
+      if (g === "Lose weight" || g === "Better blood sugar")
+        return [
+          { value: "Evening hunger" },
+          { value: "Low energy to move" },
+          { value: "Stress eating" },
+          { value: "I don't know yet" },
+        ];
+      if (g === "Conceive" || g === "Know when I ovulate")
+        return [
+          { value: "Unclear timing" },
+          { value: "Irregular cycles" },
+          { value: "Stress" },
+          { value: "I don't know yet" },
+        ];
+      return [
+        { value: "Poor sleep" },
+        { value: "Stress" },
+        { value: "Symptoms getting in the way" },
+        { value: "I don't know yet" },
+      ];
+    },
+    reflect: (d) =>
+      one(d, "goal_blocker") && one(d, "goal_blocker") !== "I don't know yet"
+        ? "That's the thread I'll pull on first."
+        : "Then finding it is my job, not yours.",
   },
 
   { id: "notifications", kind: "notifications" },
   { id: "building", kind: "building" },
   { id: "summary", kind: "summary" },
 ];
+
+/* ------------------------------------------------------- conversational beats */
+
+/**
+ * Short acknowledgements Ciatta uses between questions when the node itself
+ * has nothing specific to say. Never repeated within one session.
+ */
+const ACKS = [
+  "Thank you — that helps.",
+  "Got it. Let's build on that.",
+  "That gives me useful context.",
+  "Noted. I'll fold that in.",
+  "Good to know.",
+  "That tells me something.",
+  "I'll remember that.",
+  "Understood.",
+];
+
+export function ackFor(used: string[]): string {
+  const left = ACKS.filter((x) => !used.includes(x));
+  const pool = left.length ? left : ACKS;
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
 
 export function first(d: Onboarding) {
   return d.name.trim().split(" ")[0] || "there";
