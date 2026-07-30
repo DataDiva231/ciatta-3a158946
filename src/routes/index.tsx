@@ -91,7 +91,7 @@ function TodayPage() {
         <Link
           to="/profile"
           aria-label="Profile"
-          className="mt-0.5 inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-surface/70 transition-colors hover:bg-secondary"
+          className="mt-0.5 inline-flex h-10 w-10 items-center justify-center rounded-full border border-transparent bg-transparent transition-colors hover:bg-secondary"
         >
           <ProfileIcon active={false} />
         </Link>
