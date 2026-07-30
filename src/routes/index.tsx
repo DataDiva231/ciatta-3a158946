@@ -40,7 +40,7 @@ export const Route = createFileRoute("/")({
 
 function TodayPage() {
   const navigate = useNavigate();
-  const router = useRouter();
+  const { canGoBack, goBack } = useBack("/");
   // First run: send new users into their first Teach Session.
   useEffect(() => {
     try {
