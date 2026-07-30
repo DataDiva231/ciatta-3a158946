@@ -35,9 +35,11 @@ export type ProfileView = {
   hasData: boolean;
   /** How many logs the portrait is drawn from. */
   observationCount: number;
+  /** Living one-liner about progress, used instead of a raw count. */
+  observationSummary: string;
   understandings: Understanding[];
   story: string[];
-  areas: Area[];
+
   snapshot: SnapshotRow[];
   sources: SourceRow[];
   timeline: TimelineStep[];
