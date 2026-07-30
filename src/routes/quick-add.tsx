@@ -297,25 +297,42 @@ function QuickAddPage() {
           </svg>
         </button>
         {index > 0 && (
-          <span className="mx-auto flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1.5 text-[12px] text-accent">
+          <div className="mx-auto flex min-w-0 flex-wrap items-center justify-center gap-1.5">
             {answeredSteps.map((s, i) =>
               answers[s.key] ? (
-                <span key={s.key} className="flex items-center gap-1.5">
-                  {i > 0 && <span className="text-fog">•</span>}
-                  {answers[s.key]}
-                </span>
+                <button
+                  key={s.key}
+                  type="button"
+                  onClick={() => goTo(i)}
+                  className="animate-in fade-in zoom-in-95 flex max-w-[120px] items-center gap-1 rounded-full bg-secondary px-2.5 py-1 text-[11px] text-accent duration-300"
+                >
+                  <span className="truncate">{answers[s.key]}</span>
+                  {i === answeredSteps.length - 1 && <CheckIcon className="shrink-0 text-accent" />}
+                </button>
               ) : null,
             )}
-            <CheckIcon className="text-accent" />
-          </span>
+          </div>
         )}
         <span className="h-10 w-10 shrink-0" />
       </div>
 
-      <h1 className="mt-6 text-center font-serif text-[27px] leading-tight">{step.title}</h1>
-      <p className="mt-2 text-center text-[13px] leading-relaxed text-muted-foreground">
-        {step.sub}
-      </p>
+      <div
+        key={`${step.key}-${index}`}
+        className={`animate-in fade-in duration-300 ease-out ${
+          direction === "forward" ? "slide-in-from-right-6" : "slide-in-from-left-6"
+        }`}
+      >
+        <h1 className="mt-6 text-center font-serif text-[27px] leading-tight">{step.title}</h1>
+        <p className="mt-2 text-center text-[13px] leading-relaxed text-muted-foreground">
+          {continuation ? (
+            <>
+              <span className="text-foreground">{continuation}</span> {step.sub}
+            </>
+          ) : (
+            step.sub
+          )}
+        </p>
+
 
       {step.layout === "grid" ? (
         <div className="mt-6 grid grid-cols-2 gap-3">
