@@ -134,15 +134,8 @@ function Why({ children }: { children: React.ReactNode }) {
   );
 }
 
-/** Ciatta answering back before it moves on. */
-function Reflection({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="animate-in fade-in slide-in-from-bottom-2 mt-7 flex gap-3 duration-500">
-      <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-clay/70" />
-      <p className="text-[14px] leading-relaxed text-foreground/80">{children}</p>
-    </div>
-  );
-}
+
+
 
 function Footer({
   label = "Continue",
