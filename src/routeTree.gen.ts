@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as TeachRouteImport } from './routes/teach'
 import { Route as TalkRouteImport } from './routes/talk'
 import { Route as QuickAddRouteImport } from './routes/quick-add'
+import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as JourneyRouteImport } from './routes/journey'
 import { Route as CaptureRouteImport } from './routes/capture'
 import { Route as AttachRouteImport } from './routes/attach'
@@ -36,6 +37,11 @@ const TalkRoute = TalkRouteImport.update({
 const QuickAddRoute = QuickAddRouteImport.update({
   id: '/quick-add',
   path: '/quick-add',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingRoute = OnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
   getParentRoute: () => rootRouteImport,
 } as any)
 const JourneyRoute = JourneyRouteImport.update({
@@ -94,6 +100,7 @@ export interface FileRoutesByFullPath {
   '/attach': typeof AttachRoute
   '/capture': typeof CaptureRoute
   '/journey': typeof JourneyRoute
+  '/onboarding': typeof OnboardingRoute
   '/quick-add': typeof QuickAddRoute
   '/talk': typeof TalkRoute
   '/teach': typeof TeachRoute
@@ -109,6 +116,7 @@ export interface FileRoutesByTo {
   '/attach': typeof AttachRoute
   '/capture': typeof CaptureRoute
   '/journey': typeof JourneyRoute
+  '/onboarding': typeof OnboardingRoute
   '/quick-add': typeof QuickAddRoute
   '/talk': typeof TalkRoute
   '/teach': typeof TeachRoute
@@ -125,6 +133,7 @@ export interface FileRoutesById {
   '/attach': typeof AttachRoute
   '/capture': typeof CaptureRoute
   '/journey': typeof JourneyRoute
+  '/onboarding': typeof OnboardingRoute
   '/quick-add': typeof QuickAddRoute
   '/talk': typeof TalkRoute
   '/teach': typeof TeachRoute
@@ -142,6 +151,7 @@ export interface FileRouteTypes {
     | '/attach'
     | '/capture'
     | '/journey'
+    | '/onboarding'
     | '/quick-add'
     | '/talk'
     | '/teach'
@@ -157,6 +167,7 @@ export interface FileRouteTypes {
     | '/attach'
     | '/capture'
     | '/journey'
+    | '/onboarding'
     | '/quick-add'
     | '/talk'
     | '/teach'
@@ -172,6 +183,7 @@ export interface FileRouteTypes {
     | '/attach'
     | '/capture'
     | '/journey'
+    | '/onboarding'
     | '/quick-add'
     | '/talk'
     | '/teach'
@@ -188,6 +200,7 @@ export interface RootRouteChildren {
   AttachRoute: typeof AttachRoute
   CaptureRoute: typeof CaptureRoute
   JourneyRoute: typeof JourneyRoute
+  OnboardingRoute: typeof OnboardingRoute
   QuickAddRoute: typeof QuickAddRoute
   TalkRoute: typeof TalkRoute
   TeachRoute: typeof TeachRoute
@@ -220,6 +233,13 @@ declare module '@tanstack/react-router' {
       path: '/quick-add'
       fullPath: '/quick-add'
       preLoaderRoute: typeof QuickAddRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding': {
+      id: '/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof OnboardingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/journey': {
@@ -300,6 +320,7 @@ const rootRouteChildren: RootRouteChildren = {
   AttachRoute: AttachRoute,
   CaptureRoute: CaptureRoute,
   JourneyRoute: JourneyRoute,
+  OnboardingRoute: OnboardingRoute,
   QuickAddRoute: QuickAddRoute,
   TalkRoute: TalkRoute,
   TeachRoute: TeachRoute,
@@ -313,13 +334,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
