@@ -5,7 +5,7 @@ import {
   today,
   type CyclePhase,
 } from "./ciatta-data";
-import type { CheckIn } from "./ciatta-store";
+import type { CheckIn, QuickAddEvent } from "./ciatta-store";
 
 export type NarrativeLine = {
   label: string;
@@ -21,7 +21,29 @@ export type Narrative = {
 
 type State = "recover" | "steady" | "strong";
 
-function resolveState(checkIn: CheckIn | null): State {
+/** Quick Add entries logged in the last 24 hours, newest first. */
+function recentEvents(events: QuickAddEvent[]) {
+  const cutoff = Date.now() - 24 * 60 * 60 * 1000;
+  return events.filter((e) => new Date(e.timestamp).getTime() >= cutoff);
+}
+
+function eventBias(events: QuickAddEvent[]): State | null {
+  for (const e of recentEvents(events)) {
+    if (e.category === "Sleep" && (e.value === "Barely slept" || e.value === "Restless"))
+      return "recover";
+    if (e.category === "Sleep" && e.value === "Deep") return "strong";
+    if (e.category === "Symptoms") return "recover";
+    if (e.metadata?.Flow === "Heavy" || (e.category === "Flow" && e.value === "Heavy"))
+      return "recover";
+    if (e.category === "Activity" && e.value === "Hard") return "recover";
+  }
+  return null;
+}
+
+function resolveState(checkIn: CheckIn | null, events: QuickAddEvent[]): State {
+  const bias = eventBias(events);
+  if (bias) return bias;
+
   const sleepDrop = recentShift("sleepQuality");
   const felt = checkIn ? (checkIn.sleepFelt + checkIn.energy) / 2 : null;
 
@@ -31,8 +53,12 @@ function resolveState(checkIn: CheckIn | null): State {
   return "steady";
 }
 
-export function buildNarrative(checkIn: CheckIn | null): Narrative {
-  const state = resolveState(checkIn);
+export function buildNarrative(
+  checkIn: CheckIn | null,
+  events: QuickAddEvent[] = [],
+): Narrative {
+  const state = resolveState(checkIn, events);
+
   const phase: CyclePhase = phaseForDay(today.cycleDay);
   const sleepDrop = Math.abs(recentShift("sleepQuality"));
   const hrShift = recentShift("restingHr");
