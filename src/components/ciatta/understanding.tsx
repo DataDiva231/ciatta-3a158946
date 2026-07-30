@@ -44,7 +44,7 @@ export function Understanding({
     >
       {/* Volumetric bloom — the reach of what Ciatta understands. */}
       <span
-        className="animate-breathe absolute inset-0 rounded-full"
+        className="absolute inset-0 rounded-full"
         style={{
           background: `radial-gradient(circle at 50% 54%, color-mix(in oklab, var(--clay) ${Math.round(
             bloom * 100,
