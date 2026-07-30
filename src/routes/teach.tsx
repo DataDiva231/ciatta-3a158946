@@ -70,15 +70,21 @@ const OTHER_WAYS = [
 ] as const;
 
 function TeachPage() {
+  const { latest } = useCheckIns();
+  const { events } = useQuickAddEvents();
+  const narrative = buildNarrative(latest, events);
+  const suggestions = buildTeachSuggestions(events, narrative.confidence.value);
+
   return (
     <div className="flex min-h-full flex-col px-6 pb-2 pt-6">
       <div className="flex flex-1 items-center justify-center py-4">
+        {/* The orb breathes: Ciatta's understanding is always evolving. */}
         <img
           src={orb}
           alt="Ciatta's iridescent understanding of you"
           width={1024}
           height={1024}
-          className="w-[70%] max-w-[280px] drop-shadow-[0_30px_60px_rgba(217,106,88,0.18)]"
+          className="w-[70%] max-w-[280px] animate-breathe drop-shadow-[0_30px_60px_rgba(217,106,88,0.18)]"
         />
       </div>
 
@@ -86,16 +92,33 @@ function TeachPage() {
         What's changed since we last checked in?
       </h1>
       <p className="mt-3 text-center text-[14px] leading-relaxed text-muted-foreground">
-        Every update makes tomorrow's understanding more personal.
+        {confidenceLine(narrative.confidence.value, suggestions.length)}
       </p>
+
+      {suggestions.length > 0 && (
+        <div className="mt-5 flex flex-wrap justify-center gap-2">
+          {suggestions.map((s) => (
+            <Link
+              key={s.category}
+              to="/quick-add"
+              search={{ category: s.category }}
+              className="animate-in fade-in flex items-center gap-2 rounded-full bg-surface px-3.5 py-2 text-[12px] leading-none ring-1 ring-border/60 transition-transform duration-200 active:scale-[0.97]"
+            >
+              <span className="text-accent">{s.label}</span>
+              <span className="text-muted-foreground">{s.reason}</span>
+            </Link>
+          ))}
+        </div>
+      )}
 
       <Link
         to="/quick-add"
-        className="mt-7 flex items-center gap-4 rounded-[26px] px-4 py-4 text-left shadow-[0_16px_30px_-18px_rgba(217,106,88,0.9)]"
+        className="mt-6 flex items-center gap-4 rounded-[26px] px-4 py-4 text-left shadow-[0_16px_30px_-18px_rgba(217,106,88,0.9)]"
         style={{
           background: "linear-gradient(100deg, var(--clay), oklch(0.72 0.17 45))",
         }}
       >
+
         <span className="grid h-14 w-14 shrink-0 place-items-center rounded-full bg-surface text-[26px] leading-none text-accent">
           +
         </span>
