@@ -126,7 +126,7 @@ function TalkPage() {
       <header className="px-6 pb-4 pt-8">
         <button
           type="button"
-          onClick={() => router.history.back()}
+          onClick={goBack}
           aria-label="Back"
           className="grid h-10 w-10 place-items-center rounded-full bg-secondary text-foreground"
         >
