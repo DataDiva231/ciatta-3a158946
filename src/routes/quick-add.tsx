@@ -5,6 +5,7 @@ import orb from "@/assets/ciatta-orb.png";
 import { useQuickAddEvents, type QuickAddEvent } from "@/lib/ciatta-store";
 import {
   buildSteps,
+  CONFIRM_LABEL,
   formatDateTime,
   LOGGED_LABEL,
   META_LABEL,
