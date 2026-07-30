@@ -409,10 +409,9 @@ function QuickAddPage() {
                   type="button"
                   onClick={() => choose(o)}
                   className={`flex min-h-[112px] flex-col items-center justify-center gap-2.5 rounded-[20px] bg-surface px-3 py-5 transition-all duration-200 active:scale-[0.98] ${
-                    selected
-                      ? "ring-1 ring-accent"
-                      : "shadow-[0_1px_2px_rgba(0,0,0,0.03)] ring-1 ring-border/60"
+                    selected ? "ring-1 ring-accent" : ""
                   }`}
+
                 >
                   <ProductGlyph icon={o.icon} />
                   <span
