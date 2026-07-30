@@ -55,6 +55,21 @@ export function tierFor(v: number) {
   return "Just Beginning";
 }
 
+/**
+ * Descriptive, non-repeating status for an area of understanding.
+ * Rank varies the wording so several quiet areas never read identically.
+ */
+export function areaStatus(v: number, rank: number) {
+  if (v >= 85)
+    return ["Well understood", "Reliably predictable", "Confirmed over time"][rank % 3];
+  if (v >= 65)
+    return ["Pattern holding", "Repeating consistently", "Taking clear shape"][rank % 3];
+  if (v >= 45) return ["Connections forming", "Starting to line up", "A shape is emerging"][rank % 3];
+  if (v >= 25)
+    return ["First signals in", "Watching for repeats", "Early threads only"][rank % 3];
+  return ["Listening, nothing yet", "Awaiting your first logs", "Not enough to say"][rank % 3];
+}
+
 const AREAS = ["Recovery", "Sleep", "Cycle", "Stress", "Nutrition", "Mood"];
 
 /** Words in a signal that point an observation at a given area of understanding. */
@@ -66,6 +81,7 @@ const AREA_WORDS: Record<string, string[]> = {
   Nutrition: ["nutrition", "food", "meal", "hydration", "water", "coffee"],
   Mood: ["mood", "feeling", "brain fog", "low mood"],
 };
+
 
 function monthYear(iso: string) {
   return new Date(iso).toLocaleDateString("en-US", { month: "long", year: "numeric" });
