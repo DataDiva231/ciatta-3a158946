@@ -273,7 +273,9 @@ export function useProfile(): ProfileView {
       hydrated: journey.hydrated,
       hasData: journey.hasData,
       observationCount: journey.observationCount,
+      observationSummary,
       understandings,
+
 
       story,
       areas,
