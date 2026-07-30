@@ -17,8 +17,28 @@ export type LearnedFact = {
   savedAt: string;
 };
 
+/** A structured Quick Add log entry — the unit Today and Journey read from. */
+export type QuickAddEvent = {
+  id: string;
+  /** Event type discriminator, so other loggers can share the same stream. */
+  type: "quick_add";
+  /** Top-level thing being taught, e.g. "Period Product". */
+  category: string;
+  /** Primary value for the category, e.g. "Tampon". */
+  value: string;
+  /** When the event actually happened (may be backdated by the timing step). */
+  timestamp: string;
+  /** When the entry was written. */
+  createdAt: string;
+  /** Optional extra fields, e.g. { Absorbency: "Super", Flow: "Heavy" }. */
+  metadata?: Record<string, string>;
+};
+
 const CHECKIN_KEY = "ciatta.checkins.v1";
 const FACTS_KEY = "ciatta.facts.v1";
+const EVENTS_KEY = "ciatta.events.v1";
+const SYNC_EVENT = "ciatta:store-change";
+
 
 export const SEED_FACTS: LearnedFact[] = [
   { id: "seed-1", text: "Migraines usually arrive two days before your period.", savedAt: "" },
