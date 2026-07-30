@@ -76,7 +76,7 @@ function TeachPage() {
   const suggestions = buildTeachSuggestions(events, narrative.confidence.value);
 
   return (
-    <div className="flex min-h-full flex-col px-6 pb-2 pt-4">
+    <div className="flex min-h-full flex-col px-6 pb-1 pt-3">
       <div className="flex flex-1 items-center justify-center py-1">
         {/* The orb breathes: Ciatta's understanding is always evolving. */}
         <img
@@ -137,7 +137,7 @@ function TeachPage() {
         <span className="h-px flex-1 bg-border" />
       </div>
 
-      <div className="mt-4 grid grid-cols-3 divide-x divide-border rounded-3xl border border-border bg-surface py-4">
+      <div className="mt-4 grid grid-cols-3 divide-x divide-border rounded-3xl border border-border bg-surface py-3">
         {OTHER_WAYS.map(({ to, label, Icon }) => (
           <Link key={label} to={to} className="flex flex-col items-center gap-2">
             <span className="grid h-10 w-10 place-items-center rounded-full bg-secondary text-muted-foreground">
