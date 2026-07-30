@@ -312,22 +312,25 @@ function QuickAddPage() {
           </svg>
         </button>
         {index > 0 && (
-          <div className="mx-auto flex min-w-0 flex-wrap items-center justify-center gap-1.5">
+          <div className="mx-auto flex min-w-0 items-center gap-1.5 rounded-full bg-secondary px-3 py-1.5 text-[12px] text-accent">
             {answeredSteps.map((s, i) =>
               answers[s.key] ? (
-                <button
-                  key={s.key}
-                  type="button"
-                  onClick={() => goTo(i)}
-                  className="animate-in fade-in zoom-in-95 flex max-w-[120px] items-center gap-1 rounded-full bg-secondary px-2.5 py-1 text-[11px] text-accent duration-300"
-                >
-                  <span className="truncate">{answers[s.key]}</span>
-                  {i === answeredSteps.length - 1 && <CheckIcon className="shrink-0 text-accent" />}
-                </button>
+                <span key={s.key} className="flex min-w-0 items-center gap-1.5">
+                  {i > 0 && <span className="text-fog">•</span>}
+                  <button
+                    type="button"
+                    onClick={() => goTo(i)}
+                    className="animate-in fade-in zoom-in-95 max-w-[110px] truncate duration-300"
+                  >
+                    {answers[s.key]}
+                  </button>
+                </span>
               ) : null,
             )}
+            <CheckIcon className="shrink-0 text-accent" />
           </div>
         )}
+
         <span className="h-10 w-10 shrink-0" />
       </div>
 
