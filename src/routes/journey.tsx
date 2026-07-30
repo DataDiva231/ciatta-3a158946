@@ -143,7 +143,7 @@ function DiscoveryRow({ d }: { d: Discovery }) {
 
 function JourneyPage() {
   return (
-    <div className="px-6 pt-10 pb-10">
+    <div className="px-6 pt-8 pb-10">
       <section>
         <DiscoveryDetail d={todaysDiscovery} eyebrow="Today's discovery" />
         <div className="mt-8 border-t border-border pt-5">
