@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 
 import figureAsset from "@/assets/ciatta-figure-cut.png.asset.json";
