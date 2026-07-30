@@ -385,10 +385,9 @@ function ProfileHeader({ since }: { since: string }) {
           {NAME}
         </h1>
         <p className="mt-1 truncate text-[13px] text-muted-foreground">
-          {since === "Just started"
-            ? "Understanding begins today"
-            : `Understanding since ${since}`}
+          {since === "Today" ? "Ciatta started learning you today" : `Learning you since ${since}`}
         </p>
+
       </div>
       <button
         type="button"
