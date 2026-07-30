@@ -37,6 +37,8 @@ export type QuickAddEvent = {
 const CHECKIN_KEY = "ciatta.checkins.v1";
 const FACTS_KEY = "ciatta.facts.v1";
 const EVENTS_KEY = "ciatta.events.v1";
+const MILESTONE_KEY = "ciatta.milestones.v1";
+
 const SYNC_EVENT = "ciatta:store-change";
 
 
