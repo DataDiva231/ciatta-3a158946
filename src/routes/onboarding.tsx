@@ -604,7 +604,6 @@ function QuestionScreen({
   const options = node.options?.(data) ?? [];
   const multi = node.kind === "multi";
   const max = node.max ?? options.length;
-  const reflection = selected.length ? node.reflect?.(state) : undefined;
 
   const pick = (value: string) => {
     let values: string[];
@@ -612,8 +611,12 @@ function QuestionScreen({
     else if (selected.includes(value)) values = selected.filter((v) => v !== value);
     else if (selected.length >= max) return;
     else values = [...selected, value];
-    setState(onAnswer(key, values));
+    const next = onAnswer(key, values);
+    setState(next);
+    // A single choice is a complete answer — move on without a second tap.
+    if (!multi) window.setTimeout(() => onNext(next), 240);
   };
+
 
   return (
     <>
