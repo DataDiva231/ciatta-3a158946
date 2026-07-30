@@ -314,7 +314,7 @@ function QuickAddPage() {
           {step.options.map((o) => {
             const selected = answers[step.key] === o.label;
             return (
-              <li key={o.label}>
+              <li key={o.label} className="relative">
                 <button
                   type="button"
                   onClick={() => choose(o)}
@@ -340,23 +340,25 @@ function QuickAddPage() {
                     )}
                   </span>
                 </button>
+                {/* Invisible native date/time picker layered over the "Custom time" row. */}
+                {o.custom && (
+                  <input
+                    ref={timeInput}
+                    type="datetime-local"
+                    aria-label="Custom time"
+                    max={toLocalInputValue(new Date())}
+                    defaultValue={toLocalInputValue(new Date())}
+                    onChange={(e) => chooseCustomTime(e.target.value)}
+                    className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                  />
+                )}
               </li>
             );
           })}
         </ul>
       )}
 
-      {/* Native date/time picker used by the "Custom time" option. */}
-      <input
-        ref={timeInput}
-        type="datetime-local"
-        aria-label="Custom time"
-        max={toLocalInputValue(new Date())}
-        defaultValue={toLocalInputValue(new Date())}
-        onChange={(e) => chooseCustomTime(e.target.value)}
-        className="absolute h-0 w-0 opacity-0"
-        tabIndex={-1}
-      />
+
 
       <div className="mt-auto flex items-center gap-3 pt-8">
         <span className="text-[12px] text-muted-foreground">
