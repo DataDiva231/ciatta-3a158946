@@ -142,7 +142,7 @@ function TalkPage() {
             />
           </svg>
         </button>
-        <h1 className="mt-5 font-serif text-[30px] leading-tight font-light">Talk to Ciatta</h1>
+        <h1 className="mt-5 font-serif text-[32px] leading-[1.12] tracking-[-0.015em]">Talk to Ciatta</h1>
         <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">
           The more it knows, the less it guesses.
         </p>
@@ -177,7 +177,7 @@ function TalkPage() {
               key={p}
               type="button"
               onClick={() => send(p)}
-              className="rounded-full border border-border px-3.5 py-2 text-left text-[13px] text-muted-foreground transition-colors hover:border-accent hover:text-accent"
+              className="rounded-full bg-secondary px-3.5 py-2 text-left text-[13px] text-muted-foreground transition-colors hover:text-accent"
             >
               {p}
             </button>

@@ -119,7 +119,7 @@ export function TeachUpload({
         </svg>
       </button>
 
-      <h1 className="mt-5 font-serif text-[30px] leading-tight font-light">{title}</h1>
+      <h1 className="mt-5 font-serif text-[30px] leading-tight">{title}</h1>
       <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">{intro}</p>
 
       <input

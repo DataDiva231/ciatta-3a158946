@@ -32,7 +32,7 @@ export function Screen({
           </button>
           {action}
         </div>
-        <h1 className="mt-5 font-serif text-[28px] leading-tight font-light tracking-[-0.01em]">
+        <h1 className="mt-5 font-serif text-[28px] leading-tight tracking-[-0.01em]">
           {title}
         </h1>
         {subtitle && (

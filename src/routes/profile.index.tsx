@@ -80,7 +80,7 @@ function Invitation({
 }) {
   return (
     <div className="mt-3 rounded-2xl bg-surface px-4 py-5">
-      <p className="font-serif text-[19px] leading-snug font-light">{line}</p>
+      <p className="font-serif text-[19px] leading-snug">{line}</p>
       <p className="mt-2 text-[14px] leading-relaxed text-muted-foreground">{body}</p>
       <Link
         to="/teach"
@@ -173,7 +173,7 @@ function UnderstandingBlock({
       >
         <span className="min-w-0">
           <span
-            className={`block font-serif font-light leading-[1.25] tracking-[-0.01em] ${
+            className={`block font-serif leading-[1.25] tracking-[-0.01em] ${
               lead ? "text-[21px]" : "text-[18px]"
             }`}
           >
@@ -404,7 +404,7 @@ function ProfileHeader({ since }: { since: string }) {
       ) : (
         <span
           aria-hidden="true"
-          className="flex h-[64px] w-[64px] shrink-0 items-center justify-center rounded-full bg-secondary font-serif text-[24px] font-light text-muted-foreground"
+          className="flex h-[64px] w-[64px] shrink-0 items-center justify-center rounded-full bg-secondary font-serif text-[24px] text-muted-foreground"
           style={{
             backgroundImage:
               "radial-gradient(circle at 30% 25%, color-mix(in oklab, var(--clay) 22%, transparent), transparent 70%)",
@@ -414,7 +414,7 @@ function ProfileHeader({ since }: { since: string }) {
         </span>
       )}
       <div className="min-w-0 flex-1">
-        <h1 className="truncate font-serif text-[26px] leading-tight font-light tracking-[-0.01em]">
+        <h1 className="truncate font-serif text-[26px] leading-tight tracking-[-0.01em]">
           {identity.name}
         </h1>
         <p className="mt-1 truncate text-[13px] text-muted-foreground">

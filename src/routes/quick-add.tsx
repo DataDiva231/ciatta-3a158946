@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
-import orb from "@/assets/ciatta-orb.png";
+import { Understanding } from "@/components/ciatta/understanding";
 import { useQuickAddEvents, type QuickAddEvent } from "@/lib/ciatta-store";
 import {
   buildSteps,
@@ -275,36 +275,20 @@ function QuickAddPage() {
     ];
 
     return (
-      <div className="flex min-h-full flex-col justify-center px-6 pb-12">
-        <div className="relative mx-auto grid place-items-center">
-          <span
-            className="absolute h-[176px] w-[176px] animate-ping rounded-full opacity-30"
-            style={{ background: "radial-gradient(circle, var(--clay) 0%, transparent 62%)" }}
-            aria-hidden="true"
-          />
-          <span
-            className="animate-in zoom-in-50 absolute h-[140px] w-[140px] rounded-full opacity-50 blur-xl duration-700"
-            style={{ background: "radial-gradient(circle, var(--clay) 0%, transparent 70%)" }}
-            aria-hidden="true"
-          />
-          <img
-            src={orb}
-            alt=""
-            width={1024}
-            height={1024}
-            loading="eager"
-            className="animate-in zoom-in-95 relative w-[140px] duration-500"
-          />
+      <div className="flex min-h-full flex-col justify-center px-7 pb-12">
+        <div className="mx-auto">
+          <Understanding size="hero" confidence={88} active className="animate-in fade-in duration-700" />
         </div>
 
-        <h1 className="animate-in fade-in mt-6 text-center font-serif text-[27px] leading-[1.15] tracking-[-0.01em] duration-300">
+        <h1 className="animate-in fade-in mt-8 text-center font-serif text-[30px] leading-[1.12] tracking-[-0.015em] duration-300">
           Understanding updated
         </h1>
-        <p className="animate-in fade-in mt-2.5 text-center text-[13px] leading-relaxed text-muted-foreground duration-500">
-          Thank you! Every update makes Ciatta smarter.
+        <p className="animate-in fade-in mt-3 text-center text-[13px] leading-relaxed text-muted-foreground duration-500">
+          Thank you — every update makes Ciatta more yours.
         </p>
 
-        <ul className="mt-8 overflow-hidden rounded-[20px] bg-surface px-5 shadow-[0_1px_2px_rgba(0,0,0,0.03)]">
+        <ul className="mt-9">
+
           {rows.map((r, i) => (
             <li
               key={r.key}
@@ -331,7 +315,7 @@ function QuickAddPage() {
 
 
   return (
-    <div className="flex min-h-full flex-col px-6 pb-6 pt-6">
+    <div className="flex min-h-full flex-col px-7 pt-6 pb-6">
       <div className="flex min-h-11 items-center gap-3">
         <button
           type="button"
@@ -380,10 +364,11 @@ function QuickAddPage() {
           direction === "forward" ? "slide-in-from-right-4" : "slide-in-from-left-4"
         }`}
       >
-        <h1 className="mt-7 text-center font-serif text-[27px] leading-[1.15] tracking-[-0.01em]">
+        <h1 className="mt-8 font-serif text-[30px] leading-[1.12] tracking-[-0.015em]">
           {step.title}
         </h1>
-        <p className="mx-auto mt-2.5 max-w-[30ch] text-center text-[13px] leading-relaxed text-muted-foreground">
+        <p className="mt-3 max-w-[34ch] text-[13px] leading-relaxed text-muted-foreground">
+
           {continuation ? (
             <>
               <span className="text-foreground">{continuation}</span> {step.sub}
@@ -425,10 +410,9 @@ function QuickAddPage() {
                   type="button"
                   onClick={() => choose(o)}
                   className={`flex min-h-[112px] flex-col items-center justify-center gap-2.5 rounded-[20px] bg-surface px-3 py-5 transition-all duration-200 active:scale-[0.98] ${
-                    selected
-                      ? "ring-1 ring-accent"
-                      : "shadow-[0_1px_2px_rgba(0,0,0,0.03)] ring-1 ring-border/60"
+                    selected ? "ring-1 ring-accent" : ""
                   }`}
+
                 >
                   <ProductGlyph icon={o.icon} />
                   <span
@@ -449,11 +433,10 @@ function QuickAddPage() {
                   <button
                     type="button"
                     onClick={() => choose(o)}
-                    className={`flex min-h-[60px] w-full items-center gap-3.5 rounded-[18px] bg-surface px-4 py-3.5 text-left transition-all duration-200 active:scale-[0.99] ${
-                      selected
-                        ? "ring-1 ring-accent"
-                        : "shadow-[0_1px_2px_rgba(0,0,0,0.03)] ring-1 ring-border/60"
+                    className={`flex min-h-[60px] w-full items-center gap-3.5 rounded-[18px] px-4 py-3.5 text-left transition-all duration-200 active:scale-[0.99] ${
+                      selected ? "bg-surface ring-1 ring-accent" : "bg-surface"
                     }`}
+
                   >
                     {o.glyph && (
                       <span className="w-11 shrink-0 text-[13px] tracking-tight text-muted-foreground">

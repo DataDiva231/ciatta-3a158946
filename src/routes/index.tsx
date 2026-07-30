@@ -2,10 +2,8 @@ import { useEffect, useState } from "react";
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 
 import { ProfileIcon } from "@/components/ciatta/tab-bar";
+import { Understanding } from "@/components/ciatta/understanding";
 
-
-import figureAsset from "@/assets/ciatta-figure-cut.png.asset.json";
-import figureWebp from "@/assets/ciatta-figure-cut.webp.asset.json";
 import { formatLongDate, today } from "@/lib/ciatta-data";
 import { useCheckIns, useQuickAddEvents } from "@/lib/ciatta-store";
 import { buildNarrative, type NarrativeLine } from "@/lib/narrative";
@@ -27,19 +25,11 @@ export const Route = createFileRoute("/")({
         content: "Ciatta reads your sleep, recovery and cycle signals and tells you what your body is asking for today.",
       },
     ],
-    links: [
-      {
-        rel: "preload",
-        as: "image",
-        href: figureWebp.url,
-        type: "image/webp",
-        fetchpriority: "high",
-      },
-    ],
   }),
 
   component: TodayPage,
 });
+
 
 function TodayPage() {
   const navigate = useNavigate();
@@ -80,99 +70,88 @@ function TodayPage() {
 
 
   return (
-    <div className="flex h-[calc(100svh-76px)] min-h-[calc(100svh-76px)] flex-col">
-      <header className="flex shrink-0 items-start justify-between gap-4 px-6 pt-6 [@media(max-height:780px)]:pt-4">
+    <div className="flex min-h-[calc(100svh-76px)] flex-col">
+      <header className="flex shrink-0 items-start justify-between gap-4 px-7 pt-8">
         <div>
-          <p className="text-[15px] font-medium text-accent">
+          <h1 className="font-serif text-[26px] leading-none tracking-[-0.015em]">
             Good morning, Jenny
+          </h1>
+          <p className="mt-2 text-[13px] text-muted-foreground">
+            {formatLongDate(today.date)}
           </p>
-          <p className="mt-1 text-sm text-muted-foreground">{formatLongDate(today.date)}</p>
         </div>
         <Link
           to="/profile"
           aria-label="Profile"
-          className="mt-0.5 inline-flex h-10 w-10 items-center justify-center rounded-full border border-transparent bg-transparent transition-colors hover:bg-secondary"
+          className="-mr-2 mt-0.5 inline-flex h-10 w-10 items-center justify-center rounded-full transition-opacity hover:opacity-70"
         >
           <ProfileIcon active={false} />
         </Link>
       </header>
 
-      <div className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden">
-        <picture className="contents">
-          <source srcSet={figureWebp.url} type="image/webp" />
-          <img
-            src={figureAsset.url}
-            alt="Ciatta's rendering of your body, lit from within"
-            width={1024}
-            height={1024}
-            decoding="async"
-            fetchPriority="high"
-            className="mx-auto h-full w-auto max-w-[94%] object-contain"
-            style={{
-              maskImage: "linear-gradient(to bottom, black 74%, transparent 98%)",
-              WebkitMaskImage: "linear-gradient(to bottom, black 74%, transparent 98%)",
-            }}
-          />
-        </picture>
+      {/* The Understanding, offset — never centred like a logo. */}
+      <div className="relative flex min-h-0 flex-1 items-center justify-end overflow-hidden pr-2 pl-10">
+        <Understanding
+          size={264}
+          confidence={narrative.confidence.value}
+          active={justTaught}
+          className="translate-x-6"
+        />
       </div>
 
-      <section className="shrink-0 px-6 pb-1">
-        <div className="mb-2 flex items-center gap-2">
+      <section className="shrink-0 px-7 pb-6">
+        <p
+          key={`conf-${narrative.confidence.value}`}
+          className="animate-in fade-in flex items-center gap-2 text-[11px] leading-none text-muted-foreground duration-500"
+        >
           <span
-            key={`conf-${narrative.confidence.value}`}
-            className="animate-in fade-in inline-flex items-center gap-1.5 rounded-full bg-secondary px-2.5 py-1 text-[11px] leading-none text-accent duration-500"
-          >
-            <span className={`h-1.5 w-1.5 rounded-full bg-accent ${justTaught ? "animate-pulse" : ""}`} />
-            {narrative.confidence.value}% confidence
-            {narrative.confidence.delta > 0 && (
-              <span className="text-muted-foreground">+{narrative.confidence.delta}</span>
-            )}
-          </span>
+            className={`h-1.5 w-1.5 rounded-full bg-accent ${justTaught ? "animate-pulse" : ""}`}
+          />
+          <span className="text-accent">{narrative.confidence.value}% understood</span>
+          {narrative.confidence.delta > 0 && <span>+{narrative.confidence.delta}</span>}
           {justTaught && (
-            <span className="animate-in fade-in slide-in-from-bottom-1 text-[11px] leading-none text-muted-foreground duration-300">
-              Updated just now
-            </span>
+            <span className="animate-in fade-in duration-300">· updated just now</span>
           )}
-        </div>
-        <h1
+        </p>
+
+        <h2
           key={narrative.headline.map((p) => p.text).join("")}
-          className="animate-in fade-in slide-in-from-bottom-2 font-serif text-[30px] leading-[1.15] font-light tracking-[-0.01em] duration-500 [@media(max-height:780px)]:text-[26px]"
+          className="animate-in fade-in slide-in-from-bottom-2 mt-3 font-serif text-[34px] leading-[1.1] tracking-[-0.015em] duration-500 [@media(max-height:780px)]:text-[29px]"
         >
           {narrative.headline.map((part, i) => (
             <span key={i} className={part.accent ? "text-accent" : undefined}>
               {part.text}
             </span>
           ))}
-        </h1>
+        </h2>
 
         {narrative.impact && (
           <p
             key={narrative.impact.text}
-            className="animate-in fade-in mt-2 truncate text-[12px] leading-none text-muted-foreground duration-700"
+            className="animate-in fade-in mt-3 truncate text-[12px] leading-none text-muted-foreground duration-700"
           >
-            <span className="text-accent">{narrative.impact.source}</span> · {narrative.impact.text}
+            <span className="text-accent">{narrative.impact.source}</span> ·{" "}
+            {narrative.impact.text}
           </p>
         )}
 
-
-
-        <div className="mt-4 divide-y divide-border border-t border-border [@media(max-height:780px)]:mt-3">
+        <div className="mt-6 space-y-3.5 [@media(max-height:780px)]:mt-5">
           {primaryLines.map((line) => (
             <NarrativeBlock key={line.label} line={line} compact />
           ))}
+        </div>
 
-          <div className="py-3">
-            <p className="label-caps">Guidance</p>
-            <p className="mt-1 font-serif text-[18px] leading-[1.3] font-light whitespace-nowrap">
-              <span className="text-accent">{narrative.guidance.lead}</span>{" "}
-              {narrative.guidance.rest}
-            </p>
-            <p className="mt-1.5 text-[13px] leading-[1.5] whitespace-nowrap text-muted-foreground">
-              {narrative.guidance.support}
-            </p>
-          </div>
+        <div className="mt-6 [@media(max-height:780px)]:mt-5">
+          <p className="font-serif text-[19px] leading-[1.3]">
+            <span className="text-accent">{narrative.guidance.lead}</span>{" "}
+            {narrative.guidance.rest}
+          </p>
+          <p className="mt-1.5 truncate text-[13px] leading-[1.5] text-muted-foreground">
+            {narrative.guidance.support}
+          </p>
         </div>
       </section>
+
     </div>
   );
 }
@@ -188,14 +167,14 @@ function NarrativeBlock({
 }) {
   const small = compact || wrap;
   return (
-    <div className={small ? "py-3" : "py-5 [@media(max-height:780px)]:py-3.5"}>
+    <div className={small ? "" : "[@media(max-height:780px)]:py-1 py-2"}>
       <p className="label-caps">{line.label}</p>
       <p
         className={
           compact
-            ? "mt-1 truncate text-[13px] leading-[1.5] tracking-[-0.01em] whitespace-nowrap"
+            ? "mt-1 truncate text-[13px] leading-[1.5] whitespace-nowrap"
             : wrap
-              ? "mt-1 text-[13px] leading-[1.5] tracking-[-0.01em]"
+              ? "mt-1 text-[13px] leading-[1.5]"
               : "mt-1.5 text-[16px] leading-[1.5]"
         }
       >
@@ -204,7 +183,7 @@ function NarrativeBlock({
             key={i}
             className={
               part.accent
-                ? `align-baseline font-serif leading-[1] text-accent ${small ? "text-[17px]" : "text-[22px]"}`
+                ? `font-medium text-accent tabular-nums ${small ? "text-[14px]" : "text-[17px]"}`
                 : undefined
             }
           >
@@ -214,6 +193,7 @@ function NarrativeBlock({
       </p>
     </div>
   );
+
 
 }
 
