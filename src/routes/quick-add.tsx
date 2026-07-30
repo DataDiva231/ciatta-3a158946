@@ -94,10 +94,31 @@ function CheckIcon({ className }: { className?: string }) {
   );
 }
 
+/** Turns the last answer into a sentence that carries into the next question. */
+function continuationFor(steps: { key: string }[], answers: Answers, index: number) {
+  if (index === 0) return null;
+  const prev = steps[index - 1];
+  const value = prev ? answers[prev.key] : undefined;
+  if (!value) return null;
+  switch (prev.key) {
+    case "category":
+      return `Got it — ${value.toLowerCase()}.`;
+    case "product":
+      return `${value} it is.`;
+    case "absorbency":
+      return `${value} noted.`;
+    case "intensity":
+      return `${value.toLowerCase()} flow noted.`;
+    default:
+      return `${value} noted.`;
+  }
+}
+
 function QuickAddPage() {
   const navigate = useNavigate();
   const { addEvent } = useQuickAddEvents();
   const [index, setIndex] = useState(0);
+  const [direction, setDirection] = useState<"forward" | "back">("forward");
   const [answers, setAnswers] = useState<Answers>({});
   /** ISO timestamp of the event, derived from the timing step. */
   const [eventTime, setEventTime] = useState<string | null>(null);
@@ -109,6 +130,7 @@ function QuickAddPage() {
   const done = index >= total;
   const step = steps[Math.min(index, total - 1)];
   const answeredSteps = steps.slice(0, Math.min(index, total));
+  const continuation = continuationFor(steps, answers, index);
 
   /** Records an answer and drops every answer that belonged to a later step. */
   const setAnswer = (stepIndex: number, label: string) => {
@@ -121,6 +143,7 @@ function QuickAddPage() {
     });
   };
 
+
   const choose = (option: QuickAddOption) => {
     if (option.custom) {
       timeInput.current?.showPicker?.();
@@ -132,6 +155,7 @@ function QuickAddPage() {
       const when = new Date(Date.now() - (option.minutesAgo ?? 0) * 60_000);
       setEventTime(when.toISOString());
     }
+    setDirection("forward");
     setAnswer(index, option.label);
     setIndex(index + 1);
   };
@@ -141,8 +165,14 @@ function QuickAddPage() {
     const when = new Date(value);
     if (Number.isNaN(when.getTime())) return;
     setEventTime(when.toISOString());
+    setDirection("forward");
     setAnswer(index, formatDateTime(when.toISOString()));
     setIndex(index + 1);
+  };
+
+  const goTo = (target: number) => {
+    setDirection(target > index ? "forward" : "back");
+    setIndex(target);
   };
 
   const back = () => {
@@ -151,8 +181,9 @@ function QuickAddPage() {
       return;
     }
     // Previous selections stay in state, so the step shows what was chosen.
-    setIndex(index - 1);
+    goTo(index - 1);
   };
+
 
   /** Builds the structured event and writes it to the shared store. */
   const save = () => {
@@ -266,25 +297,42 @@ function QuickAddPage() {
           </svg>
         </button>
         {index > 0 && (
-          <span className="mx-auto flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1.5 text-[12px] text-accent">
+          <div className="mx-auto flex min-w-0 flex-wrap items-center justify-center gap-1.5">
             {answeredSteps.map((s, i) =>
               answers[s.key] ? (
-                <span key={s.key} className="flex items-center gap-1.5">
-                  {i > 0 && <span className="text-fog">•</span>}
-                  {answers[s.key]}
-                </span>
+                <button
+                  key={s.key}
+                  type="button"
+                  onClick={() => goTo(i)}
+                  className="animate-in fade-in zoom-in-95 flex max-w-[120px] items-center gap-1 rounded-full bg-secondary px-2.5 py-1 text-[11px] text-accent duration-300"
+                >
+                  <span className="truncate">{answers[s.key]}</span>
+                  {i === answeredSteps.length - 1 && <CheckIcon className="shrink-0 text-accent" />}
+                </button>
               ) : null,
             )}
-            <CheckIcon className="text-accent" />
-          </span>
+          </div>
         )}
         <span className="h-10 w-10 shrink-0" />
       </div>
 
-      <h1 className="mt-6 text-center font-serif text-[27px] leading-tight">{step.title}</h1>
-      <p className="mt-2 text-center text-[13px] leading-relaxed text-muted-foreground">
-        {step.sub}
-      </p>
+      <div
+        key={`${step.key}-${index}`}
+        className={`animate-in fade-in duration-300 ease-out ${
+          direction === "forward" ? "slide-in-from-right-6" : "slide-in-from-left-6"
+        }`}
+      >
+        <h1 className="mt-6 text-center font-serif text-[27px] leading-tight">{step.title}</h1>
+        <p className="mt-2 text-center text-[13px] leading-relaxed text-muted-foreground">
+          {continuation ? (
+            <>
+              <span className="text-foreground">{continuation}</span> {step.sub}
+            </>
+          ) : (
+            step.sub
+          )}
+        </p>
+
 
       {step.layout === "grid" ? (
         <div className="mt-6 grid grid-cols-2 gap-3">
@@ -357,16 +405,15 @@ function QuickAddPage() {
           })}
         </ul>
       )}
-
-
+      </div>
 
       <div className="mt-auto flex items-center gap-3 pt-8">
-        <span className="text-[12px] text-muted-foreground">
+        <span className="text-[12px] tabular-nums text-muted-foreground">
           {index + 1} of {total}
         </span>
         <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-secondary">
           <span
-            className="block h-full rounded-full transition-all"
+            className="block h-full rounded-full transition-[width] duration-500 ease-out"
             style={{
               width: `${((index + 1) / total) * 100}%`,
               background: "linear-gradient(90deg, var(--clay), oklch(0.72 0.17 45))",
@@ -374,6 +421,7 @@ function QuickAddPage() {
           />
         </span>
       </div>
+
     </div>
   );
 }
