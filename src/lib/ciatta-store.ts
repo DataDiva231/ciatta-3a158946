@@ -39,7 +39,18 @@ const FACTS_KEY = "ciatta.facts.v1";
 const EVENTS_KEY = "ciatta.events.v1";
 const MILESTONE_KEY = "ciatta.milestones.v1";
 
-const SYNC_EVENT = "ciatta:store-change";
+export const SYNC_EVENT = "ciatta:store-change";
+
+/** Every key Ciatta owns — used by export and delete. */
+export const ALL_KEYS = [
+  CHECKIN_KEY,
+  FACTS_KEY,
+  EVENTS_KEY,
+  MILESTONE_KEY,
+  "ciatta.priorities.v1",
+  "ciatta.identity.v1",
+  "ciatta.settings.v1",
+];
 
 
 export const SEED_FACTS: LearnedFact[] = [
