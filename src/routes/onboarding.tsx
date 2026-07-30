@@ -8,6 +8,7 @@ import {
 } from "@/lib/onboarding-store";
 import {
   a,
+  ackFor,
   first,
   FLOW,
   nextNodeId,
@@ -133,15 +134,8 @@ function Why({ children }: { children: React.ReactNode }) {
   );
 }
 
-/** Ciatta answering back before it moves on. */
-function Reflection({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="animate-in fade-in slide-in-from-bottom-2 mt-7 flex gap-3 duration-500">
-      <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-clay/70" />
-      <p className="text-[14px] leading-relaxed text-foreground/80">{children}</p>
-    </div>
-  );
-}
+
+
 
 function Footer({
   label = "Continue",
@@ -265,6 +259,8 @@ function OnboardingPage() {
 
   const [history, setHistory] = useState<string[]>(["welcome"]);
   const [dir, setDir] = useState<1 | -1>(1);
+  const [beat, setBeat] = useState<string | null>(null);
+  const usedAcks = useRef<string[]>([]);
   const resumed = useRef(false);
 
   useEffect(() => {
@@ -277,11 +273,8 @@ function OnboardingPage() {
   const node = nodeById(id) ?? FLOW[0];
   const { total, index } = progress(data, id);
 
-  const advance = useCallback(
-    (from?: Onboarding) => {
-      const state = from ?? data;
-      const nextId = nextNodeId(state, id);
-      if (!nextId) return;
+  const commit = useCallback(
+    (nextId: string) => {
       setDir(1);
       setHistory((h) => {
         const next = [...h, nextId];
@@ -289,7 +282,31 @@ function OnboardingPage() {
         return next;
       });
     },
-    [data, id, save],
+    [save],
+  );
+
+  const advance = useCallback(
+    (from?: Onboarding) => {
+      const state = from ?? data;
+      const nextId = nextNodeId(state, id);
+      if (!nextId) return;
+      const current = nodeById(id);
+      const conversational =
+        current &&
+        ["text", "birth", "body", "single", "multi"].includes(current.kind);
+      if (!conversational) {
+        commit(nextId);
+        return;
+      }
+      const line = current?.reflect?.(state) ?? ackFor(usedAcks.current);
+      usedAcks.current = [...usedAcks.current, line];
+      setBeat(line);
+      window.setTimeout(() => {
+        setBeat(null);
+        commit(nextId);
+      }, 1150);
+    },
+    [data, id, commit],
   );
 
   const back = () => {
@@ -308,7 +325,7 @@ function OnboardingPage() {
     if (key === "lifestage") patch.lifeStage = values[0] ?? "";
     if (key === "conditions") patch.conditions = values;
     if (key === "meds") patch.medications = values;
-    if (key === "priorities") patch.priorities = values;
+    if (key === "focus") patch.priorities = values;
     if (key === "goal") patch.primaryGoal = values[0] ?? "";
     save(patch);
     return { ...data, ...patch } as Onboarding;
@@ -321,6 +338,7 @@ function OnboardingPage() {
       saveIdentity({ lifeStage: data.lifeStage });
     navigate({ to: "/" });
   };
+
 
   const bar = (
     <TopBar
@@ -534,12 +552,29 @@ function OnboardingPage() {
 
   return (
     <div className="min-h-[100svh] bg-background">
-      <Screen dir={dir} stepKey={id}>
-        {content()}
-      </Screen>
+      {beat ? (
+        <Beat line={beat} />
+      ) : (
+        <Screen dir={dir} stepKey={id}>
+          {content()}
+        </Screen>
+      )}
     </div>
   );
 }
+
+/** A short moment where Ciatta answers before asking the next thing. */
+function Beat({ line }: { line: string }) {
+  return (
+    <div className="animate-in fade-in flex h-[100svh] flex-col items-center justify-center px-10 duration-300">
+      <span className="animate-breathe mb-7 h-2.5 w-2.5 rounded-full bg-clay/70" />
+      <p className="max-w-[19rem] text-center font-serif text-[21px] leading-[1.35] font-light text-foreground/85">
+        {line}
+      </p>
+    </div>
+  );
+}
+
 
 /* ------------------------------------------------------- question with reply */
 
@@ -562,7 +597,6 @@ function QuestionScreen({
   const options = node.options?.(data) ?? [];
   const multi = node.kind === "multi";
   const max = node.max ?? options.length;
-  const reflection = selected.length ? node.reflect?.(state) : undefined;
 
   const pick = (value: string) => {
     let values: string[];
@@ -570,8 +604,12 @@ function QuestionScreen({
     else if (selected.includes(value)) values = selected.filter((v) => v !== value);
     else if (selected.length >= max) return;
     else values = [...selected, value];
-    setState(onAnswer(key, values));
+    const next = onAnswer(key, values);
+    setState(next);
+    // A single choice is a complete answer — move on without a second tap.
+    if (!multi) window.setTimeout(() => onNext(next), 240);
   };
+
 
   return (
     <>
@@ -591,16 +629,29 @@ function QuestionScreen({
             />
           ))}
         </div>
-        {reflection && <Reflection>{reflection}</Reflection>}
-        {!reflection && node.why?.(data) && <Why>{node.why(data)}</Why>}
+        {node.why?.(data) && <Why>{node.why(data)}</Why>}
       </Body>
-      <Footer
-        onNext={() => onNext(state)}
-        disabled={!node.optional && selected.length === 0}
-        onSkip={node.optional ? () => onNext(state) : undefined}
-        skipLabel="Not sure"
-        variant={selected.length ? "clay" : "outline"}
-      />
+      {multi ? (
+        <Footer
+          onNext={() => onNext(state)}
+          disabled={!node.optional && selected.length === 0}
+          onSkip={node.optional ? () => onNext(state) : undefined}
+          skipLabel="Not sure"
+          variant={selected.length ? "clay" : "outline"}
+        />
+      ) : node.optional ? (
+        <Footer
+          label="Continue"
+          onNext={() => onNext(state)}
+          disabled={selected.length === 0}
+          onSkip={() => onNext(state)}
+          skipLabel="Not sure"
+          variant={selected.length ? "clay" : "outline"}
+        />
+      ) : (
+        <div className="h-9 shrink-0" />
+      )}
+
     </>
   );
 }
@@ -722,18 +773,24 @@ function understandingLines(d: Onboarding): string[] {
   );
   if (symptoms.length) lines.push(`I'll watch for ${symptoms.join(", ").toLowerCase()}.`);
   if (a(d, "conditions").length) lines.push(`I'll read your signals through ${a(d, "conditions").join(" and ")}.`);
-  if (a(d, "meds", ).includes("GLP-1"))
+  if (a(d, "meds").includes("GLP-1"))
     lines.push(
-      `You're on ${one(d, "glp1_which") || "a GLP-1"}${
+      `You're on a GLP-1${
         one(d, "glp1_purpose") ? ` for ${one(d, "glp1_purpose").toLowerCase()}` : ""
       }. I'll separate its effects from yours.`,
     );
   if (d.appleHealthConnected)
     lines.push("Apple Health is connected, so sleep and heart rate arrive on their own.");
   else if (one(d, "sleep_self")) lines.push(`Sleep: ${one(d, "sleep_self").toLowerCase()}.`);
+  if (one(d, "focus"))
+    lines.push(`${one(d, "focus")} is where I'll look first, every day.`);
   if (d.primaryGoal) lines.push(`Everything gets measured against one thing: ${d.primaryGoal.toLowerCase()}.`);
+  const blocker = one(d, "goal_blocker");
+  if (blocker && blocker !== "I don't know yet")
+    lines.push(`And I'll keep an eye on ${blocker.toLowerCase()}, since that's what gets in the way.`);
   return lines;
 }
+
 
 function SummaryScreen({ data, onFinish }: { data: Onboarding; onFinish: () => void }) {
   const lines = understandingLines(data);
