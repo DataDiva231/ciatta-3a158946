@@ -1,4 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useRouterState } from "@tanstack/react-router";
+import { useEffect } from "react";
 
 import type { OrbTone } from "@/components/ciatta/discovery-orb";
 import {
@@ -139,9 +140,17 @@ function DiscoveryRow({ d }: { d: Discovery }) {
 }
 
 function JourneyPage() {
+  const hash = useRouterState({ select: (s) => s.location.hash });
+
+  // Deep links like /journey#discovery scroll the section into view.
+  useEffect(() => {
+    if (hash !== "discovery") return;
+    document.getElementById("discovery")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [hash]);
+
   return (
     <div className="px-6 pt-8 pb-10">
-      <section>
+      <section id="discovery" className="scroll-mt-6">
         <DiscoveryDetail d={todaysDiscovery} eyebrow="Discovery" />
         <div className="mt-8 border-t border-border pt-5">
           <p className="text-[12px] text-muted-foreground">Help us learn more</p>
