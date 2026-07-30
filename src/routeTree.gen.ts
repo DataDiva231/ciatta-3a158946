@@ -15,6 +15,7 @@ import { Route as QuickAddRouteImport } from './routes/quick-add'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as JourneyRouteImport } from './routes/journey'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiTranscribeRouteImport } from './routes/api/transcribe'
 
 const TeachRoute = TeachRouteImport.update({
   id: '/teach',
@@ -46,6 +47,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiTranscribeRoute = ApiTranscribeRouteImport.update({
+  id: '/api/transcribe',
+  path: '/api/transcribe',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -54,6 +60,7 @@ export interface FileRoutesByFullPath {
   '/quick-add': typeof QuickAddRoute
   '/talk': typeof TalkRoute
   '/teach': typeof TeachRoute
+  '/api/transcribe': typeof ApiTranscribeRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -62,6 +69,7 @@ export interface FileRoutesByTo {
   '/quick-add': typeof QuickAddRoute
   '/talk': typeof TalkRoute
   '/teach': typeof TeachRoute
+  '/api/transcribe': typeof ApiTranscribeRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -71,12 +79,27 @@ export interface FileRoutesById {
   '/quick-add': typeof QuickAddRoute
   '/talk': typeof TalkRoute
   '/teach': typeof TeachRoute
+  '/api/transcribe': typeof ApiTranscribeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/journey' | '/profile' | '/quick-add' | '/talk' | '/teach'
+  fullPaths:
+    | '/'
+    | '/journey'
+    | '/profile'
+    | '/quick-add'
+    | '/talk'
+    | '/teach'
+    | '/api/transcribe'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/journey' | '/profile' | '/quick-add' | '/talk' | '/teach'
+  to:
+    | '/'
+    | '/journey'
+    | '/profile'
+    | '/quick-add'
+    | '/talk'
+    | '/teach'
+    | '/api/transcribe'
   id:
     | '__root__'
     | '/'
@@ -85,6 +108,7 @@ export interface FileRouteTypes {
     | '/quick-add'
     | '/talk'
     | '/teach'
+    | '/api/transcribe'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -94,6 +118,7 @@ export interface RootRouteChildren {
   QuickAddRoute: typeof QuickAddRoute
   TalkRoute: typeof TalkRoute
   TeachRoute: typeof TeachRoute
+  ApiTranscribeRoute: typeof ApiTranscribeRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -140,6 +165,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/transcribe': {
+      id: '/api/transcribe'
+      path: '/api/transcribe'
+      fullPath: '/api/transcribe'
+      preLoaderRoute: typeof ApiTranscribeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -150,17 +182,8 @@ const rootRouteChildren: RootRouteChildren = {
   QuickAddRoute: QuickAddRoute,
   TalkRoute: TalkRoute,
   TeachRoute: TeachRoute,
+  ApiTranscribeRoute: ApiTranscribeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
