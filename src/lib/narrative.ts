@@ -272,7 +272,7 @@ export function buildNarrative(
   const guidance = heavier
     ? {
         lead: "Stay ahead of it.",
-        rest: "Change sooner than usual and keep iron-rich food close.",
+        rest: "Change sooner than usual today.",
         support: "Ciatta raised your leak risk for the next few hours.",
       }
     : state === "recover"
