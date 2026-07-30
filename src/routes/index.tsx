@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 
 import figureAsset from "@/assets/ciatta-figure-cut.png.asset.json";
@@ -42,6 +43,24 @@ function TodayPage() {
   const narrative = buildNarrative(latest, events);
   const primaryLabels = ["Sleep quality", "Resting heart rate"];
   const primaryLines = narrative.lines.filter((l) => primaryLabels.includes(l.label));
+  // Set by Quick Add so the insight visibly re-forms when the user lands back here.
+  const [justTaught, setJustTaught] = useState(false);
+
+  useEffect(() => {
+    let flagged = false;
+    try {
+      flagged = sessionStorage.getItem("ciatta:just-taught") !== null;
+      sessionStorage.removeItem("ciatta:just-taught");
+    } catch {
+      /* storage unavailable */
+    }
+    if (!flagged) return;
+    setJustTaught(true);
+    const t = setTimeout(() => setJustTaught(false), 2600);
+    return () => clearTimeout(t);
+  }, []);
+
+
 
   return (
     <div className="flex h-[calc(100svh-76px)] min-h-[calc(100svh-76px)] flex-col">
@@ -87,13 +106,25 @@ function TodayPage() {
       </div>
 
       <section className="shrink-0 px-6 pb-1">
-        <h1 className="font-serif text-[30px] leading-[1.15] font-light tracking-[-0.01em] [@media(max-height:780px)]:text-[26px]">
+        {justTaught && (
+          <p className="animate-in fade-in slide-in-from-bottom-1 mb-2 inline-flex items-center gap-1.5 rounded-full bg-secondary px-2.5 py-1 text-[11px] text-accent duration-300">
+            <span className="h-1.5 w-1.5 rounded-full bg-accent" />
+            Insight refreshed just now
+          </p>
+        )}
+        <h1
+          key={justTaught ? "refreshed" : "steady"}
+          className={`font-serif text-[30px] leading-[1.15] font-light tracking-[-0.01em] [@media(max-height:780px)]:text-[26px] ${
+            justTaught ? "animate-in fade-in slide-in-from-bottom-2 duration-500" : ""
+          }`}
+        >
           {narrative.headline.map((part, i) => (
             <span key={i} className={part.accent ? "text-accent" : undefined}>
               {part.text}
             </span>
           ))}
         </h1>
+
 
         <div className="mt-4 divide-y divide-border border-t border-border [@media(max-height:780px)]:mt-3">
           {primaryLines.map((line) => (

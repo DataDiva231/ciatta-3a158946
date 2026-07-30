@@ -236,6 +236,20 @@ export const LOGGED_LABEL: Record<string, string> = {
   activity: "Activity logged",
   other: "Context logged",
 };
+/** Short past-tense lines shown on the "Understanding updated" moment. */
+export const CONFIRM_LABEL: Record<string, string> = {
+  product: "Product logged",
+  absorbency: "Absorbency logged",
+  intensity: "Flow updated",
+  timing: "Timeline updated",
+  symptom: "Symptom logged",
+  sleep: "Sleep updated",
+  medication: "Medication logged",
+  nutrition: "Nutrition logged",
+  activity: "Activity logged",
+  other: "Context logged",
+};
+
 
 /** Human field name used inside event metadata. */
 export const META_LABEL: Record<string, string> = {
