@@ -445,18 +445,6 @@ function QuickAddPage() {
                       )}
                     </span>
                   </button>
-                  {/* Invisible native date/time picker layered over the "Custom time" row. */}
-                  {o.custom && (
-                    <input
-                      ref={timeInput}
-                      type="datetime-local"
-                      aria-label="Custom time"
-                      max={toLocalInputValue(new Date())}
-                      defaultValue={toLocalInputValue(new Date())}
-                      onChange={(e) => chooseCustomTime(e.target.value)}
-                      className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-                    />
-                  )}
                 </li>
               );
             })}
@@ -464,20 +452,45 @@ function QuickAddPage() {
         )}
       </div>
 
-      <div className="mt-auto flex items-center gap-3 pt-10">
-        <span className="text-[12px] leading-none tabular-nums text-muted-foreground">
-          {index + 1} of {total}
-        </span>
-        <span className="h-1 flex-1 overflow-hidden rounded-full bg-secondary">
-          <span
-            className="block h-full rounded-full transition-[width] duration-500 ease-out"
-            style={{
-              width: `${((index + 1) / total) * 100}%`,
-              background: "linear-gradient(90deg, var(--clay), oklch(0.72 0.17 45))",
-            }}
-          />
-        </span>
+      <div className="mt-auto pt-10">
+        {index > 0 && (
+          <div className="relative mb-4 flex justify-center">
+            <span className="flex items-center gap-2 rounded-full bg-secondary px-3.5 py-2 text-[12px] leading-none text-muted-foreground">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.6" />
+                <path d="M12 7.5V12l3 2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+              </svg>
+              {eventTime ? formatDateTime(eventTime) : "Just now"}
+              <span className="text-accent">Change</span>
+            </span>
+            {/* Invisible native picker — timing is assumed, never asked. */}
+            <input
+              ref={timeInput}
+              type="datetime-local"
+              aria-label="Adjust the time of this log"
+              max={toLocalInputValue(new Date())}
+              defaultValue={toLocalInputValue(new Date())}
+              onChange={(e) => chooseCustomTime(e.target.value)}
+              className="absolute inset-0 mx-auto h-full w-[220px] cursor-pointer opacity-0"
+            />
+          </div>
+        )}
+        <div className="flex items-center gap-3">
+          <span className="text-[12px] leading-none tabular-nums text-muted-foreground">
+            {index + 1} of {total}
+          </span>
+          <span className="h-1 flex-1 overflow-hidden rounded-full bg-secondary">
+            <span
+              className="block h-full rounded-full transition-[width] duration-500 ease-out"
+              style={{
+                width: `${((index + 1) / total) * 100}%`,
+                background: "linear-gradient(90deg, var(--clay), oklch(0.72 0.17 45))",
+              }}
+            />
+          </span>
+        </div>
       </div>
+
 
     </div>
   );
