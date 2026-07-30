@@ -360,10 +360,10 @@ function QuickAddPage() {
 
       <div
         key={`${step.key}-${index}`}
-        className={`animate-in fade-in duration-300 ease-out ${
-          direction === "forward" ? "slide-in-from-right-4" : "slide-in-from-left-4"
-        }`}
+        data-direction={direction}
+        className="animate-dissolve"
       >
+
         <h1 className="mt-8 font-serif text-[30px] leading-[1.12] tracking-[-0.015em]">
           {step.title}
         </h1>
