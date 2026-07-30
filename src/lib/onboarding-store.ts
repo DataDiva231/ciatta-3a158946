@@ -49,6 +49,8 @@ export const DEFAULT_ONBOARDING: Onboarding = {
   appleHealth: ["Sleep", "Heart Rate", "Activity", "Workouts", "Recovery"],
   appleHealthConnected: false,
   notifications: "",
+  answers: {},
+  path: [],
 };
 
 export function useOnboarding() {
