@@ -646,3 +646,76 @@ function ProfilePage() {
     </div>
   );
 }
+
+/** The portrait's silhouette, held while stored understanding is read. */
+function ProfileSkeleton() {
+  return (
+    <div className="px-6 pt-10 pb-6" aria-busy="true" aria-live="polite">
+      <header>
+        <h1 className="font-serif text-[46px] leading-[1.05] font-light tracking-[-0.02em]">
+          Profile
+        </h1>
+        <p className="mt-4 font-serif text-[22px] leading-[1.3] font-light">
+          What Ciatta understands about you.
+        </p>
+        <p className="mt-4 text-[14px] leading-relaxed text-muted-foreground">
+          Gathering everything Ciatta has learned so far…
+        </p>
+      </header>
+
+      <section className="mt-10 border-t border-border pt-7">
+        <Eyebrow>Your understanding</Eyebrow>
+        <div className="mt-5 space-y-6">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="space-y-3 border-b border-border pb-6">
+              <Bar w="86%" h={20} />
+              <Bar w="52%" h={20} />
+              <Bar w="34%" h={12} />
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="mt-10">
+        <Eyebrow>Your story</Eyebrow>
+        <div className="mt-4 space-y-3">
+          <Bar w="70%" h={22} />
+          <Bar />
+          <Bar w="92%" />
+          <Bar w="64%" />
+        </div>
+      </section>
+
+      <section className="mt-10 border-t border-border pt-7">
+        <Eyebrow>Areas of understanding</Eyebrow>
+        <SkeletonRows rows={6} />
+      </section>
+
+      <section className="mt-10 border-t border-border pt-7">
+        <Eyebrow>Health snapshot</Eyebrow>
+        <SkeletonRows rows={6} />
+      </section>
+
+      <section className="mt-10 border-t border-border pt-7">
+        <Eyebrow>How Ciatta learns you</Eyebrow>
+        <SkeletonRows rows={5} />
+      </section>
+
+      <section className="mt-10 border-t border-border pt-7">
+        <Eyebrow>Understanding timeline</Eyebrow>
+        <ol className="mt-5 space-y-6 border-l border-border pl-5">
+          {[0, 1, 2].map((i) => (
+            <li key={i} className="relative space-y-2">
+              <span
+                aria-hidden="true"
+                className="absolute top-1.5 -left-[25px] h-[7px] w-[7px] animate-pulse rounded-full bg-secondary"
+              />
+              <Bar w="58%" />
+              <Bar w="28%" h={12} />
+            </li>
+          ))}
+        </ol>
+      </section>
+    </div>
+  );
+}
