@@ -292,7 +292,7 @@ function QuickAddPage() {
           {rows.map((r, i) => (
             <li
               key={r.key}
-              className="animate-in fade-in slide-in-from-bottom-1 fill-mode-backwards flex items-center gap-3.5 border-t border-border/60 py-3.5 duration-300 first:border-t-0"
+              className="animate-dissolve flex items-center gap-3.5 border-t border-border/60 py-3.5 first:border-t-0"
               style={{ animationDelay: `${80 + i * 90}ms` }}
             >
               <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-secondary text-accent">
