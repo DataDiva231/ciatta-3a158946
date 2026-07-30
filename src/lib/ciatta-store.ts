@@ -37,6 +37,8 @@ export type QuickAddEvent = {
 const CHECKIN_KEY = "ciatta.checkins.v1";
 const FACTS_KEY = "ciatta.facts.v1";
 const EVENTS_KEY = "ciatta.events.v1";
+const MILESTONE_KEY = "ciatta.milestones.v1";
+
 const SYNC_EVENT = "ciatta:store-change";
 
 
@@ -167,6 +169,38 @@ export function useQuickAddEvents() {
 
   return { events: value, latest: value[0] ?? null, addEvent, removeEvent, hydrated };
 }
+
+/** A confidence threshold Ciatta crossed, recorded the moment it happened. */
+export type Milestone = {
+  id: string;
+  label: string;
+  from: number;
+  to: number;
+  /** Threshold that was crossed. */
+  threshold: number;
+  reachedAt: string;
+  note: string;
+};
+
+export function useMilestones() {
+  const { value, update, hydrated } = usePersistentState<Milestone[]>(MILESTONE_KEY, []);
+
+  const recordMilestone = useCallback(
+    (entry: Omit<Milestone, "id" | "reachedAt">) => {
+      if (value.some((m) => m.threshold === entry.threshold && m.label === entry.label)) return;
+      const milestone: Milestone = {
+        id: `ms-${entry.label}-${entry.threshold}`,
+        reachedAt: new Date().toISOString(),
+        ...entry,
+      };
+      update([milestone, ...value]);
+    },
+    [value, update],
+  );
+
+  return { milestones: value, latest: value[0] ?? null, recordMilestone, hydrated };
+}
+
 
 export function todayKey() {
 
