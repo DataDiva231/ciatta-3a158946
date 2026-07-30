@@ -238,15 +238,15 @@ function QuickAddPage() {
       { key: "understanding", label: "Understanding refined", value: "Leak risk updated" },
     ];
     return (
-      <div className="flex min-h-full flex-col justify-center px-6 pb-10">
+      <div className="flex min-h-full flex-col justify-center px-6 pb-12">
         <div className="relative mx-auto grid place-items-center">
           <span
-            className="absolute h-[190px] w-[190px] animate-ping rounded-full opacity-40"
+            className="absolute h-[176px] w-[176px] animate-ping rounded-full opacity-30"
             style={{ background: "radial-gradient(circle, var(--clay) 0%, transparent 62%)" }}
             aria-hidden="true"
           />
           <span
-            className="animate-in zoom-in-50 absolute h-[150px] w-[150px] rounded-full opacity-60 blur-xl duration-700"
+            className="animate-in zoom-in-50 absolute h-[140px] w-[140px] rounded-full opacity-50 blur-xl duration-700"
             style={{ background: "radial-gradient(circle, var(--clay) 0%, transparent 70%)" }}
             aria-hidden="true"
           />
@@ -256,30 +256,32 @@ function QuickAddPage() {
             width={1024}
             height={1024}
             loading="eager"
-            className="animate-in zoom-in-95 relative w-[150px] duration-500"
+            className="animate-in zoom-in-95 relative w-[140px] duration-500"
           />
         </div>
 
-        <h1 className="animate-in fade-in mt-1 text-center font-serif text-[28px] leading-tight duration-300">
+        <h1 className="animate-in fade-in mt-6 text-center font-serif text-[27px] leading-[1.15] tracking-[-0.01em] duration-300">
           Understanding updated
         </h1>
-        <p className="animate-in fade-in mt-2 text-center text-[13px] leading-relaxed text-muted-foreground duration-500">
+        <p className="animate-in fade-in mt-2.5 text-center text-[13px] leading-relaxed text-muted-foreground duration-500">
           Thank you! Every update makes Ciatta smarter.
         </p>
 
-        <ul className="mt-5 overflow-hidden rounded-2xl border border-border bg-surface">
+        <ul className="mt-8 overflow-hidden rounded-[20px] bg-surface px-5 shadow-[0_1px_2px_rgba(0,0,0,0.03)]">
           {rows.map((r, i) => (
             <li
               key={r.key}
-              className="animate-in fade-in slide-in-from-bottom-1 fill-mode-backwards flex items-center gap-3 border-t border-border px-4 py-3 duration-300 first:border-t-0"
+              className="animate-in fade-in slide-in-from-bottom-1 fill-mode-backwards flex items-center gap-3.5 border-t border-border/60 py-3.5 duration-300 first:border-t-0"
               style={{ animationDelay: `${80 + i * 90}ms` }}
             >
               <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-secondary text-accent">
                 <CheckIcon />
               </span>
-              <span className="min-w-0">
-                <span className="block text-[14px] text-foreground">{r.label}</span>
-                <span className="block truncate text-[12px] text-muted-foreground">{r.value}</span>
+              <span className="flex min-w-0 flex-1 items-baseline justify-between gap-3">
+                <span className="text-[14px] leading-none text-foreground">{r.label}</span>
+                <span className="truncate text-[12px] leading-none text-muted-foreground">
+                  {r.value}
+                </span>
               </span>
             </li>
           ))}
@@ -287,6 +289,7 @@ function QuickAddPage() {
       </div>
     );
   }
+
 
 
 
