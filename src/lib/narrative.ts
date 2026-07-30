@@ -147,6 +147,24 @@ export function buildNarrative(
     });
   }
 
+  const lastEvent = recentEvents(events)[0];
+  if (lastEvent) {
+    const detail = Object.entries(lastEvent.metadata ?? {})
+      .filter(([k]) => k !== "Logged for")
+      .map(([, v]) => v)
+      .join(", ");
+    lines.push({
+      label: "Quick Add",
+      parts: [
+        { text: `You logged ${lastEvent.category.toLowerCase()} — ` },
+        { text: [lastEvent.value, detail].filter(Boolean).join(", ").toLowerCase(), accent: true },
+        { text: ". Ciatta folded it into today's read." },
+      ],
+    });
+  }
+
+
+
   const guidance =
     state === "recover"
       ? {
