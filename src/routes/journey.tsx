@@ -1,4 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useRouterState } from "@tanstack/react-router";
+import { useEffect } from "react";
 
 import type { OrbTone } from "@/components/ciatta/discovery-orb";
 import {
