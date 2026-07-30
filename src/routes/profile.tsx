@@ -346,7 +346,10 @@ function ProfilePage() {
   const [openSource, setOpenSource] = useState<string | null>(null);
   const [dragIndex, setDragIndex] = useState<number | null>(null);
 
+  if (!profile.hydrated) return <ProfileSkeleton />;
+
   return (
+
     <div className="px-6 pt-10 pb-6">
       {/* Hero */}
       <header>
