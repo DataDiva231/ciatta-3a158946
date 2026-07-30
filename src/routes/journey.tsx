@@ -142,7 +142,7 @@ function JourneyPage() {
   return (
     <div className="px-6 pt-8 pb-10">
       <section>
-        <DiscoveryDetail d={todaysDiscovery} eyebrow="Today's discovery" />
+        <DiscoveryDetail d={todaysDiscovery} eyebrow="Discovery" />
         <div className="mt-8 border-t border-border pt-5">
           <p className="text-[12px] text-muted-foreground">Help us learn more</p>
           <p className="mt-2 flex items-center justify-between font-serif text-[21px] leading-none font-light">
