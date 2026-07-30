@@ -22,6 +22,10 @@ export type Onboarding = {
   appleHealth: string[];
   appleHealthConnected: boolean;
   notifications: "allow" | "later" | "";
+  /** Adaptive conversation answers, keyed by question id. */
+  answers: Record<string, string[]>;
+  /** Ordered ids of the questions Ciatta actually asked this user. */
+  path: string[];
 };
 
 export const ONBOARDING_KEY = "ciatta.onboarding.v1";
