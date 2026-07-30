@@ -172,8 +172,6 @@ const GENERIC_STEPS: Record<string, QuickAddStep> = {
 
 /** Categories where absorbency is a meaningful question. */
 const ABSORBENT_PRODUCTS = ["Tampon", "Pad", "Period Underwear"];
-/** Products that are inserted/worn, so timing matters. */
-const TIMED_PRODUCTS = ["Tampon", "Pad", "Menstrual Cup", "Disc", "Period Underwear"];
 
 export type Answers = Record<string, string>;
 
