@@ -520,7 +520,15 @@ function ProfilePage() {
             </li>
           ))}
         </ol>
+        {profile.timeline.length <= 1 && (
+          <Invitation
+            line="Your timeline starts with one log."
+            body="As understanding deepens, each milestone Ciatta crosses is recorded here, month by month."
+            action="Add your first entry"
+          />
+        )}
       </section>
+
 
       {/* Intelligence Preferences */}
       <section className="mt-10 border-t border-border pt-7">
