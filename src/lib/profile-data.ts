@@ -15,9 +15,28 @@ export type Understanding = {
   stillLearning: string;
 };
 
-export type Area = { name: string; confidence: number; tier: string };
+export type Area = {
+  name: string;
+  confidence: number;
+  tier: string;
+  /** What Ciatta currently understands about this area. */
+  detail: string;
+  /** The most recent movement in this area. */
+  recentChange: string;
+  /** Observations that feed this area. */
+  evidence: string[];
+};
 
-export type SnapshotRow = { label: string; value: string };
+export type SnapshotRow = {
+  /** URL-safe id, used by the metric detail screen. */
+  id: string;
+  label: string;
+  value: string;
+  /** Longer explanation shown on the metric detail screen. */
+  detail: string;
+  /** Supporting lines for the detail screen. */
+  notes: string[];
+};
 
 export type SourceRow = {
   id: string;
@@ -138,7 +157,15 @@ export function useProfile(): ProfileView {
       const base = matches.length
         ? Math.max(...matches.map((d) => d.confidence))
         : Math.min(24, journey.observationCount * 3);
-      return { name, confidence: base, tier: tierFor(base) };
+      const strongest = matches.sort((a, b) => b.confidence - a.confidence)[0];
+      const evidence = [...new Set(matches.flatMap((d) => d.signals))].slice(0, 5);
+      const detail = strongest
+        ? strongest.whyWeNoticed
+        : `Ciatta hasn't seen enough of your ${name.toLowerCase()} yet to say anything honest about it. A few logs is usually all it takes.`;
+      const recentChange = strongest
+        ? strongest.whatToTry
+        : `Nothing has moved here yet. The first ${name.toLowerCase()} log starts the picture.`;
+      return { name, confidence: base, tier: tierFor(base), detail, recentChange, evidence };
     })
       .sort((a, b) => b.confidence - a.confidence)
       .map((a, i) => ({ ...a, tier: areaStatus(a.confidence, i) }));
@@ -149,29 +176,77 @@ export function useProfile(): ProfileView {
     const strongest = areas[0];
 
     const snapshot: SnapshotRow[] = [
-      { label: "Learning since", value: first ? monthYear(first) : "Today" },
-      { label: "Life stage", value: "Cycling" },
       {
-        label: "Patterns held",
-        value: confirmed
-          ? `${confirmed} understood well`
-          : "None settled yet",
+        id: "learning-since",
+        label: "Learning since",
+        value: first ? monthYear(first) : "Today",
+        detail: first
+          ? `Ciatta has been building this understanding since ${monthYear(first)}. Everything on this page is drawn from what you've logged since then \u2014 nothing is assumed.`
+          : "Ciatta started today. The first thing you log becomes the first line of your portrait.",
+        notes: [
+          `${journey.observationCount} observation${journey.observationCount === 1 ? "" : "s"} held so far.`,
+          "Older logs still count. Recent ones simply count for more.",
+        ],
       },
       {
+        id: "life-stage",
+        label: "Life stage",
+        value: "Cycling",
+        detail:
+          "Your life stage tells Ciatta which rhythms to expect. Cycling means it reads your days against a roughly monthly hormonal arc rather than a flat baseline.",
+        notes: [
+          "Change this any time from Edit profile.",
+          "A wrong life stage is the fastest way to get wrong insights.",
+        ],
+      },
+      {
+        id: "patterns-held",
+        label: "Patterns held",
+        value: confirmed ? `${confirmed} understood well` : "None settled yet",
+        detail: confirmed
+          ? `${confirmed} pattern${confirmed === 1 ? " has" : "s have"} repeated often enough that Ciatta will now act on ${confirmed === 1 ? "it" : "them"} without waiting for more evidence.`
+          : "Nothing has repeated often enough to be treated as settled. Ciatta would rather say nothing than guess.",
+        notes: understandings
+          .filter((u) => u.confidence >= 70)
+          .map((u) => `${u.title} \u2014 ${u.confidence}%`),
+      },
+      {
+        id: "patterns-forming",
         label: "Patterns forming",
         value: forming ? `${forming} taking shape` : "Nothing forming yet",
+        detail: forming
+          ? "These have appeared more than once but not yet enough times to be relied on. Ciatta is watching for the next repeat."
+          : "Nothing is forming yet. Two logs of the same kind is usually where a shape begins.",
+        notes: understandings
+          .filter((u) => u.confidence < 70)
+          .map((u) => `${u.title} \u2014 ${u.confidence}%`),
       },
       {
+        id: "watching",
         label: "Quietly watching",
         value: journey.emergingInsights.length
           ? `${journey.emergingInsights.length} early threads`
           : "Listening",
+        detail:
+          "Early threads are things Ciatta has noticed once and is holding onto in case they repeat. They aren't shown as insights until they do.",
+        notes: journey.emergingInsights.map((e) => e.body),
       },
       {
+        id: "clearest-area",
         label: "Clearest area",
-        value: strongest ? `${strongest.name} — ${strongest.tier.toLowerCase()}` : "Still forming",
+        value: strongest ? `${strongest.name} \u2014 ${strongest.tier.toLowerCase()}` : "Still forming",
+        detail: strongest
+          ? `${strongest.name} is where Ciatta's picture of you is sharpest right now. ${strongest.detail}`
+          : "No single area is clearer than the others yet.",
+        notes: strongest ? strongest.evidence : [],
       },
-      { label: "Looking at next", value: focus },
+      {
+        id: "next",
+        label: "Looking at next",
+        value: focus,
+        detail: `${focus} is the thinnest part of the portrait, so it's where the next few logs will make the biggest difference.`,
+        notes: ["You can change what Ciatta leans toward under Preferences."],
+      },
     ];
 
     const sources: SourceRow[] = [

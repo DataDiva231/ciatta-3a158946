@@ -114,6 +114,32 @@
   --chart-5: oklch(0.77 0.011 67.7);
 }
 
+/* Night reading: same warmth, lowered. */
+.dark {
+  --background: oklch(0.21 0.008 60);
+  --surface: oklch(0.253 0.009 60);
+  --card: oklch(0.253 0.009 60);
+  --popover: oklch(0.253 0.009 60);
+  --secondary: oklch(0.295 0.01 60);
+  --muted: oklch(0.295 0.01 60);
+  --border: oklch(0.34 0.011 60);
+  --input: oklch(0.34 0.011 60);
+
+  --foreground: oklch(0.955 0.006 70);
+  --card-foreground: oklch(0.955 0.006 70);
+  --popover-foreground: oklch(0.955 0.006 70);
+  --secondary-foreground: oklch(0.955 0.006 70);
+  --muted-foreground: oklch(0.745 0.01 66);
+  --fog: oklch(0.6 0.011 66);
+
+  --clay: oklch(0.72 0.13 32);
+  --primary: oklch(0.72 0.13 32);
+  --accent: oklch(0.72 0.13 32);
+  --ring: oklch(0.72 0.13 32);
+  --accent-foreground: oklch(0.21 0.008 60);
+  --primary-foreground: oklch(0.21 0.008 60);
+}
+
 @layer base {
   * {
     border-color: var(--color-border);

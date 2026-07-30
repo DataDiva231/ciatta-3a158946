@@ -12,12 +12,16 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as TeachRouteImport } from './routes/teach'
 import { Route as TalkRouteImport } from './routes/talk'
 import { Route as QuickAddRouteImport } from './routes/quick-add'
-import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as JourneyRouteImport } from './routes/journey'
 import { Route as CaptureRouteImport } from './routes/capture'
 import { Route as AttachRouteImport } from './routes/attach'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ProfileIndexRouteImport } from './routes/profile.index'
+import { Route as ProfileEditRouteImport } from './routes/profile.edit'
 import { Route as ApiTranscribeRouteImport } from './routes/api/transcribe'
+import { Route as ProfileSourceIdRouteImport } from './routes/profile.source.$id'
+import { Route as ProfileSettingsSectionRouteImport } from './routes/profile.settings.$section'
+import { Route as ProfileMetricIdRouteImport } from './routes/profile.metric.$id'
 
 const TeachRoute = TeachRouteImport.update({
   id: '/teach',
@@ -32,11 +36,6 @@ const TalkRoute = TalkRouteImport.update({
 const QuickAddRoute = QuickAddRouteImport.update({
   id: '/quick-add',
   path: '/quick-add',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProfileRoute = ProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
 const JourneyRoute = JourneyRouteImport.update({
@@ -59,9 +58,34 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProfileIndexRoute = ProfileIndexRouteImport.update({
+  id: '/profile/',
+  path: '/profile/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileEditRoute = ProfileEditRouteImport.update({
+  id: '/profile/edit',
+  path: '/profile/edit',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiTranscribeRoute = ApiTranscribeRouteImport.update({
   id: '/api/transcribe',
   path: '/api/transcribe',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileSourceIdRoute = ProfileSourceIdRouteImport.update({
+  id: '/profile/source/$id',
+  path: '/profile/source/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileSettingsSectionRoute = ProfileSettingsSectionRouteImport.update({
+  id: '/profile/settings/$section',
+  path: '/profile/settings/$section',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileMetricIdRoute = ProfileMetricIdRouteImport.update({
+  id: '/profile/metric/$id',
+  path: '/profile/metric/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -70,22 +94,30 @@ export interface FileRoutesByFullPath {
   '/attach': typeof AttachRoute
   '/capture': typeof CaptureRoute
   '/journey': typeof JourneyRoute
-  '/profile': typeof ProfileRoute
   '/quick-add': typeof QuickAddRoute
   '/talk': typeof TalkRoute
   '/teach': typeof TeachRoute
   '/api/transcribe': typeof ApiTranscribeRoute
+  '/profile/edit': typeof ProfileEditRoute
+  '/profile/': typeof ProfileIndexRoute
+  '/profile/metric/$id': typeof ProfileMetricIdRoute
+  '/profile/settings/$section': typeof ProfileSettingsSectionRoute
+  '/profile/source/$id': typeof ProfileSourceIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/attach': typeof AttachRoute
   '/capture': typeof CaptureRoute
   '/journey': typeof JourneyRoute
-  '/profile': typeof ProfileRoute
   '/quick-add': typeof QuickAddRoute
   '/talk': typeof TalkRoute
   '/teach': typeof TeachRoute
   '/api/transcribe': typeof ApiTranscribeRoute
+  '/profile/edit': typeof ProfileEditRoute
+  '/profile': typeof ProfileIndexRoute
+  '/profile/metric/$id': typeof ProfileMetricIdRoute
+  '/profile/settings/$section': typeof ProfileSettingsSectionRoute
+  '/profile/source/$id': typeof ProfileSourceIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -93,11 +125,15 @@ export interface FileRoutesById {
   '/attach': typeof AttachRoute
   '/capture': typeof CaptureRoute
   '/journey': typeof JourneyRoute
-  '/profile': typeof ProfileRoute
   '/quick-add': typeof QuickAddRoute
   '/talk': typeof TalkRoute
   '/teach': typeof TeachRoute
   '/api/transcribe': typeof ApiTranscribeRoute
+  '/profile/edit': typeof ProfileEditRoute
+  '/profile/': typeof ProfileIndexRoute
+  '/profile/metric/$id': typeof ProfileMetricIdRoute
+  '/profile/settings/$section': typeof ProfileSettingsSectionRoute
+  '/profile/source/$id': typeof ProfileSourceIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -106,33 +142,45 @@ export interface FileRouteTypes {
     | '/attach'
     | '/capture'
     | '/journey'
-    | '/profile'
     | '/quick-add'
     | '/talk'
     | '/teach'
     | '/api/transcribe'
+    | '/profile/edit'
+    | '/profile/'
+    | '/profile/metric/$id'
+    | '/profile/settings/$section'
+    | '/profile/source/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/attach'
     | '/capture'
     | '/journey'
-    | '/profile'
     | '/quick-add'
     | '/talk'
     | '/teach'
     | '/api/transcribe'
+    | '/profile/edit'
+    | '/profile'
+    | '/profile/metric/$id'
+    | '/profile/settings/$section'
+    | '/profile/source/$id'
   id:
     | '__root__'
     | '/'
     | '/attach'
     | '/capture'
     | '/journey'
-    | '/profile'
     | '/quick-add'
     | '/talk'
     | '/teach'
     | '/api/transcribe'
+    | '/profile/edit'
+    | '/profile/'
+    | '/profile/metric/$id'
+    | '/profile/settings/$section'
+    | '/profile/source/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -140,11 +188,15 @@ export interface RootRouteChildren {
   AttachRoute: typeof AttachRoute
   CaptureRoute: typeof CaptureRoute
   JourneyRoute: typeof JourneyRoute
-  ProfileRoute: typeof ProfileRoute
   QuickAddRoute: typeof QuickAddRoute
   TalkRoute: typeof TalkRoute
   TeachRoute: typeof TeachRoute
   ApiTranscribeRoute: typeof ApiTranscribeRoute
+  ProfileEditRoute: typeof ProfileEditRoute
+  ProfileIndexRoute: typeof ProfileIndexRoute
+  ProfileMetricIdRoute: typeof ProfileMetricIdRoute
+  ProfileSettingsSectionRoute: typeof ProfileSettingsSectionRoute
+  ProfileSourceIdRoute: typeof ProfileSourceIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -168,13 +220,6 @@ declare module '@tanstack/react-router' {
       path: '/quick-add'
       fullPath: '/quick-add'
       preLoaderRoute: typeof QuickAddRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/profile': {
-      id: '/profile'
-      path: '/profile'
-      fullPath: '/profile'
-      preLoaderRoute: typeof ProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/journey': {
@@ -205,11 +250,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/profile/': {
+      id: '/profile/'
+      path: '/profile'
+      fullPath: '/profile/'
+      preLoaderRoute: typeof ProfileIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile/edit': {
+      id: '/profile/edit'
+      path: '/profile/edit'
+      fullPath: '/profile/edit'
+      preLoaderRoute: typeof ProfileEditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/transcribe': {
       id: '/api/transcribe'
       path: '/api/transcribe'
       fullPath: '/api/transcribe'
       preLoaderRoute: typeof ApiTranscribeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile/source/$id': {
+      id: '/profile/source/$id'
+      path: '/profile/source/$id'
+      fullPath: '/profile/source/$id'
+      preLoaderRoute: typeof ProfileSourceIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile/settings/$section': {
+      id: '/profile/settings/$section'
+      path: '/profile/settings/$section'
+      fullPath: '/profile/settings/$section'
+      preLoaderRoute: typeof ProfileSettingsSectionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile/metric/$id': {
+      id: '/profile/metric/$id'
+      path: '/profile/metric/$id'
+      fullPath: '/profile/metric/$id'
+      preLoaderRoute: typeof ProfileMetricIdRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -220,11 +300,15 @@ const rootRouteChildren: RootRouteChildren = {
   AttachRoute: AttachRoute,
   CaptureRoute: CaptureRoute,
   JourneyRoute: JourneyRoute,
-  ProfileRoute: ProfileRoute,
   QuickAddRoute: QuickAddRoute,
   TalkRoute: TalkRoute,
   TeachRoute: TeachRoute,
   ApiTranscribeRoute: ApiTranscribeRoute,
+  ProfileEditRoute: ProfileEditRoute,
+  ProfileIndexRoute: ProfileIndexRoute,
+  ProfileMetricIdRoute: ProfileMetricIdRoute,
+  ProfileSettingsSectionRoute: ProfileSettingsSectionRoute,
+  ProfileSourceIdRoute: ProfileSourceIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

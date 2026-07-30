@@ -39,7 +39,18 @@ const FACTS_KEY = "ciatta.facts.v1";
 const EVENTS_KEY = "ciatta.events.v1";
 const MILESTONE_KEY = "ciatta.milestones.v1";
 
-const SYNC_EVENT = "ciatta:store-change";
+export const SYNC_EVENT = "ciatta:store-change";
+
+/** Every key Ciatta owns — used by export and delete. */
+export const ALL_KEYS = [
+  CHECKIN_KEY,
+  FACTS_KEY,
+  EVENTS_KEY,
+  MILESTONE_KEY,
+  "ciatta.priorities.v1",
+  "ciatta.identity.v1",
+  "ciatta.settings.v1",
+];
 
 
 export const SEED_FACTS: LearnedFact[] = [
@@ -70,7 +81,7 @@ function write(key: string, value: unknown) {
 }
 
 /** Hydration-safe: starts at the fallback on both server and first client render. */
-function usePersistentState<T>(key: string, fallback: T) {
+export function usePersistentState<T>(key: string, fallback: T) {
   const [value, setValue] = useState<T>(fallback);
   const [hydrated, setHydrated] = useState(false);
 
@@ -228,4 +239,30 @@ export function usePriorities(defaults: string[]) {
   );
 
   return { priorities, reorder, hydrated };
+}
+
+
+/** Everything Ciatta holds about you, as a JSON-serialisable object. */
+export function exportAllData() {
+  const data: Record<string, unknown> = {};
+  for (const key of ALL_KEYS) {
+    const raw = typeof window === "undefined" ? null : window.localStorage.getItem(key);
+    if (raw) {
+      try {
+        data[key] = JSON.parse(raw);
+      } catch {
+        data[key] = raw;
+      }
+    }
+  }
+  return { exportedAt: new Date().toISOString(), app: "Ciatta", data };
+}
+
+/** Permanently forgets everything Ciatta has learned on this device. */
+export function deleteAllData() {
+  if (typeof window === "undefined") return;
+  for (const key of ALL_KEYS) {
+    window.localStorage.removeItem(key);
+    window.dispatchEvent(new CustomEvent(SYNC_EVENT, { detail: key }));
+  }
 }
