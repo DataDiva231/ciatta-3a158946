@@ -210,15 +210,13 @@ export function buildSteps(answers: Answers): QuickAddStep[] {
     if (!product || ABSORBENT_PRODUCTS.includes(product)) steps.push(ABSORBENCY_STEP);
     if (product === "Nothing Right Now") return steps;
     steps.push(INTENSITY_STEP);
-    if (!product || TIMED_PRODUCTS.includes(product)) {
-      steps.push(product === "Tampon" || product === "Disc" ? TIMING_STEP : WORN_TIMING_STEP);
-    }
     return steps;
   }
 
   const step = GENERIC_STEPS[category] ?? INTENSITY_STEP;
-  return [CATEGORY_STEP, step, GENERIC_TIMING_STEP];
+  return [CATEGORY_STEP, step];
 }
+
 
 export function findOption(step: QuickAddStep, label: string) {
   return step.options.find((o) => o.label === label);
