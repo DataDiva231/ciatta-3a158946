@@ -106,17 +106,26 @@ function TodayPage() {
       </div>
 
       <section className="shrink-0 px-6 pb-1">
-        {justTaught && (
-          <p className="animate-in fade-in slide-in-from-bottom-1 mb-2 inline-flex items-center gap-1.5 rounded-full bg-secondary px-2.5 py-1 text-[11px] text-accent duration-300">
-            <span className="h-1.5 w-1.5 rounded-full bg-accent" />
-            Insight refreshed just now
-          </p>
-        )}
+        <div className="mb-2 flex items-center gap-2">
+          <span
+            key={`conf-${narrative.confidence.value}`}
+            className="animate-in fade-in inline-flex items-center gap-1.5 rounded-full bg-secondary px-2.5 py-1 text-[11px] leading-none text-accent duration-500"
+          >
+            <span className={`h-1.5 w-1.5 rounded-full bg-accent ${justTaught ? "animate-pulse" : ""}`} />
+            {narrative.confidence.value}% confidence
+            {narrative.confidence.delta > 0 && (
+              <span className="text-muted-foreground">+{narrative.confidence.delta}</span>
+            )}
+          </span>
+          {justTaught && (
+            <span className="animate-in fade-in slide-in-from-bottom-1 text-[11px] leading-none text-muted-foreground duration-300">
+              Updated just now
+            </span>
+          )}
+        </div>
         <h1
-          key={justTaught ? "refreshed" : "steady"}
-          className={`font-serif text-[30px] leading-[1.15] font-light tracking-[-0.01em] [@media(max-height:780px)]:text-[26px] ${
-            justTaught ? "animate-in fade-in slide-in-from-bottom-2 duration-500" : ""
-          }`}
+          key={narrative.headline.map((p) => p.text).join("")}
+          className="animate-in fade-in slide-in-from-bottom-2 font-serif text-[30px] leading-[1.15] font-light tracking-[-0.01em] duration-500 [@media(max-height:780px)]:text-[26px]"
         >
           {narrative.headline.map((part, i) => (
             <span key={i} className={part.accent ? "text-accent" : undefined}>
@@ -124,6 +133,16 @@ function TodayPage() {
             </span>
           ))}
         </h1>
+
+        {narrative.impact && (
+          <p
+            key={narrative.impact.text}
+            className="animate-in fade-in mt-2 truncate text-[12px] leading-none text-muted-foreground duration-700"
+          >
+            <span className="text-accent">{narrative.impact.source}</span> · {narrative.impact.text}
+          </p>
+        )}
+
 
 
         <div className="mt-4 divide-y divide-border border-t border-border [@media(max-height:780px)]:mt-3">
