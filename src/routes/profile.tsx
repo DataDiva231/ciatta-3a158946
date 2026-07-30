@@ -479,24 +479,31 @@ function ProfilePage() {
       <section className="mt-9 px-6">
         <SectionTitle>Health</SectionTitle>
 
-        <p className="mt-4 mb-0 px-1 text-[13px] text-muted-foreground">Snapshot</p>
+        <p className="mt-4 mb-0 px-1 text-[13px] text-muted-foreground">
+          Where your understanding stands
+        </p>
         <Group>
           {profile.snapshot.map((s) => (
             <Row key={s.label} label={s.label} value={s.value} />
           ))}
         </Group>
         {!profile.hasData && (
-          <ExampleNote>These fill in as Ciatta observes you. Nothing is estimated.</ExampleNote>
+          <ExampleNote>Each line fills in from what you log. Nothing here is estimated.</ExampleNote>
         )}
 
-        <p className="mt-6 px-1 text-[13px] text-muted-foreground">Areas of understanding</p>
+        <p className="mt-6 px-1 text-[13px] text-muted-foreground">
+          What Ciatta is learning, area by area
+        </p>
         <Group>
           {profile.areas.map((a) => (
             <Row key={a.name} label={a.name} value={a.tier} />
           ))}
         </Group>
 
-        <p className="mt-6 px-1 text-[13px] text-muted-foreground">Connected sources</p>
+        <p className="mt-6 px-1 text-[13px] text-muted-foreground">
+          Where the understanding comes from
+        </p>
+
         <Group>
           {profile.sources.map((s) => {
             const open = openSource === s.id;
