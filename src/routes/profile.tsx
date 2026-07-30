@@ -368,6 +368,17 @@ function ProfilePage() {
       {/* Your Understanding */}
       <section className="mt-10 border-t border-border pt-7">
         <Eyebrow>Your understanding</Eyebrow>
+        {!profile.hasData && (
+          <Invitation
+            line="Your portrait is still being drawn."
+            body={`Ciatta needs a few more moments with you before it can say anything true. ${
+              profile.observationCount === 0
+                ? "Nothing logged yet."
+                : `${profile.observationCount} logged so far.`
+            } Below is what an understanding will look like.`}
+            action="Teach Ciatta something"
+          />
+        )}
         <div className="mt-3">
           {profile.understandings.map((u, i) => (
             <UnderstandingBlock
@@ -381,13 +392,18 @@ function ProfilePage() {
             />
           ))}
         </div>
+        {!profile.hasData && (
+          <ExampleNote>
+            Example understandings. They'll be replaced by your own as you teach Ciatta.
+          </ExampleNote>
+        )}
       </section>
 
       {/* Your Story */}
       <section className="mt-10">
         <Eyebrow>Your story</Eyebrow>
         <h2 className="mt-3 font-serif text-[26px] leading-tight font-light">
-          Your story so far
+          {profile.hasData ? "Your story so far" : "The first page is blank."}
         </h2>
         {profile.story.map((p) => (
           <p key={p} className="mt-4 text-[15px] leading-relaxed text-muted-foreground">
@@ -409,7 +425,13 @@ function ProfilePage() {
             />
           ))}
         </div>
+        {!profile.hasData && (
+          <ExampleNote>
+            Every area starts here. Confidence rises with each thing you log.
+          </ExampleNote>
+        )}
       </section>
+
 
       {/* Health Snapshot */}
       <section className="mt-10 border-t border-border pt-7">
