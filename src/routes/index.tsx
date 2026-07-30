@@ -167,14 +167,14 @@ function NarrativeBlock({
 }) {
   const small = compact || wrap;
   return (
-    <div className={small ? "py-3" : "py-5 [@media(max-height:780px)]:py-3.5"}>
+    <div className={small ? "" : "[@media(max-height:780px)]:py-1 py-2"}>
       <p className="label-caps">{line.label}</p>
       <p
         className={
           compact
-            ? "mt-1 truncate text-[13px] leading-[1.5] tracking-[-0.01em] whitespace-nowrap"
+            ? "mt-1 truncate text-[13px] leading-[1.5] whitespace-nowrap"
             : wrap
-              ? "mt-1 text-[13px] leading-[1.5] tracking-[-0.01em]"
+              ? "mt-1 text-[13px] leading-[1.5]"
               : "mt-1.5 text-[16px] leading-[1.5]"
         }
       >
@@ -183,7 +183,7 @@ function NarrativeBlock({
             key={i}
             className={
               part.accent
-                ? `align-baseline font-serif leading-[1] text-accent ${small ? "text-[17px]" : "text-[22px]"}`
+                ? `font-medium text-accent tabular-nums ${small ? "text-[14px]" : "text-[17px]"}`
                 : undefined
             }
           >
@@ -193,6 +193,7 @@ function NarrativeBlock({
       </p>
     </div>
   );
+
 
 }
 
