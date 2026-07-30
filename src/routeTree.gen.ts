@@ -17,6 +17,7 @@ import { Route as CaptureRouteImport } from './routes/capture'
 import { Route as AttachRouteImport } from './routes/attach'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProfileIndexRouteImport } from './routes/profile.index'
+import { Route as ProfileEditRouteImport } from './routes/profile.edit'
 import { Route as ApiTranscribeRouteImport } from './routes/api/transcribe'
 
 const TeachRoute = TeachRouteImport.update({
@@ -59,6 +60,11 @@ const ProfileIndexRoute = ProfileIndexRouteImport.update({
   path: '/profile/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProfileEditRoute = ProfileEditRouteImport.update({
+  id: '/profile/edit',
+  path: '/profile/edit',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiTranscribeRoute = ApiTranscribeRouteImport.update({
   id: '/api/transcribe',
   path: '/api/transcribe',
@@ -74,6 +80,7 @@ export interface FileRoutesByFullPath {
   '/talk': typeof TalkRoute
   '/teach': typeof TeachRoute
   '/api/transcribe': typeof ApiTranscribeRoute
+  '/profile/edit': typeof ProfileEditRoute
   '/profile/': typeof ProfileIndexRoute
 }
 export interface FileRoutesByTo {
@@ -85,6 +92,7 @@ export interface FileRoutesByTo {
   '/talk': typeof TalkRoute
   '/teach': typeof TeachRoute
   '/api/transcribe': typeof ApiTranscribeRoute
+  '/profile/edit': typeof ProfileEditRoute
   '/profile': typeof ProfileIndexRoute
 }
 export interface FileRoutesById {
@@ -97,6 +105,7 @@ export interface FileRoutesById {
   '/talk': typeof TalkRoute
   '/teach': typeof TeachRoute
   '/api/transcribe': typeof ApiTranscribeRoute
+  '/profile/edit': typeof ProfileEditRoute
   '/profile/': typeof ProfileIndexRoute
 }
 export interface FileRouteTypes {
@@ -110,6 +119,7 @@ export interface FileRouteTypes {
     | '/talk'
     | '/teach'
     | '/api/transcribe'
+    | '/profile/edit'
     | '/profile/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -121,6 +131,7 @@ export interface FileRouteTypes {
     | '/talk'
     | '/teach'
     | '/api/transcribe'
+    | '/profile/edit'
     | '/profile'
   id:
     | '__root__'
@@ -132,6 +143,7 @@ export interface FileRouteTypes {
     | '/talk'
     | '/teach'
     | '/api/transcribe'
+    | '/profile/edit'
     | '/profile/'
   fileRoutesById: FileRoutesById
 }
@@ -144,6 +156,7 @@ export interface RootRouteChildren {
   TalkRoute: typeof TalkRoute
   TeachRoute: typeof TeachRoute
   ApiTranscribeRoute: typeof ApiTranscribeRoute
+  ProfileEditRoute: typeof ProfileEditRoute
   ProfileIndexRoute: typeof ProfileIndexRoute
 }
 
@@ -205,6 +218,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProfileIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/profile/edit': {
+      id: '/profile/edit'
+      path: '/profile/edit'
+      fullPath: '/profile/edit'
+      preLoaderRoute: typeof ProfileEditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/transcribe': {
       id: '/api/transcribe'
       path: '/api/transcribe'
@@ -224,6 +244,7 @@ const rootRouteChildren: RootRouteChildren = {
   TalkRoute: TalkRoute,
   TeachRoute: TeachRoute,
   ApiTranscribeRoute: ApiTranscribeRoute,
+  ProfileEditRoute: ProfileEditRoute,
   ProfileIndexRoute: ProfileIndexRoute,
 }
 export const routeTree = rootRouteImport
