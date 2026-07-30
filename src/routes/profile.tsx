@@ -32,6 +32,63 @@ function Eyebrow({ children }: { children: string }) {
   return <p className="label-caps">{children}</p>;
 }
 
+/** A quiet shimmering placeholder used while stored understanding is read. */
+function Bar({ w = "100%", h = 14 }: { w?: string; h?: number }) {
+  return (
+    <span
+      aria-hidden="true"
+      className="block animate-pulse rounded-full bg-secondary"
+      style={{ width: w, height: h }}
+    />
+  );
+}
+
+function SkeletonRows({ rows = 4 }: { rows?: number }) {
+  return (
+    <div className="mt-4 space-y-4">
+      {Array.from({ length: rows }).map((_, i) => (
+        <div key={i} className="flex items-center justify-between gap-6">
+          <Bar w={`${38 + ((i * 13) % 26)}%`} />
+          <Bar w={`${22 + ((i * 7) % 14)}%`} h={12} />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/** Shown when a section has nothing honest to say yet. */
+function Invitation({
+  line,
+  body,
+  action = "Teach Ciatta",
+}: {
+  line: string;
+  body: string;
+  action?: string;
+}) {
+  return (
+    <div className="mt-4 rounded-2xl bg-surface px-4 py-5">
+      <p className="font-serif text-[19px] leading-snug font-light">{line}</p>
+      <p className="mt-2 text-[14px] leading-relaxed text-muted-foreground">{body}</p>
+      <Link
+        to="/teach"
+        className="mt-4 flex items-center justify-between border-t border-border pt-3.5 text-[15px] text-accent"
+      >
+        {action}
+        <span aria-hidden="true">{"\u203A"}</span>
+      </Link>
+    </div>
+  );
+}
+
+/** A soft caption marking content Ciatta hasn't earned from real data yet. */
+function ExampleNote({ children }: { children: string }) {
+  return (
+    <p className="mt-3 text-[13px] leading-relaxed text-fog italic">{children}</p>
+  );
+}
+
+
 function Row({
   label,
   value,
