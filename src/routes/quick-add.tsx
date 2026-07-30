@@ -344,7 +344,7 @@ function QuickAddPage() {
                   <button
                     type="button"
                     onClick={() => goTo(i)}
-                    className="animate-in fade-in zoom-in-95 max-w-[100px] truncate duration-300"
+                    className="animate-dissolve max-w-[100px] truncate"
                   >
                     {answers[s.key]}
                   </button>
