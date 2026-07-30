@@ -14,7 +14,7 @@ export function Screen({
   action?: ReactNode;
   children: ReactNode;
 }) {
-  const router = useRouter();
+  const { goBack } = useBack("/profile");
 
   return (
     <div className="pb-10">
