@@ -181,20 +181,11 @@ function Footer({
   );
 }
 
-function Orb({ size = 176 }: { size?: number }) {
-  return (
-    <div
-      className="animate-breathe rounded-full"
-      style={{
-        width: size,
-        height: size,
-        background:
-          "radial-gradient(circle at 34% 30%, #ffffff 0%, #f7efe6 42%, #ecdfd2 72%, #e2d2c3 100%)",
-        boxShadow: "0 24px 60px -24px rgba(120,95,75,0.35)",
-      }}
-    />
-  );
+/** The Understanding, at onboarding scale. Grows as the conversation proceeds. */
+function Orb({ size = 232, confidence = 42 }: { size?: number; confidence?: number }) {
+  return <Understanding size={size} confidence={confidence} />;
 }
+
 
 function OptionRow({
   choice,
