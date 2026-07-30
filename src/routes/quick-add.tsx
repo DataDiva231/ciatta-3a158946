@@ -238,15 +238,15 @@ function QuickAddPage() {
       { key: "understanding", label: "Understanding refined", value: "Leak risk updated" },
     ];
     return (
-      <div className="flex min-h-full flex-col justify-center px-6 pb-10">
+      <div className="flex min-h-full flex-col justify-center px-6 pb-12">
         <div className="relative mx-auto grid place-items-center">
           <span
-            className="absolute h-[190px] w-[190px] animate-ping rounded-full opacity-40"
+            className="absolute h-[176px] w-[176px] animate-ping rounded-full opacity-30"
             style={{ background: "radial-gradient(circle, var(--clay) 0%, transparent 62%)" }}
             aria-hidden="true"
           />
           <span
-            className="animate-in zoom-in-50 absolute h-[150px] w-[150px] rounded-full opacity-60 blur-xl duration-700"
+            className="animate-in zoom-in-50 absolute h-[140px] w-[140px] rounded-full opacity-50 blur-xl duration-700"
             style={{ background: "radial-gradient(circle, var(--clay) 0%, transparent 70%)" }}
             aria-hidden="true"
           />
@@ -256,30 +256,32 @@ function QuickAddPage() {
             width={1024}
             height={1024}
             loading="eager"
-            className="animate-in zoom-in-95 relative w-[150px] duration-500"
+            className="animate-in zoom-in-95 relative w-[140px] duration-500"
           />
         </div>
 
-        <h1 className="animate-in fade-in mt-1 text-center font-serif text-[28px] leading-tight duration-300">
+        <h1 className="animate-in fade-in mt-6 text-center font-serif text-[27px] leading-[1.15] tracking-[-0.01em] duration-300">
           Understanding updated
         </h1>
-        <p className="animate-in fade-in mt-2 text-center text-[13px] leading-relaxed text-muted-foreground duration-500">
+        <p className="animate-in fade-in mt-2.5 text-center text-[13px] leading-relaxed text-muted-foreground duration-500">
           Thank you! Every update makes Ciatta smarter.
         </p>
 
-        <ul className="mt-5 overflow-hidden rounded-2xl border border-border bg-surface">
+        <ul className="mt-8 overflow-hidden rounded-[20px] bg-surface px-5 shadow-[0_1px_2px_rgba(0,0,0,0.03)]">
           {rows.map((r, i) => (
             <li
               key={r.key}
-              className="animate-in fade-in slide-in-from-bottom-1 fill-mode-backwards flex items-center gap-3 border-t border-border px-4 py-3 duration-300 first:border-t-0"
+              className="animate-in fade-in slide-in-from-bottom-1 fill-mode-backwards flex items-center gap-3.5 border-t border-border/60 py-3.5 duration-300 first:border-t-0"
               style={{ animationDelay: `${80 + i * 90}ms` }}
             >
               <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-secondary text-accent">
                 <CheckIcon />
               </span>
-              <span className="min-w-0">
-                <span className="block text-[14px] text-foreground">{r.label}</span>
-                <span className="block truncate text-[12px] text-muted-foreground">{r.value}</span>
+              <span className="flex min-w-0 flex-1 items-baseline justify-between gap-3">
+                <span className="text-[14px] leading-none text-foreground">{r.label}</span>
+                <span className="truncate text-[12px] leading-none text-muted-foreground">
+                  {r.value}
+                </span>
               </span>
             </li>
           ))}
@@ -290,14 +292,15 @@ function QuickAddPage() {
 
 
 
+
   return (
-    <div className="flex min-h-full flex-col px-6 pb-4 pt-8">
-      <div className="flex items-center gap-3">
+    <div className="flex min-h-full flex-col px-6 pb-6 pt-6">
+      <div className="flex min-h-11 items-center gap-3">
         <button
           type="button"
           onClick={back}
           aria-label="Back"
-          className={`grid h-10 w-10 shrink-0 place-items-center rounded-full bg-secondary text-foreground ${
+          className={`grid h-11 w-11 shrink-0 place-items-center rounded-full bg-secondary text-foreground transition-opacity active:opacity-70 ${
             index === 0 ? "invisible" : ""
           }`}
         >
@@ -312,15 +315,15 @@ function QuickAddPage() {
           </svg>
         </button>
         {index > 0 && (
-          <div className="mx-auto flex min-w-0 items-center gap-1.5 rounded-full bg-secondary px-3 py-1.5 text-[12px] text-accent">
+          <div className="mx-auto flex min-w-0 items-center gap-1.5 rounded-full bg-secondary px-3.5 py-2 text-[12px] leading-none text-accent">
             {answeredSteps.map((s, i) =>
               answers[s.key] ? (
                 <span key={s.key} className="flex min-w-0 items-center gap-1.5">
-                  {i > 0 && <span className="text-fog">•</span>}
+                  {i > 0 && <span className="text-fog">·</span>}
                   <button
                     type="button"
                     onClick={() => goTo(i)}
-                    className="animate-in fade-in zoom-in-95 max-w-[110px] truncate duration-300"
+                    className="animate-in fade-in zoom-in-95 max-w-[100px] truncate duration-300"
                   >
                     {answers[s.key]}
                   </button>
@@ -331,17 +334,19 @@ function QuickAddPage() {
           </div>
         )}
 
-        <span className="h-10 w-10 shrink-0" />
+        <span className="h-11 w-11 shrink-0" />
       </div>
 
       <div
         key={`${step.key}-${index}`}
         className={`animate-in fade-in duration-300 ease-out ${
-          direction === "forward" ? "slide-in-from-right-6" : "slide-in-from-left-6"
+          direction === "forward" ? "slide-in-from-right-4" : "slide-in-from-left-4"
         }`}
       >
-        <h1 className="mt-6 text-center font-serif text-[27px] leading-tight">{step.title}</h1>
-        <p className="mt-2 text-center text-[13px] leading-relaxed text-muted-foreground">
+        <h1 className="mt-7 text-center font-serif text-[27px] leading-[1.15] tracking-[-0.01em]">
+          {step.title}
+        </h1>
+        <p className="mx-auto mt-2.5 max-w-[30ch] text-center text-[13px] leading-relaxed text-muted-foreground">
           {continuation ? (
             <>
               <span className="text-foreground">{continuation}</span> {step.sub}
@@ -351,87 +356,90 @@ function QuickAddPage() {
           )}
         </p>
 
-      {step.key === "category" && <p className="label-caps mt-6">Today's suggestions</p>}
+        {step.key === "category" && <p className="label-caps mt-8">Today's suggestions</p>}
 
-      {step.layout === "grid" ? (
-        <div className="mt-6 grid grid-cols-2 gap-3">
-
-          {step.options.map((o) => {
-            const selected = answers[step.key] === o.label;
-            return (
-              <button
-                key={o.label}
-                type="button"
-                onClick={() => choose(o)}
-                className={`flex flex-col items-center gap-2 rounded-2xl border px-3 py-5 transition-colors ${
-                  selected
-                    ? "border-accent bg-secondary"
-                    : "border-border bg-surface hover:border-accent/50"
-                }`}
-              >
-                <ProductGlyph icon={o.icon} />
-                <span className={`text-[13px] ${selected ? "text-accent" : "text-foreground"}`}>
-                  {o.label}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      ) : (
-        <ul className="mt-6 space-y-2.5">
-          {step.options.map((o) => {
-            const selected = answers[step.key] === o.label;
-            return (
-              <li key={o.label} className="relative">
+        {step.layout === "grid" ? (
+          <div className={`grid grid-cols-2 gap-3 ${step.key === "category" ? "mt-3" : "mt-8"}`}>
+            {step.options.map((o) => {
+              const selected = answers[step.key] === o.label;
+              return (
                 <button
+                  key={o.label}
                   type="button"
                   onClick={() => choose(o)}
-                  className={`flex w-full items-center gap-3 rounded-2xl border px-4 py-3.5 text-left transition-colors ${
+                  className={`flex min-h-[112px] flex-col items-center justify-center gap-2.5 rounded-[20px] bg-surface px-3 py-5 transition-all duration-200 active:scale-[0.98] ${
                     selected
-                      ? "border-accent bg-secondary"
-                      : "border-border bg-surface hover:border-accent/50"
+                      ? "ring-1 ring-accent"
+                      : "shadow-[0_1px_2px_rgba(0,0,0,0.03)] ring-1 ring-border/60"
                   }`}
                 >
-                  {o.glyph && (
-                    <span className="w-12 shrink-0 text-[13px] tracking-tight text-muted-foreground">
-                      {o.glyph}
-                    </span>
-                  )}
-                  <span className="min-w-0">
-                    <span
-                      className={`block text-[15px] ${selected ? "text-accent" : "text-foreground"}`}
-                    >
-                      {o.label}
-                    </span>
-                    {o.note && (
-                      <span className="block text-[12px] text-muted-foreground">{o.note}</span>
-                    )}
+                  <ProductGlyph icon={o.icon} />
+                  <span
+                    className={`text-[13px] leading-none ${selected ? "text-accent" : "text-foreground"}`}
+                  >
+                    {o.label}
                   </span>
                 </button>
-                {/* Invisible native date/time picker layered over the "Custom time" row. */}
-                {o.custom && (
-                  <input
-                    ref={timeInput}
-                    type="datetime-local"
-                    aria-label="Custom time"
-                    max={toLocalInputValue(new Date())}
-                    defaultValue={toLocalInputValue(new Date())}
-                    onChange={(e) => chooseCustomTime(e.target.value)}
-                    className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-                  />
-                )}
-              </li>
-            );
-          })}
-        </ul>
-      )}
+              );
+            })}
+          </div>
+        ) : (
+          <ul className="mt-8 space-y-2.5">
+            {step.options.map((o) => {
+              const selected = answers[step.key] === o.label;
+              return (
+                <li key={o.label} className="relative">
+                  <button
+                    type="button"
+                    onClick={() => choose(o)}
+                    className={`flex min-h-[60px] w-full items-center gap-3.5 rounded-[18px] bg-surface px-4 py-3.5 text-left transition-all duration-200 active:scale-[0.99] ${
+                      selected
+                        ? "ring-1 ring-accent"
+                        : "shadow-[0_1px_2px_rgba(0,0,0,0.03)] ring-1 ring-border/60"
+                    }`}
+                  >
+                    {o.glyph && (
+                      <span className="w-11 shrink-0 text-[13px] tracking-tight text-muted-foreground">
+                        {o.glyph}
+                      </span>
+                    )}
+                    <span className="min-w-0 flex-1">
+                      <span
+                        className={`block text-[15px] leading-tight ${selected ? "text-accent" : "text-foreground"}`}
+                      >
+                        {o.label}
+                      </span>
+                      {o.note && (
+                        <span className="mt-1 block text-[12px] leading-none text-muted-foreground">
+                          {o.note}
+                        </span>
+                      )}
+                    </span>
+                  </button>
+                  {/* Invisible native date/time picker layered over the "Custom time" row. */}
+                  {o.custom && (
+                    <input
+                      ref={timeInput}
+                      type="datetime-local"
+                      aria-label="Custom time"
+                      max={toLocalInputValue(new Date())}
+                      defaultValue={toLocalInputValue(new Date())}
+                      onChange={(e) => chooseCustomTime(e.target.value)}
+                      className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                    />
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        )}
       </div>
 
-      <div className="mt-auto flex items-center gap-3 pt-8">
-        <span className="text-[12px] tabular-nums text-muted-foreground">
+      <div className="mt-auto flex items-center gap-3 pt-10">
+        <span className="text-[12px] leading-none tabular-nums text-muted-foreground">
           {index + 1} of {total}
         </span>
-        <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-secondary">
+        <span className="h-1 flex-1 overflow-hidden rounded-full bg-secondary">
           <span
             className="block h-full rounded-full transition-[width] duration-500 ease-out"
             style={{
@@ -445,3 +453,4 @@ function QuickAddPage() {
     </div>
   );
 }
+
