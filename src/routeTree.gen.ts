@@ -15,6 +15,7 @@ import { Route as QuickAddRouteImport } from './routes/quick-add'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as JourneyRouteImport } from './routes/journey'
 import { Route as CaptureRouteImport } from './routes/capture'
+import { Route as AttachRouteImport } from './routes/attach'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiTranscribeRouteImport } from './routes/api/transcribe'
 
@@ -48,6 +49,11 @@ const CaptureRoute = CaptureRouteImport.update({
   path: '/capture',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AttachRoute = AttachRouteImport.update({
+  id: '/attach',
+  path: '/attach',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -61,6 +67,7 @@ const ApiTranscribeRoute = ApiTranscribeRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/attach': typeof AttachRoute
   '/capture': typeof CaptureRoute
   '/journey': typeof JourneyRoute
   '/profile': typeof ProfileRoute
@@ -71,6 +78,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/attach': typeof AttachRoute
   '/capture': typeof CaptureRoute
   '/journey': typeof JourneyRoute
   '/profile': typeof ProfileRoute
@@ -82,6 +90,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/attach': typeof AttachRoute
   '/capture': typeof CaptureRoute
   '/journey': typeof JourneyRoute
   '/profile': typeof ProfileRoute
@@ -94,6 +103,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/attach'
     | '/capture'
     | '/journey'
     | '/profile'
@@ -104,6 +114,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/attach'
     | '/capture'
     | '/journey'
     | '/profile'
@@ -114,6 +125,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/attach'
     | '/capture'
     | '/journey'
     | '/profile'
@@ -125,6 +137,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AttachRoute: typeof AttachRoute
   CaptureRoute: typeof CaptureRoute
   JourneyRoute: typeof JourneyRoute
   ProfileRoute: typeof ProfileRoute
@@ -178,6 +191,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CaptureRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/attach': {
+      id: '/attach'
+      path: '/attach'
+      fullPath: '/attach'
+      preLoaderRoute: typeof AttachRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -197,6 +217,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AttachRoute: AttachRoute,
   CaptureRoute: CaptureRoute,
   JourneyRoute: JourneyRoute,
   ProfileRoute: ProfileRoute,
