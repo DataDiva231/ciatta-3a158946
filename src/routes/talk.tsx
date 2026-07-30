@@ -188,13 +188,51 @@ function TalkPage() {
           <PromptInputTextarea
             ref={textareaRef}
             autoFocus
-            placeholder="Tell Ciatta something about your body…"
+            placeholder={
+              recording ? "Listening — tap the mic when you're done…" : "Tell Ciatta something about your body…"
+            }
+            disabled={recording}
           />
-          <PromptInputFooter className="justify-end">
-            <PromptInputSubmit status={pending ? "submitted" : undefined} disabled={pending} />
+          <PromptInputFooter className="justify-between">
+            <button
+              type="button"
+              onClick={() => (recording ? void memo.stop() : void memo.start())}
+              disabled={memo.state === "transcribing" || pending}
+              aria-label={recording ? "Stop recording" : "Record a voice memo"}
+              aria-pressed={recording}
+              className={`grid h-9 w-9 place-items-center rounded-full transition-colors disabled:opacity-40 ${
+                recording ? "bg-accent text-primary-foreground" : "bg-secondary text-muted-foreground"
+              }`}
+              style={
+                recording
+                  ? { boxShadow: `0 0 0 ${4 + memo.level * 10}px color-mix(in oklab, var(--clay) 18%, transparent)` }
+                  : undefined
+              }
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <rect x="9" y="3" width="6" height="11" rx="3" stroke="currentColor" strokeWidth="1.5" />
+                <path
+                  d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </button>
+            <PromptInputSubmit status={busy ? "submitted" : undefined} disabled={busy || recording} />
           </PromptInputFooter>
         </PromptInput>
+        {(recording || memo.state === "transcribing" || memo.error) && (
+          <p className="mt-2 px-1 text-[13px] text-muted-foreground">
+            {memo.error
+              ? memo.error
+              : recording
+                ? "Ciatta is listening — speak, then tap the mic to finish."
+                : "Transcribing your memo…"}
+          </p>
+        )}
       </div>
+
 
       <section className="mt-8 px-6">
         <p className="label-caps">What Ciatta has learned</p>
