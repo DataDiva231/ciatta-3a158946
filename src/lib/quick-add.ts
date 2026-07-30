@@ -27,7 +27,7 @@ export type QuickAddStep = {
 export const CATEGORY_STEP: QuickAddStep = {
   key: "category",
   title: "Quick Add",
-  sub: "What changed since we last checked in? Teach Ciatta something new in under 30 seconds.",
+  sub: "One tap teaches Ciatta something new.",
   layout: "list",
   options: [
     { label: "Period Product" },
@@ -40,6 +40,7 @@ export const CATEGORY_STEP: QuickAddStep = {
     { label: "Something Else" },
   ],
 };
+
 
 const PRODUCT_STEP: QuickAddStep = {
   key: "product",
