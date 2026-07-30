@@ -92,7 +92,7 @@ function TopBar({
               <span
                 key={i}
                 className={`h-1.5 w-1.5 rounded-full transition-colors ${
-                  i <= (index ?? 0) ? "bg-clay" : "bg-border"
+                  i <= (index ?? 0) ? "bg-foreground/70" : "bg-border"
                 }`}
               />
             ))}
@@ -143,7 +143,7 @@ function Footer({
     variant === "solid"
       ? "bg-foreground text-background"
       : variant === "clay"
-        ? "bg-wheat text-foreground"
+        ? "bg-wheat/70 text-foreground"
         : "border border-border bg-surface text-foreground shadow-[0_1px_2px_rgba(60,45,35,0.05)]";
   return (
     <div className="shrink-0 px-7 pt-2 pb-9">
@@ -266,7 +266,7 @@ function SearchList({
             className="flex w-full items-center justify-between px-4 py-3.5 text-left text-[15px] transition-colors active:bg-secondary"
           >
             {o}
-            {selected.includes(o) && <span className="text-[13px] text-clay">Added</span>}
+            {selected.includes(o) && <span className="text-[13px] text-muted-foreground">Added</span>}
           </button>
         ))}
         {custom && !filtered.some((f) => f.toLowerCase() === custom.toLowerCase()) && (
@@ -484,7 +484,7 @@ function OnboardingPage() {
                 value={data.name}
                 onChange={(e) => patch({ name: e.target.value })}
                 placeholder="Your name"
-                className="mt-8 w-full rounded-2xl border border-border bg-surface px-4 py-4 text-[16px] outline-none focus:border-clay"
+                className="mt-8 w-full rounded-2xl border border-border bg-surface px-4 py-4 text-[16px] outline-none focus:border-fog"
               />
               <Why>I&apos;ll use your name throughout your health experience.</Why>
             </Body>
@@ -710,7 +710,7 @@ function OnboardingPage() {
             <TopBar />
             <Body>
               <div className="flex h-full flex-col items-center justify-center text-center">
-                <h1 className="font-serif text-[30px] font-light tracking-[-0.015em] text-clay">
+                <h1 className="font-serif text-[30px] font-light tracking-[-0.015em] text-foreground/80">
                   Thank you.
                 </h1>
                 <p className="mt-6 max-w-[18rem] text-[15px] leading-relaxed text-muted-foreground">
