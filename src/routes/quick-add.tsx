@@ -417,7 +417,7 @@ function QuickAddPage() {
 
         {step.layout === "grid" ? (
           <div className={`grid grid-cols-2 gap-3 ${step.key === "category" ? "mt-3" : "mt-8"}`}>
-            {step.options.map((o) => {
+            {options.map((o) => {
               const selected = answers[step.key] === o.label;
               return (
                 <button
@@ -442,7 +442,7 @@ function QuickAddPage() {
           </div>
         ) : (
           <ul className="mt-8 space-y-2.5">
-            {step.options.map((o) => {
+            {options.map((o) => {
               const selected = answers[step.key] === o.label;
               return (
                 <li key={o.label} className="relative">
