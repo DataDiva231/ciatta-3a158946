@@ -1,8 +1,18 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
 import orb from "@/assets/ciatta-orb.png";
-import { useLearnedFacts } from "@/lib/ciatta-store";
+import { useQuickAddEvents, type QuickAddEvent } from "@/lib/ciatta-store";
+import {
+  buildSteps,
+  formatDateTime,
+  LOGGED_LABEL,
+  META_LABEL,
+  toLocalInputValue,
+  valueKeyFor,
+  type Answers,
+  type QuickAddOption,
+} from "@/lib/quick-add";
 
 export const Route = createFileRoute("/quick-add")({
   head: () => ({
@@ -23,165 +33,7 @@ export const Route = createFileRoute("/quick-add")({
   component: QuickAddPage,
 });
 
-type Option = { label: string; note?: string; glyph?: string; icon?: "tampon" | "pad" | "cup" | "disc" | "underwear" | "none" };
-type Step = {
-  key: string;
-  title: string;
-  sub: string;
-  layout: "list" | "grid";
-  options: Option[];
-};
-
-const CATEGORY_STEP: Step = {
-  key: "category",
-  title: "Quick Add",
-  sub: "Teach Ciatta something new in under 30 seconds.",
-  layout: "list",
-  options: [
-    { label: "Period Product" },
-    { label: "Flow" },
-    { label: "Symptoms" },
-    { label: "Sleep" },
-    { label: "Medication" },
-    { label: "Nutrition" },
-    { label: "Activity" },
-    { label: "Something Else" },
-  ],
-};
-
-const PRODUCT_FLOW: Step[] = [
-  {
-    key: "product",
-    title: "What are you using?",
-    sub: "Choose the product that's right for you.",
-    layout: "grid",
-    options: [
-      { label: "Tampon", icon: "tampon" },
-      { label: "Pad", icon: "pad" },
-      { label: "Menstrual Cup", icon: "cup" },
-      { label: "Disc", icon: "disc" },
-      { label: "Period Underwear", icon: "underwear" },
-      { label: "Nothing Right Now", icon: "none" },
-    ],
-  },
-  {
-    key: "absorbency",
-    title: "Which absorbency?",
-    sub: "Choose the one that's right for you.",
-    layout: "list",
-    options: [
-      { label: "Light", glyph: "◊" },
-      { label: "Regular", glyph: "◊◊" },
-      { label: "Super", glyph: "◊◊◊" },
-      { label: "Super+", glyph: "◊◊◊◊" },
-      { label: "Ultra", glyph: "◊◊◊◊◊" },
-    ],
-  },
-  {
-    key: "intensity",
-    title: "How is your flow right now?",
-    sub: "This helps Ciatta understand today's intensity.",
-    layout: "list",
-    options: [
-      { label: "Light", note: "Lighter than usual" },
-      { label: "Medium", note: "Moderate flow" },
-      { label: "Heavy", note: "Heavier than usual" },
-      { label: "Spotting", note: "Very light spotting" },
-    ],
-  },
-  {
-    key: "timing",
-    title: "When did you insert it?",
-    sub: "This helps Ciatta understand your timeline.",
-    layout: "list",
-    options: [
-      { label: "Just now", note: "0 min ago" },
-      { label: "30 minutes ago", note: "30 min" },
-      { label: "1 hour ago", note: "1 hr" },
-      { label: "2 hours ago", note: "2 hr" },
-      { label: "Custom time", note: "Choose exact time" },
-    ],
-  },
-];
-
-const GENERIC_FLOW: Record<string, Step> = {
-  Flow: PRODUCT_FLOW[2],
-  Symptoms: {
-    key: "symptom",
-    title: "What are you feeling?",
-    sub: "Pick the one that stands out most right now.",
-    layout: "list",
-    options: [
-      { label: "Cramps", note: "Lower abdomen" },
-      { label: "Headache", note: "Dull or sharp" },
-      { label: "Bloating", note: "Fullness or pressure" },
-      { label: "Fatigue", note: "Low energy" },
-      { label: "Mood shift", note: "Irritable or low" },
-    ],
-  },
-  Sleep: {
-    key: "sleep",
-    title: "How did you sleep?",
-    sub: "Your own read matters as much as the sensor's.",
-    layout: "list",
-    options: [
-      { label: "Deep", note: "Woke up rested" },
-      { label: "Okay", note: "A little broken" },
-      { label: "Restless", note: "Woke several times" },
-      { label: "Barely slept", note: "Long night" },
-    ],
-  },
-  Medication: {
-    key: "medication",
-    title: "What did you take?",
-    sub: "Ciatta will treat this as context, not a deviation.",
-    layout: "list",
-    options: [
-      { label: "Pain relief", note: "Ibuprofen, paracetamol" },
-      { label: "Hormonal", note: "Pill, patch, IUD" },
-      { label: "Supplement", note: "Iron, magnesium, vitamin D" },
-      { label: "Something else", note: "Tell Ciatta later" },
-    ],
-  },
-  Nutrition: {
-    key: "nutrition",
-    title: "How have you eaten today?",
-    sub: "Rough is fine — patterns matter more than precision.",
-    layout: "list",
-    options: [
-      { label: "Balanced", note: "Regular meals" },
-      { label: "Light", note: "Skipped a meal" },
-      { label: "Heavy", note: "Larger than usual" },
-      { label: "Craving-led", note: "Sugar or salt" },
-    ],
-  },
-  Activity: {
-    key: "activity",
-    title: "What did your body do?",
-    sub: "Ciatta reads effort against recovery, not the calendar.",
-    layout: "list",
-    options: [
-      { label: "Rest", note: "Nothing structured" },
-      { label: "Easy movement", note: "Walk, mobility, yoga" },
-      { label: "Moderate", note: "Steady session" },
-      { label: "Hard", note: "Intervals or heavy lifting" },
-    ],
-  },
-  "Something Else": {
-    key: "other",
-    title: "What should Ciatta know?",
-    sub: "Anything your sensors can't see.",
-    layout: "list",
-    options: [
-      { label: "Travel", note: "Time zone or altitude" },
-      { label: "Illness", note: "Cold, fever, infection" },
-      { label: "Stress", note: "Work or life load" },
-      { label: "Alcohol", note: "Last night" },
-    ],
-  },
-};
-
-function ProductGlyph({ icon }: { icon: Option["icon"] }) {
+function ProductGlyph({ icon }: { icon: QuickAddOption["icon"] }) {
   const s = { stroke: "var(--muted-foreground)", strokeWidth: 1.3, fill: "none" } as const;
   switch (icon) {
     case "tampon":
@@ -242,49 +94,54 @@ function CheckIcon({ className }: { className?: string }) {
   );
 }
 
-const LOGGED_LABEL: Record<string, string> = {
-  category: "Category logged",
-  product: "Product logged",
-  absorbency: "Absorbency logged",
-  intensity: "Flow intensity logged",
-  timing: "Timeline updated",
-  symptom: "Symptom logged",
-  sleep: "Sleep logged",
-  medication: "Medication logged",
-  nutrition: "Nutrition logged",
-  activity: "Activity logged",
-  other: "Context logged",
-};
-
 function QuickAddPage() {
   const navigate = useNavigate();
-  const { addFact } = useLearnedFacts();
+  const { addEvent } = useQuickAddEvents();
   const [index, setIndex] = useState(0);
-  const [answers, setAnswers] = useState<string[]>([]);
+  const [answers, setAnswers] = useState<Answers>({});
+  /** ISO timestamp of the event, derived from the timing step. */
+  const [eventTime, setEventTime] = useState<string | null>(null);
+  const [saved, setSaved] = useState<QuickAddEvent | null>(null);
+  const timeInput = useRef<HTMLInputElement>(null);
 
-  const steps = useMemo<Step[]>(() => {
-    const category = answers[0];
-    if (!category) return [CATEGORY_STEP];
-    if (category === "Period Product") {
-      const product = answers[1];
-      const needsAbsorbency = product === "Tampon" || product === "Pad";
-      return [
-        CATEGORY_STEP,
-        PRODUCT_FLOW[0],
-        ...(product && !needsAbsorbency ? [] : [PRODUCT_FLOW[1]]),
-        PRODUCT_FLOW[2],
-        PRODUCT_FLOW[3],
-      ];
+  const steps = useMemo(() => buildSteps(answers), [answers]);
+  const total = steps.length;
+  const done = index >= total;
+  const step = steps[Math.min(index, total - 1)];
+  const answeredSteps = steps.slice(0, Math.min(index, total));
+
+  /** Records an answer and drops every answer that belonged to a later step. */
+  const setAnswer = (stepIndex: number, label: string) => {
+    const keep = steps.slice(0, stepIndex).map((s) => s.key);
+    setAnswers((prev) => {
+      const next: Answers = {};
+      for (const k of keep) if (prev[k] !== undefined) next[k] = prev[k];
+      next[steps[stepIndex].key] = label;
+      return next;
+    });
+  };
+
+  const choose = (option: QuickAddOption) => {
+    if (option.custom) {
+      timeInput.current?.showPicker?.();
+      timeInput.current?.focus();
+      timeInput.current?.click();
+      return;
     }
-    return [CATEGORY_STEP, GENERIC_FLOW[category] ?? PRODUCT_FLOW[2]];
-  }, [answers]);
+    if (step.key === "timing") {
+      const when = new Date(Date.now() - (option.minutesAgo ?? 0) * 60_000);
+      setEventTime(when.toISOString());
+    }
+    setAnswer(index, option.label);
+    setIndex(index + 1);
+  };
 
-  const total = answers[0] ? steps.length + 1 : 6;
-  const done = index >= steps.length;
-  const step = steps[Math.min(index, steps.length - 1)];
-
-  const choose = (label: string) => {
-    setAnswers((prev) => [...prev.slice(0, index), label]);
+  const chooseCustomTime = (value: string) => {
+    if (!value) return;
+    const when = new Date(value);
+    if (Number.isNaN(when.getTime())) return;
+    setEventTime(when.toISOString());
+    setAnswer(index, formatDateTime(when.toISOString()));
     setIndex(index + 1);
   };
 
@@ -293,15 +150,39 @@ function QuickAddPage() {
       navigate({ to: "/teach" });
       return;
     }
+    // Previous selections stay in state, so the step shows what was chosen.
     setIndex(index - 1);
   };
 
-  const finish = () => {
-    addFact(`Quick Add: ${answers.join(" · ")}`);
-    navigate({ to: "/" });
+  /** Builds the structured event and writes it to the shared store. */
+  const save = () => {
+    if (saved) return saved;
+    const category = answers.category ?? "Something Else";
+    const valueKey = valueKeyFor(category);
+    const metadata: Record<string, string> = {};
+    for (const s of steps) {
+      if (s.key === "category" || s.key === valueKey) continue;
+      const a = answers[s.key];
+      if (a) metadata[META_LABEL[s.key] ?? s.key] = a;
+    }
+    const event = addEvent({
+      category,
+      value: answers[valueKey] ?? category,
+      timestamp: eventTime ?? new Date().toISOString(),
+      metadata: Object.keys(metadata).length ? metadata : undefined,
+    });
+    setSaved(event);
+    return event;
   };
 
+  // Persist as soon as the confirmation screen is reached so Today refreshes now.
+  useEffect(() => {
+    if (done) save();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [done]);
+
   if (done) {
+    const confirmed = saved;
     return (
       <div className="flex min-h-full flex-col px-6 pb-4 pt-10">
         <img
@@ -320,33 +201,40 @@ function QuickAddPage() {
         </p>
 
         <ul className="mt-7 space-y-0 overflow-hidden rounded-2xl border border-border bg-surface">
-          {answers.map((a, i) => (
-            <li key={i} className="flex items-center gap-3 border-t border-border px-4 py-3.5 first:border-t-0">
-              <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-secondary text-accent">
-                <CheckIcon />
-              </span>
-              <span className="min-w-0">
-                <span className="block text-[14px] text-foreground">
-                  {LOGGED_LABEL[steps[i]?.key ?? ""] ?? "Detail logged"}
+          {steps.map((s) =>
+            answers[s.key] ? (
+              <li
+                key={s.key}
+                className="flex items-center gap-3 border-t border-border px-4 py-3.5 first:border-t-0"
+              >
+                <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-secondary text-accent">
+                  <CheckIcon />
                 </span>
-                <span className="block text-[12px] text-muted-foreground">{a}</span>
-              </span>
-            </li>
-          ))}
+                <span className="min-w-0">
+                  <span className="block text-[14px] text-foreground">
+                    {LOGGED_LABEL[s.key] ?? "Detail logged"}
+                  </span>
+                  <span className="block text-[12px] text-muted-foreground">{answers[s.key]}</span>
+                </span>
+              </li>
+            ) : null,
+          )}
           <li className="flex items-center gap-3 border-t border-border px-4 py-3.5">
             <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-secondary text-accent">
               <CheckIcon />
             </span>
             <span>
               <span className="block text-[14px] text-foreground">Predictions refined</span>
-              <span className="block text-[12px] text-muted-foreground">Leak risk updated</span>
+              <span className="block text-[12px] text-muted-foreground">
+                {confirmed ? formatDateTime(confirmed.timestamp) : "Leak risk updated"}
+              </span>
             </span>
           </li>
         </ul>
 
         <button
           type="button"
-          onClick={finish}
+          onClick={() => navigate({ to: "/" })}
           className="mt-7 w-full rounded-2xl py-4 font-serif text-[20px] text-primary-foreground shadow-[0_16px_30px_-18px_rgba(217,106,88,0.9)]"
           style={{ background: "linear-gradient(100deg, var(--clay), oklch(0.72 0.17 45))" }}
         >
@@ -377,14 +265,16 @@ function QuickAddPage() {
             />
           </svg>
         </button>
-        {answers.length > 0 && index > 0 && (
+        {index > 0 && (
           <span className="mx-auto flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1.5 text-[12px] text-accent">
-            {answers.slice(0, index).map((a, i) => (
-              <span key={i} className="flex items-center gap-1.5">
-                {i > 0 && <span className="text-fog">•</span>}
-                {a}
-              </span>
-            ))}
+            {answeredSteps.map((s, i) =>
+              answers[s.key] ? (
+                <span key={s.key} className="flex items-center gap-1.5">
+                  {i > 0 && <span className="text-fog">•</span>}
+                  {answers[s.key]}
+                </span>
+              ) : null,
+            )}
             <CheckIcon className="text-accent" />
           </span>
         )}
@@ -399,12 +289,12 @@ function QuickAddPage() {
       {step.layout === "grid" ? (
         <div className="mt-6 grid grid-cols-2 gap-3">
           {step.options.map((o) => {
-            const selected = answers[index] === o.label;
+            const selected = answers[step.key] === o.label;
             return (
               <button
                 key={o.label}
                 type="button"
-                onClick={() => choose(o.label)}
+                onClick={() => choose(o)}
                 className={`flex flex-col items-center gap-2 rounded-2xl border px-3 py-5 transition-colors ${
                   selected
                     ? "border-accent bg-secondary"
@@ -422,12 +312,12 @@ function QuickAddPage() {
       ) : (
         <ul className="mt-6 space-y-2.5">
           {step.options.map((o) => {
-            const selected = answers[index] === o.label;
+            const selected = answers[step.key] === o.label;
             return (
-              <li key={o.label}>
+              <li key={o.label} className="relative">
                 <button
                   type="button"
-                  onClick={() => choose(o.label)}
+                  onClick={() => choose(o)}
                   className={`flex w-full items-center gap-3 rounded-2xl border px-4 py-3.5 text-left transition-colors ${
                     selected
                       ? "border-accent bg-secondary"
@@ -450,11 +340,25 @@ function QuickAddPage() {
                     )}
                   </span>
                 </button>
+                {/* Invisible native date/time picker layered over the "Custom time" row. */}
+                {o.custom && (
+                  <input
+                    ref={timeInput}
+                    type="datetime-local"
+                    aria-label="Custom time"
+                    max={toLocalInputValue(new Date())}
+                    defaultValue={toLocalInputValue(new Date())}
+                    onChange={(e) => chooseCustomTime(e.target.value)}
+                    className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                  />
+                )}
               </li>
             );
           })}
         </ul>
       )}
+
+
 
       <div className="mt-auto flex items-center gap-3 pt-8">
         <span className="text-[12px] text-muted-foreground">

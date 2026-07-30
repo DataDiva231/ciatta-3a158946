@@ -17,8 +17,28 @@ export type LearnedFact = {
   savedAt: string;
 };
 
+/** A structured Quick Add log entry — the unit Today and Journey read from. */
+export type QuickAddEvent = {
+  id: string;
+  /** Event type discriminator, so other loggers can share the same stream. */
+  type: "quick_add";
+  /** Top-level thing being taught, e.g. "Period Product". */
+  category: string;
+  /** Primary value for the category, e.g. "Tampon". */
+  value: string;
+  /** When the event actually happened (may be backdated by the timing step). */
+  timestamp: string;
+  /** When the entry was written. */
+  createdAt: string;
+  /** Optional extra fields, e.g. { Absorbency: "Super", Flow: "Heavy" }. */
+  metadata?: Record<string, string>;
+};
+
 const CHECKIN_KEY = "ciatta.checkins.v1";
 const FACTS_KEY = "ciatta.facts.v1";
+const EVENTS_KEY = "ciatta.events.v1";
+const SYNC_EVENT = "ciatta:store-change";
+
 
 export const SEED_FACTS: LearnedFact[] = [
   { id: "seed-1", text: "Migraines usually arrive two days before your period.", savedAt: "" },
@@ -43,6 +63,8 @@ function write(key: string, value: unknown) {
   } catch {
     /* storage unavailable — the demo still works in memory */
   }
+  // Let every mounted reader of this key refresh immediately.
+  window.dispatchEvent(new CustomEvent(SYNC_EVENT, { detail: key }));
 }
 
 /** Hydration-safe: starts at the fallback on both server and first client render. */
@@ -53,6 +75,21 @@ function usePersistentState<T>(key: string, fallback: T) {
   useEffect(() => {
     setValue(read<T>(key, fallback));
     setHydrated(true);
+
+    const sync = (e: Event) => {
+      const changed = (e as CustomEvent<string>).detail;
+      if (changed && changed !== key) return;
+      setValue(read<T>(key, fallback));
+    };
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === key) setValue(read<T>(key, fallback));
+    };
+    window.addEventListener(SYNC_EVENT, sync);
+    window.addEventListener("storage", onStorage);
+    return () => {
+      window.removeEventListener(SYNC_EVENT, sync);
+      window.removeEventListener("storage", onStorage);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key]);
 
@@ -66,6 +103,7 @@ function usePersistentState<T>(key: string, fallback: T) {
 
   return { value, update, hydrated };
 }
+
 
 export function useCheckIns() {
   const { value, update, hydrated } = usePersistentState<CheckIn[]>(CHECKIN_KEY, []);
@@ -105,6 +143,32 @@ export function useLearnedFacts() {
   return { facts: value, addFact, removeFact, hydrated };
 }
 
+export function useQuickAddEvents() {
+  const { value, update, hydrated } = usePersistentState<QuickAddEvent[]>(EVENTS_KEY, []);
+
+  const addEvent = useCallback(
+    (entry: Omit<QuickAddEvent, "id" | "type" | "createdAt">) => {
+      const event: QuickAddEvent = {
+        id: `qa-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+        type: "quick_add",
+        createdAt: new Date().toISOString(),
+        ...entry,
+      };
+      update([event, ...value]);
+      return event;
+    },
+    [value, update],
+  );
+
+  const removeEvent = useCallback(
+    (id: string) => update(value.filter((e) => e.id !== id)),
+    [value, update],
+  );
+
+  return { events: value, latest: value[0] ?? null, addEvent, removeEvent, hydrated };
+}
+
 export function todayKey() {
+
   return "2026-07-29";
 }

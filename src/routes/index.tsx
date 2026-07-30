@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import figureAsset from "@/assets/ciatta-figure-cut.png.asset.json";
 import figureWebp from "@/assets/ciatta-figure-cut.webp.asset.json";
 import { formatLongDate, today } from "@/lib/ciatta-data";
-import { useCheckIns } from "@/lib/ciatta-store";
+import { useCheckIns, useQuickAddEvents } from "@/lib/ciatta-store";
 import { buildNarrative, type NarrativeLine } from "@/lib/narrative";
 
 
@@ -38,7 +38,8 @@ export const Route = createFileRoute("/")({
 
 function TodayPage() {
   const { latest } = useCheckIns();
-  const narrative = buildNarrative(latest);
+  const { events } = useQuickAddEvents();
+  const narrative = buildNarrative(latest, events);
   const primaryLabels = ["Sleep quality", "Resting heart rate"];
   const primaryLines = narrative.lines.filter((l) => primaryLabels.includes(l.label));
 
