@@ -27,7 +27,7 @@ export type QuickAddStep = {
 export const CATEGORY_STEP: QuickAddStep = {
   key: "category",
   title: "Quick Add",
-  sub: "What changed since we last checked in? Teach Ciatta something new in under 30 seconds.",
+  sub: "One tap teaches Ciatta something new.",
   layout: "list",
   options: [
     { label: "Period Product" },
@@ -40,6 +40,7 @@ export const CATEGORY_STEP: QuickAddStep = {
     { label: "Something Else" },
   ],
 };
+
 
 const PRODUCT_STEP: QuickAddStep = {
   key: "product",
@@ -83,32 +84,14 @@ const INTENSITY_STEP: QuickAddStep = {
   ],
 };
 
-const TIMING_STEP: QuickAddStep = {
-  key: "timing",
-  title: "When did you insert it?",
-  sub: "This helps Ciatta understand your timeline.",
-  layout: "list",
-  options: [
-    { label: "Just now", note: "0 min ago", minutesAgo: 0 },
-    { label: "30 minutes ago", note: "30 min", minutesAgo: 30 },
-    { label: "1 hour ago", note: "1 hr", minutesAgo: 60 },
-    { label: "2 hours ago", note: "2 hr", minutesAgo: 120 },
-    { label: "Custom time", note: "Choose exact time", custom: true },
-  ],
-};
+/** Preset offsets for the inline time chip (timing is no longer its own step). */
+export const TIME_PRESETS: { label: string; minutesAgo: number }[] = [
+  { label: "Just now", minutesAgo: 0 },
+  { label: "30 min ago", minutesAgo: 30 },
+  { label: "1 hr ago", minutesAgo: 60 },
+  { label: "2 hr ago", minutesAgo: 120 },
+];
 
-const WORN_TIMING_STEP: QuickAddStep = {
-  ...TIMING_STEP,
-  key: "timing",
-  title: "When did you start wearing it?",
-};
-
-const GENERIC_TIMING_STEP: QuickAddStep = {
-  ...TIMING_STEP,
-  key: "timing",
-  title: "When did this happen?",
-  sub: "Ciatta reads timing as closely as the signal itself.",
-};
 
 const GENERIC_STEPS: Record<string, QuickAddStep> = {
   Flow: INTENSITY_STEP,
@@ -189,8 +172,6 @@ const GENERIC_STEPS: Record<string, QuickAddStep> = {
 
 /** Categories where absorbency is a meaningful question. */
 const ABSORBENT_PRODUCTS = ["Tampon", "Pad", "Period Underwear"];
-/** Products that are inserted/worn, so timing matters. */
-const TIMED_PRODUCTS = ["Tampon", "Pad", "Menstrual Cup", "Disc", "Period Underwear"];
 
 export type Answers = Record<string, string>;
 
@@ -209,15 +190,13 @@ export function buildSteps(answers: Answers): QuickAddStep[] {
     if (!product || ABSORBENT_PRODUCTS.includes(product)) steps.push(ABSORBENCY_STEP);
     if (product === "Nothing Right Now") return steps;
     steps.push(INTENSITY_STEP);
-    if (!product || TIMED_PRODUCTS.includes(product)) {
-      steps.push(product === "Tampon" || product === "Disc" ? TIMING_STEP : WORN_TIMING_STEP);
-    }
     return steps;
   }
 
   const step = GENERIC_STEPS[category] ?? INTENSITY_STEP;
-  return [CATEGORY_STEP, step, GENERIC_TIMING_STEP];
+  return [CATEGORY_STEP, step];
 }
+
 
 export function findOption(step: QuickAddStep, label: string) {
   return step.options.find((o) => o.label === label);

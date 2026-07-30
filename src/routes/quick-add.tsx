@@ -117,11 +117,11 @@ function continuationFor(steps: { key: string }[], answers: Answers, index: numb
 
 function QuickAddPage() {
   const navigate = useNavigate();
-  const { addEvent } = useQuickAddEvents();
+  const { addEvent, events } = useQuickAddEvents();
   const [index, setIndex] = useState(0);
   const [direction, setDirection] = useState<"forward" | "back">("forward");
   const [answers, setAnswers] = useState<Answers>({});
-  /** ISO timestamp of the event, derived from the timing step. */
+  /** ISO timestamp of the event. Defaults to now; the time chip can adjust it. */
   const [eventTime, setEventTime] = useState<string | null>(null);
   const [saved, setSaved] = useState<QuickAddEvent | null>(null);
   const timeInput = useRef<HTMLInputElement>(null);
@@ -132,6 +132,12 @@ function QuickAddPage() {
   const step = steps[Math.min(index, total - 1)];
   const answeredSteps = steps.slice(0, Math.min(index, total));
   const continuation = continuationFor(steps, answers, index);
+
+  /** The most recent period-product log, offered as a one-tap repeat. */
+  const lastProduct = useMemo(
+    () => events.find((e) => e.category === "Period Product" && e.metadata),
+    [events],
+  );
 
   /** Records an answer and drops every answer that belonged to a later step. */
   const setAnswer = (stepIndex: number, label: string) => {
@@ -146,19 +152,24 @@ function QuickAddPage() {
 
 
   const choose = (option: QuickAddOption) => {
-    if (option.custom) {
-      timeInput.current?.showPicker?.();
-      timeInput.current?.focus();
-      timeInput.current?.click();
-      return;
-    }
-    if (step.key === "timing") {
-      const when = new Date(Date.now() - (option.minutesAgo ?? 0) * 60_000);
-      setEventTime(when.toISOString());
-    }
     setDirection("forward");
     setAnswer(index, option.label);
     setIndex(index + 1);
+  };
+
+  /** One tap re-logs the last product, absorbency and flow, timestamped now. */
+  const repeatLast = () => {
+    if (!lastProduct) return;
+    const meta = lastProduct.metadata ?? {};
+    setDirection("forward");
+    setEventTime(new Date().toISOString());
+    setAnswers({
+      category: "Period Product",
+      product: lastProduct.value,
+      ...(meta.Absorbency ? { absorbency: meta.Absorbency } : {}),
+      ...(meta.Flow ? { intensity: meta.Flow } : {}),
+    });
+    setIndex(9);
   };
 
   const chooseCustomTime = (value: string) => {
@@ -166,9 +177,6 @@ function QuickAddPage() {
     const when = new Date(value);
     if (Number.isNaN(when.getTime())) return;
     setEventTime(when.toISOString());
-    setDirection("forward");
-    setAnswer(index, formatDateTime(when.toISOString()));
-    setIndex(index + 1);
   };
 
   const goTo = (target: number) => {
@@ -184,6 +192,7 @@ function QuickAddPage() {
     // Previous selections stay in state, so the step shows what was chosen.
     goTo(index - 1);
   };
+
 
 
   /** Builds the structured event and writes it to the shared store. */
@@ -235,8 +244,14 @@ function QuickAddPage() {
           label: CONFIRM_LABEL[s.key] ?? LOGGED_LABEL[s.key] ?? "Logged",
           value: answers[s.key],
         })),
+      {
+        key: "timing",
+        label: "Timeline updated",
+        value: eventTime ? formatDateTime(eventTime) : "Just now",
+      },
       { key: "understanding", label: "Understanding refined", value: "Leak risk updated" },
     ];
+
     return (
       <div className="flex min-h-full flex-col justify-center px-6 pb-12">
         <div className="relative mx-auto grid place-items-center">
@@ -356,7 +371,27 @@ function QuickAddPage() {
           )}
         </p>
 
+        {step.key === "category" && lastProduct && (
+          <button
+            type="button"
+            onClick={repeatLast}
+            className="mt-8 flex w-full items-center gap-3.5 rounded-[18px] bg-surface px-4 py-3.5 text-left ring-1 ring-accent/40 transition-all duration-200 active:scale-[0.99]"
+          >
+            <span className="min-w-0 flex-1">
+              <span className="block text-[15px] leading-tight text-accent">Same as last time</span>
+              <span className="mt-1 block truncate text-[12px] leading-none text-muted-foreground">
+                {[lastProduct.value, lastProduct.metadata?.Absorbency, lastProduct.metadata?.Flow]
+                  .filter(Boolean)
+                  .join(" · ")}
+              </span>
+            </span>
+            <span className="shrink-0 text-[12px] leading-none text-muted-foreground">1 tap</span>
+          </button>
+        )}
+
         {step.key === "category" && <p className="label-caps mt-8">Today's suggestions</p>}
+
+
 
         {step.layout === "grid" ? (
           <div className={`grid grid-cols-2 gap-3 ${step.key === "category" ? "mt-3" : "mt-8"}`}>
@@ -416,18 +451,6 @@ function QuickAddPage() {
                       )}
                     </span>
                   </button>
-                  {/* Invisible native date/time picker layered over the "Custom time" row. */}
-                  {o.custom && (
-                    <input
-                      ref={timeInput}
-                      type="datetime-local"
-                      aria-label="Custom time"
-                      max={toLocalInputValue(new Date())}
-                      defaultValue={toLocalInputValue(new Date())}
-                      onChange={(e) => chooseCustomTime(e.target.value)}
-                      className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-                    />
-                  )}
                 </li>
               );
             })}
@@ -435,20 +458,45 @@ function QuickAddPage() {
         )}
       </div>
 
-      <div className="mt-auto flex items-center gap-3 pt-10">
-        <span className="text-[12px] leading-none tabular-nums text-muted-foreground">
-          {index + 1} of {total}
-        </span>
-        <span className="h-1 flex-1 overflow-hidden rounded-full bg-secondary">
-          <span
-            className="block h-full rounded-full transition-[width] duration-500 ease-out"
-            style={{
-              width: `${((index + 1) / total) * 100}%`,
-              background: "linear-gradient(90deg, var(--clay), oklch(0.72 0.17 45))",
-            }}
-          />
-        </span>
+      <div className="mt-auto pt-10">
+        {index > 0 && (
+          <div className="relative mb-4 flex justify-center">
+            <span className="flex items-center gap-2 rounded-full bg-secondary px-3.5 py-2 text-[12px] leading-none text-muted-foreground">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.6" />
+                <path d="M12 7.5V12l3 2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+              </svg>
+              {eventTime ? formatDateTime(eventTime) : "Just now"}
+              <span className="text-accent">Change</span>
+            </span>
+            {/* Invisible native picker — timing is assumed, never asked. */}
+            <input
+              ref={timeInput}
+              type="datetime-local"
+              aria-label="Adjust the time of this log"
+              max={toLocalInputValue(new Date())}
+              defaultValue={toLocalInputValue(new Date())}
+              onChange={(e) => chooseCustomTime(e.target.value)}
+              className="absolute inset-0 mx-auto h-full w-[220px] cursor-pointer opacity-0"
+            />
+          </div>
+        )}
+        <div className="flex items-center gap-3">
+          <span className="text-[12px] leading-none tabular-nums text-muted-foreground">
+            {index + 1} of {total}
+          </span>
+          <span className="h-1 flex-1 overflow-hidden rounded-full bg-secondary">
+            <span
+              className="block h-full rounded-full transition-[width] duration-500 ease-out"
+              style={{
+                width: `${((index + 1) / total) * 100}%`,
+                background: "linear-gradient(90deg, var(--clay), oklch(0.72 0.17 45))",
+              }}
+            />
+          </span>
+        </div>
       </div>
+
 
     </div>
   );
