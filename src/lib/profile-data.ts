@@ -39,8 +39,9 @@ export type ProfileView = {
   observationSummary: string;
   understandings: Understanding[];
   story: string[];
-
+  areas: Area[];
   snapshot: SnapshotRow[];
+
   sources: SourceRow[];
   timeline: TimelineStep[];
   defaultPriorities: string[];
