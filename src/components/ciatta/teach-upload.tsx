@@ -1,6 +1,8 @@
 import { useRef, useState } from "react";
 import { useRouter } from "@tanstack/react-router";
 
+import { useBack } from "@/lib/use-back";
+
 import { useQuickAddEvents } from "@/lib/ciatta-store";
 
 /** Downscale a photo so Ciatta can keep a visual memory without hoarding megabytes. */
