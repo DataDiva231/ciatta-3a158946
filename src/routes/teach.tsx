@@ -69,24 +69,21 @@ function TeachPage() {
 
       <Link
         to="/quick-add"
-        className="mt-8 flex items-center justify-between gap-4 rounded-[28px] px-6 py-5 text-left"
-        style={{
-          background: "linear-gradient(100deg, var(--clay), oklch(0.72 0.17 45))",
-          boxShadow: "var(--shadow-soft)",
-        }}
+        className="mt-8 flex items-center justify-between gap-4 rounded-full bg-foreground px-6 py-4 text-left transition-opacity hover:opacity-90 active:opacity-80"
       >
         <span className="min-w-0">
-          <span className="block font-serif text-[24px] leading-none text-primary-foreground">
+          <span className="block text-[15px] leading-none font-medium text-background">
             Quick Add
           </span>
-          <span className="mt-2 block text-[12px] leading-snug text-primary-foreground/85">
+          <span className="mt-1.5 block text-[12px] leading-snug text-background/70">
             The fastest way to teach Ciatta something new.
           </span>
         </span>
-        <span aria-hidden="true" className="text-[18px] text-primary-foreground/80">
+        <span aria-hidden="true" className="text-[16px] text-background/70">
           →
         </span>
       </Link>
+
 
       <div className="mt-7 flex items-center justify-between text-[13px]">
         <span className="text-muted-foreground">Or teach another way</span>

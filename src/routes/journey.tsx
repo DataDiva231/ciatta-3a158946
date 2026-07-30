@@ -27,13 +27,18 @@ export const Route = createFileRoute("/journey")({
   component: JourneyPage,
 });
 
+/**
+ * One accent, everywhere. Semantic colors are reserved for genuine status,
+ * never for decoration — so every Journey eyebrow speaks in Living Clay.
+ */
 const TONE_TEXT: Record<OrbTone, string> = {
   clay: "var(--clay)",
-  moss: "var(--moss)",
-  "stone-blue": "var(--stone-blue)",
-  wheat: "var(--wheat)",
-  iris: "oklch(0.66 0.13 300)",
+  moss: "var(--clay)",
+  "stone-blue": "var(--clay)",
+  wheat: "var(--clay)",
+  iris: "var(--clay)",
 };
+
 
 /** Small uppercase eyebrow that opens every Journey section. */
 function Eyebrow({ children, tone }: { children: string; tone?: OrbTone }) {
