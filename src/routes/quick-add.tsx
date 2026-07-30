@@ -351,9 +351,11 @@ function QuickAddPage() {
           )}
         </p>
 
+      {step.key === "category" && <p className="label-caps mt-6">Today's suggestions</p>}
 
       {step.layout === "grid" ? (
         <div className="mt-6 grid grid-cols-2 gap-3">
+
           {step.options.map((o) => {
             const selected = answers[step.key] === o.label;
             return (
