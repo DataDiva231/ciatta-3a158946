@@ -212,68 +212,64 @@ function QuickAddPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [done]);
 
+  // "Understanding updated" is a moment, not a screen: it returns to Today on its own.
+  useEffect(() => {
+    if (!done) return;
+    try {
+      sessionStorage.setItem("ciatta:just-taught", String(Date.now()));
+    } catch {
+      /* storage unavailable — the refresh cue is optional */
+    }
+    const t = setTimeout(() => navigate({ to: "/" }), 950);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [done]);
+
   if (done) {
-    const confirmed = saved;
+    const rows = [
+      ...steps
+        .filter((s) => s.key !== "category" && answers[s.key])
+        .map((s) => ({ key: s.key, label: CONFIRM_LABEL[s.key] ?? LOGGED_LABEL[s.key] ?? "Logged" })),
+      { key: "understanding", label: "Understanding refined" },
+    ];
     return (
-      <div className="flex min-h-full flex-col px-6 pb-4 pt-10">
-        <img
-          src={orb}
-          alt=""
-          width={1024}
-          height={1024}
-          loading="lazy"
-          className="mx-auto w-[42%] max-w-[170px]"
-        />
-        <h1 className="mt-2 text-center font-serif text-[28px] leading-tight">
+      <div className="flex min-h-full flex-col items-center justify-center px-6 pb-16">
+        <div className="relative grid place-items-center">
+          <span
+            className="absolute h-[170px] w-[170px] animate-ping rounded-full opacity-40"
+            style={{ background: "radial-gradient(circle, var(--clay) 0%, transparent 65%)" }}
+            aria-hidden="true"
+          />
+          <img
+            src={orb}
+            alt=""
+            width={1024}
+            height={1024}
+            loading="eager"
+            className="animate-in zoom-in-95 relative w-[170px] duration-500"
+          />
+        </div>
+
+        <h1 className="animate-in fade-in mt-4 text-center font-serif text-[28px] leading-tight duration-300">
           Understanding updated
         </h1>
-        <p className="mt-3 text-center text-[14px] leading-relaxed text-muted-foreground">
-          Thank you! Every update makes Ciatta smarter.
-        </p>
 
-        <ul className="mt-7 space-y-0 overflow-hidden rounded-2xl border border-border bg-surface">
-          {steps.map((s) =>
-            answers[s.key] ? (
-              <li
-                key={s.key}
-                className="flex items-center gap-3 border-t border-border px-4 py-3.5 first:border-t-0"
-              >
-                <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-secondary text-accent">
-                  <CheckIcon />
-                </span>
-                <span className="min-w-0">
-                  <span className="block text-[14px] text-foreground">
-                    {LOGGED_LABEL[s.key] ?? "Detail logged"}
-                  </span>
-                  <span className="block text-[12px] text-muted-foreground">{answers[s.key]}</span>
-                </span>
-              </li>
-            ) : null,
-          )}
-          <li className="flex items-center gap-3 border-t border-border px-4 py-3.5">
-            <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-secondary text-accent">
-              <CheckIcon />
-            </span>
-            <span>
-              <span className="block text-[14px] text-foreground">Predictions refined</span>
-              <span className="block text-[12px] text-muted-foreground">
-                {confirmed ? formatDateTime(confirmed.timestamp) : "Leak risk updated"}
-              </span>
-            </span>
-          </li>
+        <ul className="mt-5 space-y-2">
+          {rows.map((r, i) => (
+            <li
+              key={r.key}
+              className="animate-in fade-in slide-in-from-bottom-2 flex items-center justify-center gap-2 text-[14px] text-foreground duration-300 fill-mode-backwards"
+              style={{ animationDelay: `${120 + i * 110}ms` }}
+            >
+              <CheckIcon className="text-accent" />
+              {r.label}
+            </li>
+          ))}
         </ul>
-
-        <button
-          type="button"
-          onClick={() => navigate({ to: "/" })}
-          className="mt-7 w-full rounded-2xl py-4 font-serif text-[20px] text-primary-foreground shadow-[0_16px_30px_-18px_rgba(217,106,88,0.9)]"
-          style={{ background: "linear-gradient(100deg, var(--clay), oklch(0.72 0.17 45))" }}
-        >
-          Done
-        </button>
       </div>
     );
   }
+
 
   return (
     <div className="flex min-h-full flex-col px-6 pb-4 pt-8">
