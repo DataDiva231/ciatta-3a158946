@@ -94,10 +94,31 @@ function CheckIcon({ className }: { className?: string }) {
   );
 }
 
+/** Turns the last answer into a sentence that carries into the next question. */
+function continuationFor(steps: { key: string }[], answers: Answers, index: number) {
+  if (index === 0) return null;
+  const prev = steps[index - 1];
+  const value = prev ? answers[prev.key] : undefined;
+  if (!value) return null;
+  switch (prev.key) {
+    case "category":
+      return `Got it — ${value.toLowerCase()}.`;
+    case "product":
+      return `${value} it is.`;
+    case "absorbency":
+      return `${value} noted.`;
+    case "intensity":
+      return `${value.toLowerCase()} flow noted.`;
+    default:
+      return `${value} noted.`;
+  }
+}
+
 function QuickAddPage() {
   const navigate = useNavigate();
   const { addEvent } = useQuickAddEvents();
   const [index, setIndex] = useState(0);
+  const [direction, setDirection] = useState<"forward" | "back">("forward");
   const [answers, setAnswers] = useState<Answers>({});
   /** ISO timestamp of the event, derived from the timing step. */
   const [eventTime, setEventTime] = useState<string | null>(null);
@@ -109,6 +130,7 @@ function QuickAddPage() {
   const done = index >= total;
   const step = steps[Math.min(index, total - 1)];
   const answeredSteps = steps.slice(0, Math.min(index, total));
+  const continuation = continuationFor(steps, answers, index);
 
   /** Records an answer and drops every answer that belonged to a later step. */
   const setAnswer = (stepIndex: number, label: string) => {
@@ -120,6 +142,7 @@ function QuickAddPage() {
       return next;
     });
   };
+
 
   const choose = (option: QuickAddOption) => {
     if (option.custom) {
