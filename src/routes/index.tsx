@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
 import figureAsset from "@/assets/ciatta-figure-cut.png.asset.json";
 import figureWebp from "@/assets/ciatta-figure-cut.webp.asset.json";
 import { formatLongDate, today } from "@/lib/ciatta-data";
 import { useCheckIns, useQuickAddEvents } from "@/lib/ciatta-store";
 import { buildNarrative, type NarrativeLine } from "@/lib/narrative";
+import { ONBOARDING_KEY } from "@/lib/onboarding-store";
 
 
 export const Route = createFileRoute("/")({
@@ -38,6 +39,18 @@ export const Route = createFileRoute("/")({
 });
 
 function TodayPage() {
+  const navigate = useNavigate();
+  // First run: send new users into their first Teach Session.
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(ONBOARDING_KEY);
+      const done = raw ? Boolean(JSON.parse(raw)?.completed) : false;
+      if (!done) navigate({ to: "/onboarding" });
+    } catch {
+      /* storage unavailable */
+    }
+  }, [navigate]);
+
   const { latest } = useCheckIns();
   const { events } = useQuickAddEvents();
   const narrative = buildNarrative(latest, events);
