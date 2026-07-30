@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
 
 import figureAsset from "@/assets/ciatta-figure-cut.png.asset.json";
 import figureWebp from "@/assets/ciatta-figure-cut.webp.asset.json";
@@ -40,6 +40,7 @@ export const Route = createFileRoute("/")({
 
 function TodayPage() {
   const navigate = useNavigate();
+  const router = useRouter();
   // First run: send new users into their first Teach Session.
   useEffect(() => {
     try {
@@ -81,7 +82,8 @@ function TodayPage() {
         <button
           type="button"
           aria-label="Back"
-          className="grid h-10 w-10 place-items-center rounded-full bg-secondary text-foreground [@media(max-height:780px)]:h-9 [@media(max-height:780px)]:w-9"
+          onClick={() => router.history.back()}
+          className="grid h-10 w-10 place-items-center rounded-full bg-secondary text-foreground transition-colors hover:bg-secondary/70 active:bg-secondary/70 [@media(max-height:780px)]:h-9 [@media(max-height:780px)]:w-9"
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path
