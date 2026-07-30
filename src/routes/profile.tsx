@@ -574,10 +574,12 @@ function ProfilePage() {
 
       {/* Preferences */}
       <section className="mt-9 px-6">
-        <SectionTitle>Preferences</SectionTitle>
+        <SectionTitle note="Tap to reorder">Preferences</SectionTitle>
         <p className="mt-3 px-1 text-[14px] leading-relaxed text-muted-foreground">
-          What Ciatta prioritizes when it forms new understanding.
+          Ciatta looks everywhere, but it looks hardest at what's near the top. Move a topic up and
+          future insights will lean toward it.
         </p>
+
         <Group>
           {priorities.map((p, i) => (
             <div key={p} className="flex items-center gap-3 px-4 py-3.5 text-[15px]">
