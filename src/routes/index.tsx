@@ -81,7 +81,8 @@ function TodayPage() {
         <button
           type="button"
           aria-label="Back"
-          className="grid h-10 w-10 place-items-center rounded-full bg-secondary text-foreground [@media(max-height:780px)]:h-9 [@media(max-height:780px)]:w-9"
+          onClick={() => router.history.back()}
+          className="grid h-10 w-10 place-items-center rounded-full bg-secondary text-foreground transition-colors hover:bg-secondary/70 active:bg-secondary/70 [@media(max-height:780px)]:h-9 [@media(max-height:780px)]:w-9"
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path
