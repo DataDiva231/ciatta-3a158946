@@ -64,7 +64,6 @@ const tabs = [
   { to: "/", label: "Today", Icon: SunriseIcon },
   { to: "/teach", label: "Teach", Icon: TeachIcon },
   { to: "/journey", label: "Journey", Icon: JourneyIcon },
-  { to: "/profile", label: "Profile", Icon: ProfileIcon },
 ] as const;
 
 export function TabBar() {
