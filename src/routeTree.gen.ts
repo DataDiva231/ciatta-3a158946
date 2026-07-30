@@ -20,6 +20,7 @@ import { Route as ProfileIndexRouteImport } from './routes/profile.index'
 import { Route as ProfileEditRouteImport } from './routes/profile.edit'
 import { Route as ApiTranscribeRouteImport } from './routes/api/transcribe'
 import { Route as ProfileSourceIdRouteImport } from './routes/profile.source.$id'
+import { Route as ProfileSettingsSectionRouteImport } from './routes/profile.settings.$section'
 import { Route as ProfileMetricIdRouteImport } from './routes/profile.metric.$id'
 
 const TeachRoute = TeachRouteImport.update({
@@ -77,6 +78,11 @@ const ProfileSourceIdRoute = ProfileSourceIdRouteImport.update({
   path: '/profile/source/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProfileSettingsSectionRoute = ProfileSettingsSectionRouteImport.update({
+  id: '/profile/settings/$section',
+  path: '/profile/settings/$section',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProfileMetricIdRoute = ProfileMetricIdRouteImport.update({
   id: '/profile/metric/$id',
   path: '/profile/metric/$id',
@@ -95,6 +101,7 @@ export interface FileRoutesByFullPath {
   '/profile/edit': typeof ProfileEditRoute
   '/profile/': typeof ProfileIndexRoute
   '/profile/metric/$id': typeof ProfileMetricIdRoute
+  '/profile/settings/$section': typeof ProfileSettingsSectionRoute
   '/profile/source/$id': typeof ProfileSourceIdRoute
 }
 export interface FileRoutesByTo {
@@ -109,6 +116,7 @@ export interface FileRoutesByTo {
   '/profile/edit': typeof ProfileEditRoute
   '/profile': typeof ProfileIndexRoute
   '/profile/metric/$id': typeof ProfileMetricIdRoute
+  '/profile/settings/$section': typeof ProfileSettingsSectionRoute
   '/profile/source/$id': typeof ProfileSourceIdRoute
 }
 export interface FileRoutesById {
@@ -124,6 +132,7 @@ export interface FileRoutesById {
   '/profile/edit': typeof ProfileEditRoute
   '/profile/': typeof ProfileIndexRoute
   '/profile/metric/$id': typeof ProfileMetricIdRoute
+  '/profile/settings/$section': typeof ProfileSettingsSectionRoute
   '/profile/source/$id': typeof ProfileSourceIdRoute
 }
 export interface FileRouteTypes {
@@ -140,6 +149,7 @@ export interface FileRouteTypes {
     | '/profile/edit'
     | '/profile/'
     | '/profile/metric/$id'
+    | '/profile/settings/$section'
     | '/profile/source/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -154,6 +164,7 @@ export interface FileRouteTypes {
     | '/profile/edit'
     | '/profile'
     | '/profile/metric/$id'
+    | '/profile/settings/$section'
     | '/profile/source/$id'
   id:
     | '__root__'
@@ -168,6 +179,7 @@ export interface FileRouteTypes {
     | '/profile/edit'
     | '/profile/'
     | '/profile/metric/$id'
+    | '/profile/settings/$section'
     | '/profile/source/$id'
   fileRoutesById: FileRoutesById
 }
@@ -183,6 +195,7 @@ export interface RootRouteChildren {
   ProfileEditRoute: typeof ProfileEditRoute
   ProfileIndexRoute: typeof ProfileIndexRoute
   ProfileMetricIdRoute: typeof ProfileMetricIdRoute
+  ProfileSettingsSectionRoute: typeof ProfileSettingsSectionRoute
   ProfileSourceIdRoute: typeof ProfileSourceIdRoute
 }
 
@@ -265,6 +278,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProfileSourceIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/profile/settings/$section': {
+      id: '/profile/settings/$section'
+      path: '/profile/settings/$section'
+      fullPath: '/profile/settings/$section'
+      preLoaderRoute: typeof ProfileSettingsSectionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/profile/metric/$id': {
       id: '/profile/metric/$id'
       path: '/profile/metric/$id'
@@ -287,6 +307,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileEditRoute: ProfileEditRoute,
   ProfileIndexRoute: ProfileIndexRoute,
   ProfileMetricIdRoute: ProfileMetricIdRoute,
+  ProfileSettingsSectionRoute: ProfileSettingsSectionRoute,
   ProfileSourceIdRoute: ProfileSourceIdRoute,
 }
 export const routeTree = rootRouteImport
