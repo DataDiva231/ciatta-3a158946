@@ -54,13 +54,14 @@ export const DEFAULT_ONBOARDING: Onboarding = {
 };
 
 export function useOnboarding() {
-  const { value, update, hydrated } = usePersistentState<Onboarding>(
+  const { value, updateWith, hydrated } = usePersistentState<Onboarding>(
     ONBOARDING_KEY,
     DEFAULT_ONBOARDING,
   );
   const save = useCallback(
-    (next: Partial<Onboarding>) => update({ ...DEFAULT_ONBOARDING, ...value, ...next }),
-    [value, update],
+    (next: Partial<Onboarding>) =>
+      updateWith((prev) => ({ ...DEFAULT_ONBOARDING, ...prev, ...next })),
+    [updateWith],
   );
   return { data: { ...DEFAULT_ONBOARDING, ...value }, save, hydrated };
 }
