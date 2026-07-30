@@ -135,9 +135,22 @@ function TodayPage() {
           </p>
         )}
 
-        <div className="mt-6 space-y-3.5 [@media(max-height:780px)]:mt-5">
+        <div className="mt-6 space-y-2 [@media(max-height:780px)]:mt-5">
           {primaryLines.map((line) => (
-            <NarrativeBlock key={line.label} line={line} compact />
+            <Link
+              key={line.label}
+              to="/teach"
+              className="flex items-center gap-3 rounded-2xl bg-surface px-4 py-3 shadow-[0_10px_26px_-22px_rgba(60,45,35,0.5)] transition-transform active:scale-[0.99]"
+            >
+              <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-accent" />
+              <span className="min-w-0 flex-1">
+                <NarrativeBlock line={line} wrap />
+              </span>
+              <span aria-hidden="true" className="shrink-0 text-[16px] leading-none text-muted-foreground/50">
+                {"\u203A"}
+              </span>
+
+            </Link>
           ))}
         </div>
 
@@ -150,6 +163,7 @@ function TodayPage() {
             {narrative.guidance.support}
           </p>
         </div>
+
       </section>
 
     </div>

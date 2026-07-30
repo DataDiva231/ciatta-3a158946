@@ -1,6 +1,21 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import {
+  Activity,
+  Brain,
+  Droplet,
+  Feather,
+  Flame,
+  HeartPulse,
+  Leaf,
+  Moon,
+  Sparkles,
+  Sun,
+  Waves,
+  Wind,
+} from "lucide-react";
 
+import { Composer } from "@/components/ciatta/composer";
 import { Understanding } from "@/components/ciatta/understanding";
 import {
   MONTHS,
@@ -58,7 +73,7 @@ function Screen({
     <div
       key={stepKey}
       className={`flex h-[100svh] flex-col ${
-        dir === 1 ? "animate-in slide-in-from-right-8" : "animate-in slide-in-from-left-8"
+        dir === 1 ? "animate-in slide-in-from-right-4" : "animate-in slide-in-from-left-4"
       } fade-in duration-300 ease-out`}
     >
       {children}
@@ -66,77 +81,95 @@ function Screen({
   );
 }
 
-function TopBar({
-  onBack,
-  title,
-  ratio,
-}: {
-  onBack?: () => void;
-  title?: string;
-  ratio?: number;
-}) {
+/** Almost nothing: a back affordance and a hairline of progress. */
+function TopBar({ onBack, ratio }: { onBack?: () => void; ratio?: number }) {
   return (
-    <div className="relative flex h-12 shrink-0 items-center px-4 pt-3">
+    <div className="relative flex h-14 shrink-0 items-center px-5 pt-4">
       {onBack && (
         <button
           type="button"
           onClick={onBack}
           aria-label="Back"
-          className="-ml-1 flex h-9 w-9 items-center justify-center rounded-full text-[20px] leading-none text-muted-foreground transition-colors active:bg-secondary"
+          className="-ml-1.5 flex h-10 w-10 items-center justify-center rounded-full text-[22px] leading-none text-muted-foreground transition-colors active:bg-secondary"
         >
           {"\u2039"}
         </button>
       )}
-      <div className="pointer-events-none absolute inset-x-0 top-3 flex flex-col items-center gap-2.5">
-        {title && (
-          <span className="text-[12px] tracking-[0.08em] text-muted-foreground uppercase">
-            {title}
-          </span>
-        )}
-        {ratio !== undefined && (
-          <span className="h-[3px] w-28 overflow-hidden rounded-full bg-border">
-            <span
-              className="block h-full rounded-full bg-foreground/60 transition-[width] duration-500 ease-out"
-              style={{ width: `${Math.max(6, Math.round(ratio * 100))}%` }}
-            />
-          </span>
-        )}
-      </div>
+      {ratio !== undefined && (
+        <span className="pointer-events-none absolute inset-x-0 top-6 mx-auto block h-[2px] w-24 overflow-hidden rounded-full bg-border/70">
+          <span
+            className="block h-full rounded-full bg-accent/70 transition-[width] duration-500 ease-out"
+            style={{ width: `${Math.max(6, Math.round(ratio * 100))}%` }}
+          />
+        </span>
+      )}
     </div>
   );
 }
 
-function Body({ children }: { children: React.ReactNode }) {
-  return <div className="flex-1 overflow-y-auto px-7 pt-6 pb-4">{children}</div>;
+function Body({
+  children,
+  center = false,
+}: {
+  children: React.ReactNode;
+  center?: boolean;
+}) {
+  return (
+    <div
+      className={`flex-1 overflow-y-auto px-8 pt-2 pb-4 ${
+        center ? "flex flex-col justify-center" : ""
+      }`}
+    >
+      {children}
+    </div>
+  );
 }
 
-function Lead({ children }: { children: React.ReactNode }) {
+/** The Understanding, at onboarding scale. */
+function Orb({ size = 168, confidence = 42, active }: { size?: number; confidence?: number; active?: boolean }) {
   return (
-    <p className="animate-in fade-in mb-3 text-[13px] leading-relaxed text-muted-foreground duration-500">
-      {children}
-    </p>
+    <div className="flex justify-center">
+      <Understanding size={size} confidence={confidence} active={active} />
+    </div>
   );
 }
 
 function Question({ children }: { children: React.ReactNode }) {
   return (
-    <h1 className="font-serif text-[30px] leading-[1.18] tracking-[-0.015em] text-foreground">
+    <h1 className="animate-in fade-in mx-auto max-w-[19rem] text-center font-serif text-[29px] leading-[1.15] tracking-[-0.015em] text-balance text-foreground duration-500">
       {children}
     </h1>
   );
 }
 
-function Why({ children }: { children: React.ReactNode }) {
+function Support({ children }: { children: React.ReactNode }) {
   return (
-    <div className="mt-7 rounded-2xl bg-surface px-4 py-3.5 shadow-[0_1px_2px_rgba(60,45,35,0.05)]">
-      <p className="text-[13px] font-medium text-foreground">Why I'm asking</p>
-      <p className="mt-1 text-[13px] leading-relaxed text-muted-foreground">{children}</p>
-    </div>
+    <p className="animate-in fade-in mx-auto mt-3 max-w-[19rem] text-center text-[13.5px] leading-relaxed text-muted-foreground duration-500">
+      {children}
+    </p>
   );
 }
 
-
-
+function PrimaryButton({
+  label,
+  onClick,
+  disabled,
+}: {
+  label: string;
+  onClick: () => void;
+  disabled?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className="w-full rounded-full bg-accent px-6 py-[15px] text-[15px] font-medium text-accent-foreground shadow-[0_12px_28px_-20px_color-mix(in_oklab,var(--clay)_70%,transparent)] transition-all duration-200 active:scale-[0.99] disabled:opacity-35 disabled:shadow-none"
+    >
+      {label}
+    </button>
+  );
+}
 
 function Footer({
   label = "Continue",
@@ -144,101 +177,104 @@ function Footer({
   disabled,
   onSkip,
   skipLabel = "Skip",
-  variant = "outline",
+  note,
 }: {
   label?: string;
   onNext: () => void;
   disabled?: boolean;
   onSkip?: () => void;
   skipLabel?: string;
-  variant?: "outline" | "solid" | "clay";
+  note?: string;
 }) {
-  const base =
-    "flex w-full items-center justify-center gap-2 rounded-2xl px-6 py-4 text-[15px] transition-all active:scale-[0.99] disabled:opacity-40";
-  const styles =
-    variant === "solid"
-      ? "bg-foreground text-background"
-      : variant === "clay"
-        ? "bg-wheat/70 text-foreground"
-        : "border border-border bg-surface text-foreground shadow-[0_1px_2px_rgba(60,45,35,0.05)]";
   return (
-    <div className="shrink-0 px-7 pt-2 pb-9">
-      <div className="flex items-center gap-4">
-        {onSkip && (
-          <button
-            type="button"
-            onClick={onSkip}
-            className="shrink-0 px-1 py-3 text-[14px] text-muted-foreground"
-          >
-            {skipLabel}
-          </button>
-        )}
-        <button type="button" onClick={onNext} disabled={disabled} className={`${base} ${styles}`}>
-          {label}
-          {label === "Continue" && <span aria-hidden="true">{"\u2192"}</span>}
+    <div className="shrink-0 px-8 pt-3 pb-10">
+      <PrimaryButton label={label} onClick={onNext} disabled={disabled} />
+      {onSkip && (
+        <button
+          type="button"
+          onClick={onSkip}
+          className="mx-auto mt-3.5 block px-3 py-1 text-[13.5px] text-muted-foreground"
+        >
+          {skipLabel}
         </button>
-      </div>
+      )}
+      {note && (
+        <p className="mt-4 text-center text-[12px] text-muted-foreground">{note}</p>
+      )}
     </div>
   );
 }
 
-/** The Understanding, at onboarding scale. Grows as the conversation proceeds. */
-function Orb({ size = 232, confidence = 42 }: { size?: number; confidence?: number }) {
-  return <Understanding size={size} confidence={confidence} />;
-}
+/* --------------------------------------------------------------- suggestions */
 
+const GLYPHS = [
+  Moon,
+  Droplet,
+  Waves,
+  Leaf,
+  Flame,
+  Feather,
+  Sun,
+  Wind,
+  HeartPulse,
+  Brain,
+  Activity,
+  Sparkles,
+];
 
-function OptionRow({
+/** A suggestion, in Ciatta's voice: warm glyph, plain words, no chrome. */
+function Suggestion({
   choice,
+  index,
   checked,
-  onToggle,
-  shape,
   dimmed,
+  onToggle,
 }: {
   choice: Choice;
+  index: number;
   checked: boolean;
-  onToggle: () => void;
-  shape: "box" | "radio";
   dimmed?: boolean;
+  onToggle: () => void;
 }) {
+  const Glyph = GLYPHS[index % GLYPHS.length];
   return (
     <button
       type="button"
       onClick={onToggle}
       aria-pressed={checked}
-      className={`flex w-full items-center gap-3 rounded-2xl px-4 py-4 text-left transition-all active:scale-[0.99] ${
+      className={`flex h-full w-full items-center gap-2.5 px-4 py-3.5 text-left transition-all duration-200 active:scale-[0.985] ${
+        choice.hint ? "rounded-[20px]" : "rounded-full"
+      } ${
         checked
-          ? "bg-surface shadow-[0_1px_3px_rgba(60,45,35,0.08)]"
-          : "bg-surface/60 hover:bg-surface"
-      } ${dimmed ? "opacity-40" : ""}`}
+          ? "bg-accent/10 shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--clay)_35%,transparent)]"
+          : "bg-surface shadow-[0_8px_20px_-18px_rgba(60,45,35,0.5)]"
+      } ${dimmed ? "opacity-35" : ""}`}
     >
-      <span
-        className={`flex h-5 w-5 shrink-0 items-center justify-center border transition-colors ${
-          shape === "radio" ? "rounded-full" : "rounded-[6px]"
-        } ${checked ? "border-foreground bg-foreground" : "border-fog bg-background"}`}
-      >
-        {checked &&
-          (shape === "radio" ? (
-            <span className="h-2 w-2 rounded-full bg-background" />
-          ) : (
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-              <path
-                d="M2.5 6.3 4.8 8.6 9.5 3.9"
-                stroke="var(--background)"
-                strokeWidth="1.7"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          ))}
-      </span>
+
+      <Glyph
+        size={16}
+        strokeWidth={1.6}
+        aria-hidden="true"
+        className={checked ? "shrink-0 text-accent" : "shrink-0 text-accent/70"}
+      />
       <span className="min-w-0">
-        <span className="block text-[15px] text-foreground">{choice.value}</span>
+        <span className="block text-[14.5px] leading-snug text-foreground">{choice.value}</span>
         {choice.hint && (
-          <span className="mt-0.5 block text-[12.5px] text-muted-foreground">{choice.hint}</span>
+          <span className="mt-0.5 block text-[12px] leading-snug text-muted-foreground">
+            {choice.hint}
+          </span>
         )}
       </span>
     </button>
+  );
+}
+
+/** Quiet iOS-style field used for the few structured answers. */
+function Field({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="rounded-2xl bg-surface px-4 py-3 shadow-[0_8px_20px_-18px_rgba(60,45,35,0.5)]">
+      {children}
+    </div>
   );
 }
 
@@ -331,34 +367,42 @@ function OnboardingPage() {
     navigate({ to: "/" });
   };
 
-
-  const bar = (
-    <TopBar
-      onBack={history.length > 1 ? back : undefined}
-      title="Teach Session 1"
-      ratio={total ? (index + 1) / total : 0}
-    />
-  );
+  const ratio = total ? (index + 1) / total : 0;
+  const bar = <TopBar onBack={history.length > 1 ? back : undefined} ratio={ratio} />;
+  const confidence = Math.round(30 + ratio * 55);
 
   const content = () => {
     switch (node.kind) {
       case "intro":
-        return <Intro id={node.id} onBack={history.length > 1 ? back : undefined} onNext={() => advance()} />;
+        return (
+          <Intro
+            id={node.id}
+            onBack={history.length > 1 ? back : undefined}
+            onNext={() => advance()}
+          />
+        );
 
       case "text":
         return (
           <>
             {bar}
-            <Body>
-              <Question>{node.ask?.(data)}</Question>
-              <input
-                autoFocus
-                value={data.name}
-                onChange={(e) => save({ name: e.target.value })}
-                placeholder="Your name"
-                className="mt-8 w-full rounded-2xl border border-border bg-surface px-4 py-4 text-[16px] outline-none focus:border-fog"
-              />
-              {node.why?.(data) && <Why>{node.why(data)}</Why>}
+            <Body center>
+              <Orb size={150} confidence={confidence} />
+              <div className="mt-8">
+                <Question>{node.ask?.(data)}</Question>
+                {node.why?.(data) && <Support>{node.why(data)}</Support>}
+              </div>
+              <div className="mx-auto mt-7 w-full max-w-[19rem]">
+                <Field>
+                  <input
+                    autoFocus
+                    value={data.name}
+                    onChange={(e) => save({ name: e.target.value })}
+                    placeholder="Your name"
+                    className="w-full bg-transparent text-center text-[16px] outline-none placeholder:text-fog"
+                  />
+                </Field>
+              </div>
             </Body>
             <Footer onNext={() => advance()} disabled={!data.name.trim()} />
           </>
@@ -368,10 +412,13 @@ function OnboardingPage() {
         return (
           <>
             {bar}
-            <Body>
-              {node.lead?.(data) && <Lead>{node.lead(data)}</Lead>}
-              <Question>{node.ask?.(data)}</Question>
-              <div className="mt-8 grid grid-cols-3 gap-3">
+            <Body center>
+              <Orb size={132} confidence={confidence} />
+              <div className="mt-7">
+                <Question>{node.ask?.(data)}</Question>
+                {node.why?.(data) && <Support>{node.why(data)}</Support>}
+              </div>
+              <div className="mx-auto mt-7 grid w-full max-w-[19rem] grid-cols-3 gap-2.5">
                 {(
                   [
                     ["birthMonth", "Month", MONTHS],
@@ -379,21 +426,24 @@ function OnboardingPage() {
                     ["birthYear", "Year", Array.from({ length: 60 }, (_, i) => String(2010 - i))],
                   ] as const
                 ).map(([key, label, opts]) => (
-                  <label key={key} className="rounded-2xl border border-border bg-surface px-3 py-2.5">
-                    <span className="block text-[11px] text-muted-foreground">{label}</span>
-                    <select
-                      value={data[key]}
-                      onChange={(e) => save({ [key]: e.target.value } as Partial<Onboarding>)}
-                      className="w-full bg-transparent text-[15px] outline-none"
-                    >
-                      {opts.map((o) => (
-                        <option key={o}>{o}</option>
-                      ))}
-                    </select>
-                  </label>
+                  <Field key={key}>
+                    <label>
+                      <span className="block text-[10.5px] tracking-[0.08em] text-muted-foreground uppercase">
+                        {label}
+                      </span>
+                      <select
+                        value={data[key]}
+                        onChange={(e) => save({ [key]: e.target.value } as Partial<Onboarding>)}
+                        className="mt-0.5 w-full bg-transparent text-[15px] outline-none"
+                      >
+                        {opts.map((o) => (
+                          <option key={o}>{o}</option>
+                        ))}
+                      </select>
+                    </label>
+                  </Field>
                 ))}
               </div>
-              {node.why?.(data) && <Why>{node.why(data)}</Why>}
             </Body>
             <Footer onNext={() => advance()} />
           </>
@@ -403,43 +453,51 @@ function OnboardingPage() {
         return (
           <>
             {bar}
-            <Body>
-              {node.lead?.(data) && <Lead>{node.lead(data)}</Lead>}
-              <Question>{node.ask?.(data)}</Question>
-              <div className="mt-8 flex gap-3">
-                {(
-                  [
-                    ["heightFt", "ft", 8, 1],
-                    ["heightIn", "in", 12, 0],
-                  ] as const
-                ).map(([key, unit, max, start]) => (
-                  <label
-                    key={key}
-                    className="flex flex-1 items-baseline gap-2 rounded-2xl border border-border bg-surface px-4 py-3.5"
-                  >
-                    <select
-                      value={data[key]}
-                      onChange={(e) => save({ [key]: e.target.value } as Partial<Onboarding>)}
-                      className="flex-1 bg-transparent text-[17px] outline-none"
-                    >
-                      {Array.from({ length: max }, (_, i) => String(i + start)).map((v) => (
-                        <option key={v}>{v}</option>
-                      ))}
-                    </select>
-                    <span className="text-[13px] text-muted-foreground">{unit}</span>
-                  </label>
-                ))}
+            <Body center>
+              <Orb size={132} confidence={confidence} />
+              <div className="mt-7">
+                <Question>{node.ask?.(data)}</Question>
+                {node.lead?.(data) && <Support>{node.lead(data)}</Support>}
               </div>
-              <label className="mt-3 flex items-baseline gap-2 rounded-2xl border border-border bg-surface px-4 py-3.5">
-                <input
-                  inputMode="numeric"
-                  value={data.weight}
-                  onChange={(e) => save({ weight: e.target.value.replace(/\D/g, "") })}
-                  placeholder="Weight"
-                  className="w-full bg-transparent text-[17px] outline-none placeholder:text-fog"
-                />
-                <span className="text-[13px] text-muted-foreground">lb</span>
-              </label>
+              <div className="mx-auto mt-7 w-full max-w-[19rem] space-y-2.5">
+                <div className="flex gap-2.5">
+                  {(
+                    [
+                      ["heightFt", "ft", 8, 1],
+                      ["heightIn", "in", 12, 0],
+                    ] as const
+                  ).map(([key, unit, max, start]) => (
+                    <div key={key} className="flex-1">
+                      <Field>
+                        <label className="flex items-baseline gap-2">
+                          <select
+                            value={data[key]}
+                            onChange={(e) => save({ [key]: e.target.value } as Partial<Onboarding>)}
+                            className="flex-1 bg-transparent text-[17px] outline-none"
+                          >
+                            {Array.from({ length: max }, (_, i) => String(i + start)).map((v) => (
+                              <option key={v}>{v}</option>
+                            ))}
+                          </select>
+                          <span className="text-[13px] text-muted-foreground">{unit}</span>
+                        </label>
+                      </Field>
+                    </div>
+                  ))}
+                </div>
+                <Field>
+                  <label className="flex items-baseline gap-2">
+                    <input
+                      inputMode="numeric"
+                      value={data.weight}
+                      onChange={(e) => save({ weight: e.target.value.replace(/\D/g, "") })}
+                      placeholder="Weight"
+                      className="w-full bg-transparent text-[17px] outline-none placeholder:text-fog"
+                    />
+                    <span className="text-[13px] text-muted-foreground">lb</span>
+                  </label>
+                </Field>
+              </div>
             </Body>
             <Footer onNext={() => advance()} onSkip={() => advance()} skipLabel="Rather not" />
           </>
@@ -447,50 +505,59 @@ function OnboardingPage() {
 
       case "single":
       case "multi":
-        return <QuestionScreen key={node.id} node={node} data={data} bar={bar} onAnswer={answer} onNext={advance} />;
+        return (
+          <QuestionScreen
+            key={node.id}
+            node={node}
+            data={data}
+            bar={bar}
+            confidence={confidence}
+            onAnswer={answer}
+            onNext={advance}
+          />
+        );
 
       case "connect":
         return (
           <>
             {bar}
-            <Body>
-              <Question>
-                Can I learn from
-                <br />
-                Apple Health?
-              </Question>
-              <p className="mt-4 text-[14px] leading-relaxed text-muted-foreground">
-                If you connect it, I'll pick up sleep, heart rate and movement on my own — and I
-                won't need to ask you about them.
-              </p>
-              <div className="mt-7 flex flex-wrap gap-2">
+            <Body center>
+              <Orb size={150} confidence={confidence} />
+              <div className="mt-8">
+                <Question>Can I learn from Apple Health?</Question>
+                <Support>
+                  If you connect it, I&apos;ll pick up sleep, heart rate and movement on my own — and
+                  I won&apos;t need to ask you about them.
+                </Support>
+              </div>
+              <div className="mx-auto mt-6 flex max-w-[19rem] flex-wrap justify-center gap-2">
                 {["Sleep", "Heart rate", "Activity", "Workouts", "Recovery"].map((o) => (
-                  <span key={o} className="rounded-full bg-wheat/50 px-3.5 py-2 text-[13px]">
+                  <span
+                    key={o}
+                    className="rounded-full bg-surface px-3.5 py-2 text-[12.5px] text-muted-foreground shadow-[0_8px_20px_-18px_rgba(60,45,35,0.5)]"
+                  >
                     {o}
                   </span>
                 ))}
               </div>
             </Body>
-            <div className="shrink-0 space-y-3 px-7 pt-2 pb-9">
-              <button
-                type="button"
+            <div className="shrink-0 px-8 pt-3 pb-10">
+              <PrimaryButton
+                label="Connect Apple Health"
                 onClick={() => {
                   save({ appleHealthConnected: true });
                   advance({ ...data, appleHealthConnected: true });
                 }}
-                className="w-full rounded-2xl bg-foreground px-6 py-4 text-[15px] text-background transition-transform active:scale-[0.99]"
-              >
-                Connect Apple Health
-              </button>
+              />
               <button
                 type="button"
                 onClick={() => {
                   save({ appleHealthConnected: false });
                   advance({ ...data, appleHealthConnected: false });
                 }}
-                className="w-full rounded-2xl border border-border bg-surface px-6 py-4 text-[15px] text-foreground"
+                className="mx-auto mt-3.5 block px-3 py-1 text-[13.5px] text-muted-foreground"
               >
-                I'll tell you myself
+                I&apos;ll tell you myself
               </button>
             </div>
           </>
@@ -500,37 +567,35 @@ function OnboardingPage() {
         return (
           <>
             {bar}
-            <Body>
-              <Question>
-                Should I tell you when
-                <br />
-                something changes?
-              </Question>
-              <div className="mt-8 space-y-3">
+            <Body center>
+              <Orb size={150} confidence={confidence} />
+              <div className="mt-8">
+                <Question>Should I tell you when something changes?</Question>
+                <Support>
+                  One quiet note a day, only when something meaningful shifts.
+                </Support>
+              </div>
+              <div className="mx-auto mt-7 w-full max-w-[19rem] space-y-2.5">
                 {(
                   [
                     ["Yes, let me know", "allow"],
                     ["Not for now", "later"],
                   ] as const
-                ).map(([label, value]) => (
-                  <button
+                ).map(([label, value], i) => (
+                  <Suggestion
                     key={value}
-                    type="button"
-                    onClick={() => {
+                    index={i === 0 ? 11 : 5}
+                    choice={{ value: label }}
+                    checked={data.notifications === value}
+                    onToggle={() => {
                       save({ notifications: value });
                       advance({ ...data, notifications: value });
                     }}
-                    className="w-full rounded-2xl border border-border bg-surface px-6 py-4 text-[15px] shadow-[0_1px_2px_rgba(60,45,35,0.05)] active:scale-[0.99]"
-                  >
-                    {label}
-                  </button>
+                  />
                 ))}
               </div>
-              <p className="mt-6 text-[13px] leading-relaxed text-muted-foreground">
-                One quiet note a day, only when something meaningful shifts.
-              </p>
             </Body>
-            <div className="h-9 shrink-0" />
+            <div className="h-10 shrink-0" />
           </>
         );
 
@@ -545,7 +610,7 @@ function OnboardingPage() {
   return (
     <div className="min-h-[100svh] bg-background">
       {beat ? (
-        <Beat line={beat} />
+        <Beat line={beat} confidence={confidence} />
       ) : (
         <Screen dir={dir} stepKey={id}>
           {content()}
@@ -555,31 +620,41 @@ function OnboardingPage() {
   );
 }
 
-/** A short moment where Ciatta answers before asking the next thing. */
-function Beat({ line }: { line: string }) {
+/**
+ * Reflection. Ciatta answers before it asks anything else: one large breathing
+ * Understanding, one editorial sentence, nothing to press.
+ */
+function Beat({ line, confidence }: { line: string; confidence: number }) {
   return (
-    <div className="animate-in fade-in flex h-[100svh] flex-col items-center justify-center px-10 duration-300">
-      <span className="animate-breathe mb-7 h-2.5 w-2.5 rounded-full bg-clay/70" />
-      <p className="max-w-[19rem] text-center font-serif text-[21px] leading-[1.35] text-foreground/85">
+    <div className="animate-in fade-in flex h-[100svh] flex-col items-center justify-center px-10 duration-500">
+      <p className="animate-in fade-in text-[12px] tracking-[0.1em] text-muted-foreground uppercase duration-700">
+        Ciatta is understanding
+      </p>
+      <div className="mt-10">
+        <Understanding size={212} confidence={confidence} active />
+      </div>
+      <p className="animate-in fade-in mt-12 max-w-[19rem] text-center font-serif text-[22px] leading-[1.3] text-balance text-foreground/90 duration-700">
         {line}
       </p>
+      <span className="mt-14 h-[2px] w-16 rounded-full bg-border" />
     </div>
   );
 }
 
-
-/* ------------------------------------------------------- question with reply */
+/* ------------------------------------------------- the Teach question surface */
 
 function QuestionScreen({
   node,
   data,
   bar,
+  confidence,
   onAnswer,
   onNext,
 }: {
   node: FlowNode;
   data: Onboarding;
   bar: React.ReactNode;
+  confidence: number;
   onAnswer: (key: string, values: string[]) => Onboarding;
   onNext: (from?: Onboarding) => void;
 }) {
@@ -602,48 +677,51 @@ function QuestionScreen({
     if (!multi) window.setTimeout(() => onNext(next), 240);
   };
 
-
   return (
     <>
       {bar}
-      <Body>
-        {node.lead?.(data) && <Lead>{node.lead(data)}</Lead>}
-        <Question>{node.ask?.(data)}</Question>
-        <div className="mt-6 space-y-2">
-          {options.map((o) => (
-            <OptionRow
+      <div className="flex-1 overflow-y-auto px-8 pt-2 pb-4">
+        <Orb size={124} confidence={confidence} />
+        <div className="mt-6">
+          <Question>{node.ask?.(data)}</Question>
+          {(node.lead?.(data) || node.why?.(data)) && (
+            <Support>{node.lead?.(data) ?? node.why?.(data)}</Support>
+          )}
+        </div>
+
+        <div
+          className={`mx-auto mt-7 grid w-full max-w-[21rem] gap-2 ${
+            options.length > 4 ? "grid-cols-2" : "grid-cols-1"
+          }`}
+        >
+          {options.map((o, i) => (
+            <Suggestion
               key={o.value}
+              index={i}
               choice={o}
-              shape={multi ? "box" : "radio"}
               checked={selected.includes(o.value)}
               dimmed={multi && !selected.includes(o.value) && selected.length >= max}
               onToggle={() => pick(o.value)}
             />
           ))}
         </div>
-        {node.why?.(data) && <Why>{node.why(data)}</Why>}
-      </Body>
-      {multi ? (
+
+        {/* Not the primary input — only for what wasn't suggested. */}
+        <div className="mx-auto mt-5 w-full max-w-[21rem]">
+          <Composer onSubmit={(text) => pick(text)} />
+        </div>
+      </div>
+
+      {multi || node.optional ? (
         <Footer
           onNext={() => onNext(state)}
           disabled={!node.optional && selected.length === 0}
           onSkip={node.optional ? () => onNext(state) : undefined}
           skipLabel="Not sure"
-          variant={selected.length ? "clay" : "outline"}
-        />
-      ) : node.optional ? (
-        <Footer
-          label="Continue"
-          onNext={() => onNext(state)}
-          disabled={selected.length === 0}
-          onSkip={() => onNext(state)}
-          skipLabel="Not sure"
-          variant={selected.length ? "clay" : "outline"}
         />
       ) : (
-        <div className="h-9 shrink-0" />
+        <div className="h-10 shrink-0" />
       )}
-
     </>
   );
 }
@@ -663,21 +741,22 @@ function Intro({
     return (
       <>
         <TopBar />
-        <Body>
-          <div className="flex h-full flex-col items-center justify-center text-center">
-            <h1 className="font-serif text-[38px] leading-[1.15] tracking-[-0.02em]">
-              Every body
-              <br />
-              has a story.
-            </h1>
-            <p className="mt-8 text-[15px] leading-relaxed text-muted-foreground">
-              Let&apos;s begin
-              <br />
-              understanding yours.
-            </p>
-          </div>
+        <Body center>
+          <Orb size={196} confidence={26} />
+          <h1 className="animate-in fade-in mt-12 text-center font-serif text-[36px] leading-[1.12] tracking-[-0.02em] duration-700">
+            Every body
+            <br />
+            has a story.
+          </h1>
+          <Support>
+            We&apos;ll build your understanding together, one answer at a time.
+          </Support>
         </Body>
-        <Footer label="Begin" onNext={onNext} variant="clay" />
+        <Footer
+          label="Get Started"
+          onNext={onNext}
+          note="Your data is private and secure."
+        />
       </>
     );
 
@@ -685,22 +764,27 @@ function Intro({
     return (
       <>
         <TopBar onBack={onBack} />
-        <Body>
-          <h1 className="text-center font-serif text-[30px] leading-[1.2] tracking-[-0.015em]">
+        <Body center>
+          <Orb size={150} confidence={30} />
+          <h1 className="mt-10 text-center font-serif text-[30px] leading-[1.18] tracking-[-0.015em]">
             Your privacy
             <br />
             comes first.
           </h1>
-          <div className="mt-9 space-y-4 text-[14px] leading-relaxed">
+          <div className="mx-auto mt-8 max-w-[17rem] space-y-3 text-center text-[14px] leading-relaxed text-foreground/85">
             {["Your health data belongs to you.", "Encrypted.", "Private.", "Never sold."].map(
-              (line) => (
-                <p key={line}>{line}</p>
+              (line, i) => (
+                <p
+                  key={line}
+                  className="animate-in fade-in duration-700"
+                  style={{ animationDelay: `${i * 110}ms`, animationFillMode: "backwards" }}
+                >
+                  {line}
+                </p>
               ),
             )}
           </div>
-          <p className="mt-8 text-[14px] leading-relaxed text-muted-foreground">
-            You decide what I learn, and what you keep to yourself.
-          </p>
+          <Support>You decide what I learn, and what you keep to yourself.</Support>
         </Body>
         <Footer onNext={onNext} />
       </>
@@ -708,39 +792,21 @@ function Intro({
 
   return (
     <>
-      <TopBar onBack={onBack} title="Teach Session 1" />
-      <Body>
-        <div className="flex h-full flex-col items-center justify-center text-center">
-          <div className="mt-2 flex justify-center">
-            <Orb />
-          </div>
-          <p className="mt-10 max-w-[20rem] text-[15px] leading-relaxed">
-            I&apos;ll ask a few questions. Each answer tells me what to ask next, so this stays
-            short.
-          </p>
-          <p className="mt-6 text-[13px] text-muted-foreground">
-            Usually two or three minutes.
-          </p>
-        </div>
+      <TopBar onBack={onBack} />
+      <Body center>
+        <Orb size={196} confidence={34} />
+        <h1 className="mt-11 text-center font-serif text-[28px] leading-[1.2] tracking-[-0.015em]">
+          This takes just
+          <br />
+          a few moments.
+        </h1>
+        <Support>
+          I&apos;ll ask one thing at a time. Each answer tells me what to ask next, so this stays
+          short.
+        </Support>
       </Body>
-      <Footer label="Let's Begin" onNext={onNext} variant="clay" />
+      <Footer label="Let's Begin" onNext={onNext} note="Usually two or three minutes." />
     </>
-  );
-}
-
-function Summary({ label, items }: { label: string; items: string[] }) {
-  if (!items.length) return null;
-  return (
-    <div className="mt-7">
-      <p className="text-[12px] tracking-[0.06em] text-muted-foreground uppercase">{label}</p>
-      <div className="mt-3 flex flex-wrap gap-2">
-        {items.map((i) => (
-          <span key={i} className="rounded-full bg-wheat/50 px-3.5 py-2 text-[13px] text-foreground">
-            {i}
-          </span>
-        ))}
-      </div>
-    </div>
   );
 }
 
@@ -782,43 +848,53 @@ function understandingLines(d: Onboarding): string[] {
   return lines;
 }
 
-
+/** The editorial understanding card, not a list of answers. */
 function SummaryScreen({ data, onFinish }: { data: Onboarding; onFinish: () => void }) {
   const lines = understandingLines(data);
   return (
     <>
       <TopBar />
-      <Body>
-        <h1 className="font-serif text-[30px] leading-tight tracking-[-0.015em]">
-          Here&apos;s what I understand, {first(data)}.
+      <div className="flex-1 overflow-y-auto px-8 pt-2 pb-4">
+        <h1 className="animate-in fade-in text-center font-serif text-[30px] leading-[1.16] tracking-[-0.015em] duration-700">
+          Here&apos;s what I&apos;ve
+          <br />
+          learned so far
         </h1>
-        <div className="mt-7 space-y-4">
-          {lines.map((line, i) => (
-            <div
-              key={line}
-              className="animate-in fade-in slide-in-from-bottom-2 flex gap-3 duration-500"
-              style={{ animationDelay: `${i * 90}ms`, animationFillMode: "backwards" }}
-            >
-              <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-clay/70" />
-              <p className="text-[15px] leading-relaxed text-foreground/85">{line}</p>
-            </div>
-          ))}
+        <div className="mt-7">
+          <Orb size={104} confidence={92} active />
         </div>
 
-        <Summary label="Watching first" items={data.priorities.length ? data.priorities : ["Still listening"]} />
 
-        <p className="mt-8 text-[14px] leading-relaxed text-muted-foreground">
-          That&apos;s enough to begin. Everything else I&apos;ll learn from you as we go.
+        <div className="mx-auto mt-7 max-w-[21rem] rounded-[26px] bg-surface px-5 py-5 shadow-[0_18px_44px_-32px_rgba(60,45,35,0.55)]">
+          <div className="space-y-4">
+            {lines.map((line, i) => {
+              const Glyph = GLYPHS[i % GLYPHS.length];
+              return (
+                <div
+                  key={line}
+                  className="animate-in fade-in slide-in-from-bottom-2 flex gap-3 duration-700"
+                  style={{ animationDelay: `${i * 110}ms`, animationFillMode: "backwards" }}
+                >
+                  <Glyph
+                    size={16}
+                    strokeWidth={1.6}
+                    aria-hidden="true"
+                    className="mt-[3px] shrink-0 text-accent/80"
+                  />
+                  <p className="text-[14.5px] leading-relaxed text-foreground/85">{line}</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <p className="mx-auto mt-6 max-w-[19rem] text-center text-[13px] leading-relaxed text-muted-foreground">
+          I&apos;ll keep learning and update this as we go, {first(data)}.
         </p>
-      </Body>
-      <div className="shrink-0 px-7 pt-2 pb-9">
-        <button
-          type="button"
-          onClick={onFinish}
-          className="flex w-full items-center justify-center gap-2 rounded-2xl bg-foreground px-6 py-4 text-[15px] text-background transition-transform active:scale-[0.99]"
-        >
-          Go to Today <span aria-hidden="true">{"\u2192"}</span>
-        </button>
+
+      </div>
+      <div className="shrink-0 px-8 pt-3 pb-10">
+        <PrimaryButton label="Go to Today" onClick={onFinish} />
       </div>
     </>
   );
@@ -851,50 +927,57 @@ function Building({ onDone, data }: { onDone: () => void; data: Onboarding }) {
   return (
     <>
       <TopBar />
-      <Body>
-        <div className="flex h-full flex-col justify-center">
-          <h1 className="font-serif text-[26px] leading-tight tracking-[-0.015em]">
-            {done >= lines.length ? "Your understanding is ready" : "Putting it together…"}
-          </h1>
-          <div className="mt-8 space-y-4">
-            {lines.map((line, i) => {
-              const complete = i < done;
-              const active = i === done;
-              return (
-                <div
-                  key={line}
-                  className={`flex items-center gap-3 transition-opacity duration-500 ${
-                    complete || active ? "opacity-100" : "opacity-35"
-                  }`}
+      <Body center>
+        <h1 className="text-center font-serif text-[29px] leading-[1.16] tracking-[-0.015em]">
+          Building your
+          <br />
+          understanding
+        </h1>
+        <p className="mt-2.5 text-center text-[13px] text-muted-foreground">
+          This takes just a few moments.
+        </p>
+
+        <div className="mx-auto mt-9 w-full max-w-[19rem] space-y-3.5">
+          {lines.map((line, i) => {
+            const complete = i < done;
+            const active = i === done;
+            return (
+              <div
+                key={line}
+                className={`flex items-center gap-3 transition-opacity duration-500 ${
+                  complete ? "opacity-100" : active ? "opacity-80" : "opacity-30"
+                }`}
+              >
+                <span
+                  className={`flex h-[18px] w-[18px] items-center justify-center rounded-full transition-colors duration-500 ${
+                    complete
+                      ? "bg-accent"
+                      : "shadow-[inset_0_0_0_1px_var(--fog)]"
+                  } ${active ? "animate-breathe" : ""}`}
                 >
-                  <span
-                    className={`flex h-5 w-5 items-center justify-center rounded-full border transition-colors ${
-                      complete ? "border-foreground bg-foreground" : "border-fog"
-                    } ${active ? "animate-pulse" : ""}`}
-                  >
-                    {complete && (
-                      <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-                        <path
-                          d="M2.5 6.3 4.8 8.6 9.5 3.9"
-                          stroke="var(--background)"
-                          strokeWidth="1.7"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    )}
-                  </span>
-                  <span className="text-[15px]">{line}</span>
-                </div>
-              );
-            })}
-          </div>
-          <div className="mt-12 flex justify-center opacity-70">
-            <Orb size={120} />
-          </div>
+                  {complete && (
+                    <svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                      <path
+                        d="M2.5 6.3 4.8 8.6 9.5 3.9"
+                        stroke="var(--accent-foreground)"
+                        strokeWidth="1.9"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  )}
+                </span>
+                <span className="text-[14.5px] leading-snug">{line}</span>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="mt-11">
+          <Orb size={156} confidence={70} active />
         </div>
       </Body>
-      <div className="h-9 shrink-0" />
+      <div className="h-10 shrink-0" />
     </>
   );
 }
