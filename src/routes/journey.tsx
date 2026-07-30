@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { DiscoveryOrb, type OrbTone } from "@/components/ciatta/discovery-orb";
+import type { OrbTone } from "@/components/ciatta/discovery-orb";
 import {
   emergingInsights,
   journeyTimeline,
