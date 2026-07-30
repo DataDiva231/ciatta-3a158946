@@ -872,7 +872,7 @@ function SummaryScreen({ data, onFinish }: { data: Onboarding; onFinish: () => v
               return (
                 <div
                   key={line}
-                  className="animate-in fade-in slide-in-from-bottom-2 flex gap-3 duration-700"
+                  className="animate-dissolve flex gap-3"
                   style={{ animationDelay: `${i * 110}ms`, animationFillMode: "backwards" }}
                 >
                   <Glyph
