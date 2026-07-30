@@ -114,6 +114,12 @@ function TalkPage() {
     send(message.text ?? "");
   };
 
+  /** Voice memos: hold to speak, release and Ciatta transcribes it in. */
+  const memo = useVoiceMemo((text) => send(text));
+  const recording = memo.state === "recording";
+  const busy = pending || memo.state === "transcribing";
+
+
   return (
     <div className="flex flex-col pt-0">
       <header className="px-6 pb-4 pt-8">
