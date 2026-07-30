@@ -1,15 +1,10 @@
-import { createFileRoute, useRouterState } from "@tanstack/react-router";
+import { Link, createFileRoute, useRouterState } from "@tanstack/react-router";
 import { useEffect } from "react";
 
 import type { OrbTone } from "@/components/ciatta/discovery-orb";
-import {
-  emergingInsights,
-  journeyTimeline,
-  recentDiscoveries,
-  todaysDiscovery,
-  understandingMilestone,
-  type Discovery,
-} from "@/lib/journey-content";
+import { useJourney } from "@/lib/journey-data";
+import { type Discovery } from "@/lib/journey-content";
+
 
 export const Route = createFileRoute("/journey")({
   head: () => ({
