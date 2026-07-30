@@ -1,8 +1,13 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 
 import type { OrbTone } from "@/components/ciatta/discovery-orb";
-import { useCheckIns, useLearnedFacts, useQuickAddEvents } from "./ciatta-store";
-import type { CheckIn, LearnedFact, QuickAddEvent } from "./ciatta-store";
+import {
+  useCheckIns,
+  useLearnedFacts,
+  useMilestones,
+  useQuickAddEvents,
+} from "./ciatta-store";
+import type { CheckIn, LearnedFact, Milestone, QuickAddEvent } from "./ciatta-store";
 import {
   emergingInsights as demoEmerging,
   journeyTimeline as demoTimeline,
@@ -22,19 +27,34 @@ export type EmergingInsight = {
 
 export type TimelineEntry = { month: string; note: string };
 
+export type MilestoneView = {
+  label: string;
+  from: number;
+  to: number;
+  note: string;
+};
+
 export type JourneyView = {
   /** True once localStorage has been read on the client. */
   hydrated: boolean;
-  /** False when the user has taught Ciatta nothing yet — demo story is shown. */
+  /** False while the user has taught Ciatta too little — the demo story stands in. */
   hasData: boolean;
   todaysDiscovery: Discovery;
   recentDiscoveries: Discovery[];
   emergingInsights: EmergingInsight[];
-  milestone: { label: string; from: number; to: number; note: string };
+  milestone: MilestoneView;
   timeline: TimelineEntry[];
   /** How many logs Journey is reading from. */
   observationCount: number;
 };
+
+/** Below this, there isn't enough evidence to generate an honest story. */
+const MIN_OBSERVATIONS = 3;
+/** Confidence a pattern must reach before it counts as a discovery. */
+const DISCOVERY_THRESHOLD = 45;
+/** Understanding levels that become milestones the first time they're crossed. */
+const MILESTONE_THRESHOLDS = [40, 60, 75, 90];
+const UNDERSTANDING_LABEL = "Understanding of you";
 
 const TONES: OrbTone[] = ["iris", "clay", "moss", "stone-blue", "wheat"];
 
@@ -55,12 +75,22 @@ function dayKey(iso: string) {
   return new Date(iso).toISOString().slice(0, 10);
 }
 
-function monthLabel(iso: string) {
-  return new Date(iso).toLocaleDateString("en-US", { month: "long" });
+function monthKey(iso: string) {
+  return new Date(iso).toISOString().slice(0, 7);
+}
+
+function monthLabel(key: string) {
+  const [y, m] = key.split("-").map(Number);
+  return new Date(Date.UTC(y, m - 1, 1)).toLocaleDateString("en-US", { month: "long" });
 }
 
 function plural(n: number, word: string) {
   return `${n} ${word}${n === 1 ? "" : "s"}`;
+}
+
+function list(items: string[]) {
+  if (items.length <= 1) return items[0] ?? "";
+  return `${items.slice(0, -1).join(", ")} and ${items[items.length - 1]}`;
 }
 
 type Group = {
@@ -89,12 +119,17 @@ function dominant(g: Group) {
   return [...g.values.entries()].sort((a, b) => b[1] - a[1])[0];
 }
 
-/** Confidence for a pattern grows with repetitions and the days it spans. */
+/** Confidence grows with repetition, how many days it spans, and how recent it is. */
 function groupConfidence(g: Group) {
   const [, count] = dominant(g);
   const repeat = Math.min(count, 8) / 8;
   const spread = Math.min(g.days.size, 6) / 6;
-  return Math.round(28 + repeat * 42 + spread * 25);
+  const consistency = count / g.events.length;
+  const newest = Math.max(...g.events.map((e) => new Date(e.timestamp).getTime()));
+  const ageDays = (Date.now() - newest) / 86_400_000;
+  const recency = ageDays <= 2 ? 1 : ageDays <= 7 ? 0.6 : 0.25;
+  const raw = 20 + repeat * 36 + spread * 22 + consistency * 12 + recency * 7;
+  return Math.max(12, Math.min(97, Math.round(raw)));
 }
 
 function signalsFor(g: Group) {
@@ -106,9 +141,12 @@ function signalsFor(g: Group) {
 function discoveryFromGroup(g: Group): Discovery {
   const [value, count] = dominant(g);
   const confidence = groupConfidence(g);
-  const tone = toneFor(g.category);
   const label = g.category.toLowerCase();
   const last = g.events[0];
+  const lastDate = new Date(last.timestamp).toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+  });
   return {
     id: `derived-${g.category}`,
     title:
@@ -117,11 +155,11 @@ function discoveryFromGroup(g: Group): Discovery {
         : `You started teaching Ciatta about ${label}.`,
     confidenceLabel: confidenceLabel(confidence),
     confidence,
-    tone,
+    tone: toneFor(g.category),
     whyWeNoticed:
       count > 1
         ? `You've logged ${label} ${plural(g.events.length, "time")} across ${plural(g.days.size, "day")}, and ${value.toLowerCase()} came up ${plural(count, "time")}.`
-        : `You logged ${value.toLowerCase()} on ${new Date(last.timestamp).toLocaleDateString("en-US", { month: "long", day: "numeric" })}. One more log and we can start looking for a pattern.`,
+        : `You logged ${value.toLowerCase()} on ${lastDate}. One more log and Ciatta can start looking for a pattern.`,
     signals: signalsFor(g),
     whyThisMatters: [
       count > 1
@@ -129,9 +167,11 @@ function discoveryFromGroup(g: Group): Discovery {
         : `Every ${label} log narrows what Ciatta has to guess about your body.`,
       ...(last.metadata && Object.keys(last.metadata).length
         ? [
-            `Your last entry also carried ${Object.entries(last.metadata)
-              .map(([k, v]) => `${k.toLowerCase()} ${v.toLowerCase()}`)
-              .join(", ")}.`,
+            `Your most recent entry also carried ${list(
+              Object.entries(last.metadata).map(
+                ([k, v]) => `${k.toLowerCase()} ${v.toLowerCase()}`,
+              ),
+            )}.`,
           ]
         : []),
     ],
@@ -147,12 +187,15 @@ function checkInDiscovery(checkIns: CheckIn[]): Discovery | null {
   const recent = checkIns.slice(0, 7);
   const avgSleep = recent.reduce((a, c) => a + c.sleepFelt, 0) / recent.length;
   const avgEnergy = recent.reduce((a, c) => a + c.energy, 0) / recent.length;
-  const aligned = recent.filter((c) => Math.sign(c.sleepFelt - avgSleep) === Math.sign(c.energy - avgEnergy)).length;
-  const confidence = Math.round(35 + (aligned / recent.length) * 50);
+  const aligned = recent.filter(
+    (c) => Math.sign(c.sleepFelt - avgSleep) === Math.sign(c.energy - avgEnergy),
+  ).length;
+  const ratio = aligned / recent.length;
+  const confidence = Math.max(12, Math.min(97, Math.round(30 + ratio * 55 + recent.length * 2)));
   return {
     id: "derived-checkin",
     title:
-      aligned / recent.length >= 0.6
+      ratio >= 0.6
         ? "Your energy tends to follow how you slept."
         : "Your energy doesn't always track your sleep.",
     confidenceLabel: confidenceLabel(confidence),
@@ -162,30 +205,34 @@ function checkInDiscovery(checkIns: CheckIn[]): Discovery | null {
     signals: ["Check-ins", "Sleep", "Energy", "Mood"],
     whyThisMatters: [
       "How you feel in the morning is one of the strongest signals Ciatta has about recovery.",
+      ratio >= 0.6
+        ? "Protecting sleep is likely the fastest lever you have on how the day feels."
+        : "Something other than sleep is shaping your energy — Ciatta is looking for it.",
     ],
     whatToTry: "Keep checking in each morning — the relationship sharpens with every day.",
   };
 }
 
-function buildTimeline(events: QuickAddEvent[], checkIns: CheckIn[]): TimelineEntry[] {
-  const months = new Map<string, { count: number; categories: Set<string>; time: number }>();
-  const add = (iso: string, category: string) => {
-    const key = monthLabel(iso);
-    const m = months.get(key) ?? { count: 0, categories: new Set<string>(), time: 0 };
-    m.count += 1;
-    m.categories.add(category);
-    m.time = Math.max(m.time, new Date(iso).getTime());
-    months.set(key, m);
+function symptomDiscovery(checkIns: CheckIn[]): Discovery | null {
+  const counts = new Map<string, number>();
+  for (const c of checkIns) for (const s of c.symptoms) counts.set(s, (counts.get(s) ?? 0) + 1);
+  const top = [...counts.entries()].sort((a, b) => b[1] - a[1])[0];
+  if (!top || top[1] < 2) return null;
+  const [symptom, n] = top;
+  const confidence = Math.max(12, Math.min(97, Math.round(30 + (n / checkIns.length) * 55)));
+  return {
+    id: `derived-symptom-${symptom}`,
+    title: `${symptom} is showing up repeatedly.`,
+    confidenceLabel: confidenceLabel(confidence),
+    confidence,
+    tone: toneFor(symptom),
+    whyWeNoticed: `${symptom} appeared in ${n} of your last ${plural(checkIns.length, "check-in")}.`,
+    signals: ["Check-ins", "Symptoms", "Cycle"],
+    whyThisMatters: [
+      "A symptom that repeats is usually tied to something rhythmic — your cycle, your sleep, or your load.",
+    ],
+    whatToTry: `Note what the day looked like the next time ${symptom.toLowerCase()} appears.`,
   };
-  for (const e of events) add(e.timestamp, e.category);
-  for (const c of checkIns) add(c.savedAt || `${c.day}T09:00:00.000Z`, "Check-in");
-
-  return [...months.entries()]
-    .sort((a, b) => b[1].time - a[1].time)
-    .map(([month, m]) => ({
-      month,
-      note: `${plural(m.count, "observation")} across ${[...m.categories].slice(0, 3).join(", ").toLowerCase()}.`,
-    }));
 }
 
 function factInsights(facts: LearnedFact[]): EmergingInsight[] {
@@ -201,16 +248,113 @@ function factInsights(facts: LearnedFact[]): EmergingInsight[] {
     }));
 }
 
-/** Journey read live from ciatta.events.v1, check-ins and taught facts. */
+function buildTimeline(
+  events: QuickAddEvent[],
+  checkIns: CheckIn[],
+  facts: LearnedFact[],
+  milestones: Milestone[],
+): TimelineEntry[] {
+  type Bucket = { count: number; categories: Set<string>; milestones: Milestone[]; time: number };
+  const months = new Map<string, Bucket>();
+  const bucket = (iso: string) => {
+    const key = monthKey(iso);
+    const b = months.get(key) ?? {
+      count: 0,
+      categories: new Set<string>(),
+      milestones: [],
+      time: new Date(iso).getTime(),
+    };
+    b.time = Math.max(b.time, new Date(iso).getTime());
+    months.set(key, b);
+    return b;
+  };
+
+  for (const e of events) {
+    const b = bucket(e.timestamp);
+    b.count += 1;
+    b.categories.add(e.category.toLowerCase());
+  }
+  for (const c of checkIns) {
+    const b = bucket(c.savedAt || `${c.day}T09:00:00.000Z`);
+    b.count += 1;
+    b.categories.add("check-ins");
+  }
+  for (const f of facts) {
+    if (!f.savedAt) continue;
+    const b = bucket(f.savedAt);
+    b.count += 1;
+    b.categories.add("things you taught us");
+  }
+  for (const m of milestones) bucket(m.reachedAt).milestones.push(m);
+
+  return [...months.entries()]
+    .sort((a, b) => b[1].time - a[1].time)
+    .map(([key, b]) => {
+      const parts: string[] = [];
+      for (const m of b.milestones.sort((x, y) => y.threshold - x.threshold)) {
+        parts.push(`${m.label} reached ${m.to}%`);
+      }
+      if (b.count) {
+        parts.push(
+          `${plural(b.count, "observation")} across ${list([...b.categories].slice(0, 3))}`,
+        );
+      }
+      return { month: monthLabel(key), note: `${parts.join(". ")}.` };
+    });
+}
+
+/** Journey read live from ciatta.events.v1, check-ins, taught facts and milestones. */
 export function useJourney(): JourneyView {
   const { events, hydrated: eventsReady } = useQuickAddEvents();
   const { checkIns, hydrated: checkInsReady } = useCheckIns();
   const { facts, hydrated: factsReady } = useLearnedFacts();
-  const hydrated = eventsReady && checkInsReady && factsReady;
+  const { milestones, recordMilestone, hydrated: milestonesReady } = useMilestones();
+  const hydrated = eventsReady && checkInsReady && factsReady && milestonesReady;
+
+  const derived = useMemo(() => {
+    const observationCount =
+      events.length + checkIns.length + facts.filter((f) => f.savedAt).length;
+
+    const discoveries: Discovery[] = groupByCategory(events).map(discoveryFromGroup);
+    const ci = checkInDiscovery(checkIns);
+    if (ci) discoveries.push(ci);
+    const sym = symptomDiscovery(checkIns);
+    if (sym) discoveries.push(sym);
+    discoveries.sort((a, b) => b.confidence - a.confidence);
+
+    const overall = discoveries.length
+      ? Math.min(
+          97,
+          Math.round(
+            discoveries.reduce((a, d) => a + d.confidence, 0) / discoveries.length +
+              Math.min(observationCount, 20) * 0.4,
+          ),
+        )
+      : 0;
+
+    return { observationCount, discoveries, overall };
+  }, [events, checkIns, facts]);
+
+  // Milestones are written the first time understanding crosses a threshold.
+  useEffect(() => {
+    if (!hydrated || derived.observationCount < MIN_OBSERVATIONS) return;
+    const crossed = MILESTONE_THRESHOLDS.filter((t) => derived.overall >= t);
+    const highest = crossed[crossed.length - 1];
+    if (!highest) return;
+    if (milestones.some((m) => m.threshold === highest && m.label === UNDERSTANDING_LABEL)) return;
+    const previous = milestones[0]?.to ?? Math.max(0, derived.overall - 20);
+    recordMilestone({
+      label: UNDERSTANDING_LABEL,
+      threshold: highest,
+      from: previous,
+      to: derived.overall,
+      note: `Enough consistent evidence arrived for Ciatta to pass ${highest}% understanding.`,
+    });
+  }, [hydrated, derived.overall, derived.observationCount, milestones, recordMilestone]);
 
   return useMemo(() => {
-    const observationCount = events.length + checkIns.length;
-    const hasData = observationCount > 0;
+    const { observationCount, discoveries, overall } = derived;
+    const hasData = observationCount >= MIN_OBSERVATIONS && discoveries.length > 0;
 
     if (!hasData) {
       return {
@@ -221,53 +365,48 @@ export function useJourney(): JourneyView {
         emergingInsights: demoEmerging as EmergingInsight[],
         milestone: demoMilestone,
         timeline: demoTimeline,
-        observationCount: 0,
+        observationCount,
       };
     }
 
-    const groups = groupByCategory(events);
-    const derived: Discovery[] = groups.map(discoveryFromGroup);
-    const ci = checkInDiscovery(checkIns);
-    if (ci) derived.push(ci);
-    derived.sort((a, b) => b.confidence - a.confidence);
+    const confident = discoveries.filter((d) => d.confidence >= DISCOVERY_THRESHOLD);
+    const early = discoveries.filter((d) => d.confidence < DISCOVERY_THRESHOLD);
 
-    const confident = derived.filter((d) => d.confidence >= 45);
-    const early = derived.filter((d) => d.confidence < 45);
-
-    const lead = confident[0] ?? derived[0];
-    const recent = (confident.length > 1 ? confident.slice(1) : derived.slice(1)).slice(0, 5);
+    const lead = confident[0] ?? discoveries[0];
+    const recent = (confident.length ? confident : discoveries).filter((d) => d.id !== lead.id);
 
     const emerging: EmergingInsight[] = [
-      ...early.map((d) => ({
-        id: d.id,
-        body: d.title,
-        confidenceLabel: d.confidenceLabel,
-        confidence: d.confidence,
-        tone: d.tone,
-      })),
+      ...early
+        .filter((d) => d.id !== lead.id)
+        .map((d) => ({
+          id: d.id,
+          body: d.title,
+          confidenceLabel: d.confidenceLabel,
+          confidence: d.confidence,
+          tone: d.tone,
+        })),
       ...factInsights(facts),
     ].slice(0, 4);
 
-    const overall = Math.min(
-      97,
-      Math.round(derived.reduce((a, d) => a + d.confidence, 0) / Math.max(derived.length, 1)),
-    );
-    const from = Math.max(10, overall - Math.min(20, observationCount * 3));
+    const latest = milestones[0];
+    const milestone: MilestoneView = latest
+      ? { label: latest.label, from: latest.from, to: overall, note: latest.note }
+      : {
+          label: UNDERSTANDING_LABEL,
+          from: Math.max(0, overall - Math.min(20, observationCount * 3)),
+          to: overall,
+          note: `Built from ${plural(observationCount, "observation")} you've taught Ciatta so far.`,
+        };
 
     return {
       hydrated,
       hasData: true,
       todaysDiscovery: lead,
-      recentDiscoveries: recent,
+      recentDiscoveries: recent.slice(0, 5),
       emergingInsights: emerging,
-      milestone: {
-        label: "Understanding of you",
-        from,
-        to: overall,
-        note: `Built from ${plural(observationCount, "observation")} you've taught Ciatta so far.`,
-      },
-      timeline: buildTimeline(events, checkIns),
+      milestone,
+      timeline: buildTimeline(events, checkIns, facts, milestones),
       observationCount,
     };
-  }, [events, checkIns, facts, hydrated]);
+  }, [derived, hydrated, events, checkIns, facts, milestones]);
 }
