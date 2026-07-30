@@ -559,12 +559,29 @@ function OnboardingPage() {
 
   return (
     <div className="min-h-[100svh] bg-background">
-      <Screen dir={dir} stepKey={id}>
-        {content()}
-      </Screen>
+      {beat ? (
+        <Beat line={beat} />
+      ) : (
+        <Screen dir={dir} stepKey={id}>
+          {content()}
+        </Screen>
+      )}
     </div>
   );
 }
+
+/** A short moment where Ciatta answers before asking the next thing. */
+function Beat({ line }: { line: string }) {
+  return (
+    <div className="animate-in fade-in flex h-[100svh] flex-col items-center justify-center px-10 duration-300">
+      <span className="animate-breathe mb-7 h-2.5 w-2.5 rounded-full bg-clay/70" />
+      <p className="max-w-[19rem] text-center font-serif text-[21px] leading-[1.35] font-light text-foreground/85">
+        {line}
+      </p>
+    </div>
+  );
+}
+
 
 /* ------------------------------------------------------- question with reply */
 
