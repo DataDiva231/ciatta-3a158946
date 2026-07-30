@@ -433,11 +433,10 @@ function QuickAddPage() {
                   <button
                     type="button"
                     onClick={() => choose(o)}
-                    className={`flex min-h-[60px] w-full items-center gap-3.5 rounded-[18px] bg-surface px-4 py-3.5 text-left transition-all duration-200 active:scale-[0.99] ${
-                      selected
-                        ? "ring-1 ring-accent"
-                        : "shadow-[0_1px_2px_rgba(0,0,0,0.03)] ring-1 ring-border/60"
+                    className={`flex min-h-[60px] w-full items-center gap-3.5 rounded-[18px] px-4 py-3.5 text-left transition-all duration-200 active:scale-[0.99] ${
+                      selected ? "bg-surface ring-1 ring-accent" : "bg-surface"
                     }`}
+
                   >
                     {o.glyph && (
                       <span className="w-11 shrink-0 text-[13px] tracking-tight text-muted-foreground">
