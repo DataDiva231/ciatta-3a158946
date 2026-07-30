@@ -1,15 +1,10 @@
-import { createFileRoute, useRouterState } from "@tanstack/react-router";
+import { Link, createFileRoute, useRouterState } from "@tanstack/react-router";
 import { useEffect } from "react";
 
 import type { OrbTone } from "@/components/ciatta/discovery-orb";
-import {
-  emergingInsights,
-  journeyTimeline,
-  recentDiscoveries,
-  todaysDiscovery,
-  understandingMilestone,
-  type Discovery,
-} from "@/lib/journey-content";
+import { useJourney } from "@/lib/journey-data";
+import { type Discovery } from "@/lib/journey-content";
+
 
 export const Route = createFileRoute("/journey")({
   head: () => ({
@@ -139,8 +134,15 @@ function DiscoveryRow({ d }: { d: Discovery }) {
   );
 }
 
+function Empty({ children }: { children: string }) {
+  return (
+    <p className="mt-4 text-[13px] leading-[1.7] text-muted-foreground">{children}</p>
+  );
+}
+
 function JourneyPage() {
   const hash = useRouterState({ select: (s) => s.location.hash });
+  const journey = useJourney();
 
   // Deep links like /journey#discovery scroll the section into view.
   useEffect(() => {
@@ -151,8 +153,8 @@ function JourneyPage() {
   return (
     <div className="px-6 pt-8 pb-10">
       <section id="discovery" className="scroll-mt-6">
-        <DiscoveryDetail d={todaysDiscovery} eyebrow="Discovery" />
-        <div className="mt-8 border-t border-border pt-5">
+        <DiscoveryDetail d={journey.todaysDiscovery} eyebrow="Discovery" />
+        <Link to="/teach" className="mt-8 block border-t border-border pt-5">
           <p className="text-[12px] text-muted-foreground">Help us learn more</p>
           <p className="mt-2 flex items-center justify-between font-serif text-[21px] leading-none font-light">
             Teach Ciatta More
@@ -160,71 +162,85 @@ function JourneyPage() {
               →
             </span>
           </p>
-        </div>
+        </Link>
       </section>
 
       <section className="mt-12">
         <Eyebrow>Recent discoveries</Eyebrow>
-        <div className="mt-3 divide-y divide-border border-t border-border">
-          {recentDiscoveries.map((d) => (
-            <DiscoveryRow key={d.id} d={d} />
-          ))}
-        </div>
+        {journey.recentDiscoveries.length ? (
+          <div className="mt-3 divide-y divide-border border-t border-border">
+            {journey.recentDiscoveries.map((d) => (
+              <DiscoveryRow key={d.id} d={d} />
+            ))}
+          </div>
+        ) : (
+          <Empty>
+            Nothing has repeated often enough to become a discovery yet. Keep teaching
+            Ciatta and patterns will surface here.
+          </Empty>
+        )}
       </section>
 
       <section className="mt-12">
         <Eyebrow>Emerging insights</Eyebrow>
-        <div className="mt-3 divide-y divide-border border-t border-border">
-          {emergingInsights.map((i) => (
-            <article key={i.id} className="flex items-start justify-between gap-6 py-5">
-              <div className="min-w-0">
-                <p className="font-serif text-[19px] leading-[1.3] font-light">{i.body}</p>
-                <p className="mt-1.5 text-[12px] text-muted-foreground">
-                  {i.confidenceLabel}
+        {journey.emergingInsights.length ? (
+          <div className="mt-3 divide-y divide-border border-t border-border">
+            {journey.emergingInsights.map((i) => (
+              <article key={i.id} className="flex items-start justify-between gap-6 py-5">
+                <div className="min-w-0">
+                  <p className="font-serif text-[19px] leading-[1.3] font-light">{i.body}</p>
+                  <p className="mt-1.5 text-[12px] text-muted-foreground">
+                    {i.confidenceLabel}
+                  </p>
+                  <p className="mt-2 text-[13px] text-accent">Continue teaching Ciatta.</p>
+                </div>
+                <p
+                  className="shrink-0 pt-0.5 text-[15px] tabular-nums"
+                  style={{ color: TONE_TEXT[i.tone] }}
+                >
+                  {i.confidence}%
                 </p>
-                <p className="mt-2 text-[13px] text-accent">Continue teaching Ciatta.</p>
-              </div>
-              <p
-                className="shrink-0 pt-0.5 text-[15px] tabular-nums"
-                style={{ color: TONE_TEXT[i.tone] }}
-              >
-                {i.confidence}%
-              </p>
-            </article>
-          ))}
-        </div>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <Empty>Ciatta is still watching. New relationships appear here first.</Empty>
+        )}
       </section>
 
       <section className="mt-12">
         <Eyebrow>Understanding milestones</Eyebrow>
         <div className="mt-5 border-t border-border pt-7 text-center">
-          <p className="text-[12px] text-muted-foreground">
-            {understandingMilestone.label}
-          </p>
+          <p className="text-[12px] text-muted-foreground">{journey.milestone.label}</p>
           <p className="mt-3 flex items-center justify-center gap-4 font-serif text-[28px] leading-none font-light text-moss">
-            <span>{understandingMilestone.from}%</span>
+            <span>{journey.milestone.from}%</span>
             <span aria-hidden="true" className="text-[16px] text-muted-foreground">
               →
             </span>
-            <span>{understandingMilestone.to}%</span>
+            <span>{journey.milestone.to}%</span>
           </p>
           <p className="mx-auto mt-4 max-w-[30ch] text-[13px] leading-[1.7] text-muted-foreground">
-            {understandingMilestone.note}
+            {journey.milestone.note}
           </p>
         </div>
       </section>
 
       <section className="mt-12">
         <Eyebrow>Journey timeline</Eyebrow>
-        <dl className="mt-3 divide-y divide-border border-t border-border">
-          {journeyTimeline.map((t) => (
-            <div key={t.month} className="flex items-baseline gap-6 py-4">
-              <dt className="w-16 shrink-0 text-[13px] font-medium">{t.month}</dt>
-              <dd className="text-[13px] leading-[1.6] text-muted-foreground">{t.note}</dd>
-            </div>
-          ))}
-        </dl>
+        {journey.timeline.length ? (
+          <dl className="mt-3 divide-y divide-border border-t border-border">
+            {journey.timeline.map((t) => (
+              <div key={t.month} className="flex items-baseline gap-6 py-4">
+                <dt className="w-16 shrink-0 text-[13px] font-medium">{t.month}</dt>
+                <dd className="text-[13px] leading-[1.6] text-muted-foreground">{t.note}</dd>
+              </div>
+            ))}
+          </dl>
+        ) : (
+          <Empty>Your timeline begins with your first log.</Empty>
+        )}
       </section>
+
 
       <span className="my-10 block h-px w-full border-t border-dotted border-border" />
 
