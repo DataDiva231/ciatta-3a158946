@@ -22,12 +22,11 @@ function TeachIcon({ active }: IconProps) {
   return (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <path
-        d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v7a2.5 2.5 0 0 1-2.5 2.5H10l-4.5 3.5V16H6.5A2.5 2.5 0 0 1 4 13.5v-7Z"
+        d="M12 5v14M5 12h14"
         stroke={stroke(active)}
-        strokeWidth="1.4"
-        strokeLinejoin="round"
+        strokeWidth="1.6"
+        strokeLinecap="round"
       />
-      <path d="M8.5 10h7" stroke={stroke(active)} strokeWidth="1.4" strokeLinecap="round" />
     </svg>
   );
 }
