@@ -1,11 +1,10 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
 import orb from "@/assets/ciatta-orb.png";
 import { useQuickAddEvents, type QuickAddEvent } from "@/lib/ciatta-store";
 import {
   buildSteps,
-  findOption,
   formatDateTime,
   LOGGED_LABEL,
   META_LABEL,
@@ -177,9 +176,13 @@ function QuickAddPage() {
   };
 
   // Persist as soon as the confirmation screen is reached so Today refreshes now.
-  const confirmed = done ? (saved ?? save()) : null;
+  useEffect(() => {
+    if (done) save();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [done]);
 
-  if (done && confirmed) {
+  if (done) {
+    const confirmed = saved;
     return (
       <div className="flex min-h-full flex-col px-6 pb-4 pt-10">
         <img
@@ -223,7 +226,7 @@ function QuickAddPage() {
             <span>
               <span className="block text-[14px] text-foreground">Predictions refined</span>
               <span className="block text-[12px] text-muted-foreground">
-                {formatDateTime(confirmed.timestamp)}
+                {confirmed ? formatDateTime(confirmed.timestamp) : "Leak risk updated"}
               </span>
             </span>
           </li>
@@ -351,7 +354,7 @@ function QuickAddPage() {
         max={toLocalInputValue(new Date())}
         defaultValue={toLocalInputValue(new Date())}
         onChange={(e) => chooseCustomTime(e.target.value)}
-        className="pointer-events-none absolute h-0 w-0 opacity-0"
+        className="absolute h-0 w-0 opacity-0"
         tabIndex={-1}
       />
 
