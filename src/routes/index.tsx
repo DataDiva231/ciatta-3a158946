@@ -144,11 +144,12 @@ function TodayPage() {
             >
               <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-accent" />
               <span className="min-w-0 flex-1">
-                <NarrativeBlock line={line} compact />
+                <NarrativeBlock line={line} wrap />
               </span>
-              <span aria-hidden="true" className="shrink-0 text-[16px] leading-none text-fog">
+              <span aria-hidden="true" className="shrink-0 text-[16px] leading-none text-muted-foreground/50">
                 {"\u203A"}
               </span>
+
             </Link>
           ))}
         </div>
