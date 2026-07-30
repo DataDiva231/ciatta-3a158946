@@ -1,4 +1,4 @@
-import understandingAsset from "@/assets/understanding-cut.png.asset.json";
+import understandingAsset from "@/assets/understanding-orb.png.asset.json";
 
 /**
  * The Understanding — Ciatta's single brand asset.
