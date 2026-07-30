@@ -364,10 +364,11 @@ function QuickAddPage() {
           direction === "forward" ? "slide-in-from-right-4" : "slide-in-from-left-4"
         }`}
       >
-        <h1 className="mt-7 text-center font-serif text-[27px] leading-[1.15] tracking-[-0.01em]">
+        <h1 className="mt-8 font-serif text-[30px] leading-[1.12] tracking-[-0.015em]">
           {step.title}
         </h1>
-        <p className="mx-auto mt-2.5 max-w-[30ch] text-center text-[13px] leading-relaxed text-muted-foreground">
+        <p className="mt-3 max-w-[34ch] text-[13px] leading-relaxed text-muted-foreground">
+
           {continuation ? (
             <>
               <span className="text-foreground">{continuation}</span> {step.sub}
