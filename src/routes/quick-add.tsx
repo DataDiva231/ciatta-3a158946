@@ -16,6 +16,10 @@ import {
 } from "@/lib/quick-add";
 
 export const Route = createFileRoute("/quick-add")({
+  // Teach can deep-link straight into a category, skipping the first question.
+  validateSearch: (search: Record<string, unknown>) => ({
+    category: typeof search.category === "string" ? search.category : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Quick Add — Ciatta" },
@@ -33,6 +37,7 @@ export const Route = createFileRoute("/quick-add")({
   }),
   component: QuickAddPage,
 });
+
 
 function ProductGlyph({ icon }: { icon: QuickAddOption["icon"] }) {
   const s = { stroke: "var(--muted-foreground)", strokeWidth: 1.3, fill: "none" } as const;
