@@ -32,6 +32,63 @@ function Eyebrow({ children }: { children: string }) {
   return <p className="label-caps">{children}</p>;
 }
 
+/** A quiet shimmering placeholder used while stored understanding is read. */
+function Bar({ w = "100%", h = 14 }: { w?: string; h?: number }) {
+  return (
+    <span
+      aria-hidden="true"
+      className="block animate-pulse rounded-full bg-secondary"
+      style={{ width: w, height: h }}
+    />
+  );
+}
+
+function SkeletonRows({ rows = 4 }: { rows?: number }) {
+  return (
+    <div className="mt-4 space-y-4">
+      {Array.from({ length: rows }).map((_, i) => (
+        <div key={i} className="flex items-center justify-between gap-6">
+          <Bar w={`${38 + ((i * 13) % 26)}%`} />
+          <Bar w={`${22 + ((i * 7) % 14)}%`} h={12} />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/** Shown when a section has nothing honest to say yet. */
+function Invitation({
+  line,
+  body,
+  action = "Teach Ciatta",
+}: {
+  line: string;
+  body: string;
+  action?: string;
+}) {
+  return (
+    <div className="mt-4 rounded-2xl bg-surface px-4 py-5">
+      <p className="font-serif text-[19px] leading-snug font-light">{line}</p>
+      <p className="mt-2 text-[14px] leading-relaxed text-muted-foreground">{body}</p>
+      <Link
+        to="/teach"
+        className="mt-4 flex items-center justify-between border-t border-border pt-3.5 text-[15px] text-accent"
+      >
+        {action}
+        <span aria-hidden="true">{"\u203A"}</span>
+      </Link>
+    </div>
+  );
+}
+
+/** A soft caption marking content Ciatta hasn't earned from real data yet. */
+function ExampleNote({ children }: { children: string }) {
+  return (
+    <p className="mt-3 text-[13px] leading-relaxed text-fog italic">{children}</p>
+  );
+}
+
+
 function Row({
   label,
   value,
@@ -289,7 +346,10 @@ function ProfilePage() {
   const [openSource, setOpenSource] = useState<string | null>(null);
   const [dragIndex, setDragIndex] = useState<number | null>(null);
 
+  if (!profile.hydrated) return <ProfileSkeleton />;
+
   return (
+
     <div className="px-6 pt-10 pb-6">
       {/* Hero */}
       <header>
@@ -308,6 +368,17 @@ function ProfilePage() {
       {/* Your Understanding */}
       <section className="mt-10 border-t border-border pt-7">
         <Eyebrow>Your understanding</Eyebrow>
+        {!profile.hasData && (
+          <Invitation
+            line="Your portrait is still being drawn."
+            body={`Ciatta needs a few more moments with you before it can say anything true. ${
+              profile.observationCount === 0
+                ? "Nothing logged yet."
+                : `${profile.observationCount} logged so far.`
+            } Below is what an understanding will look like.`}
+            action="Teach Ciatta something"
+          />
+        )}
         <div className="mt-3">
           {profile.understandings.map((u, i) => (
             <UnderstandingBlock
@@ -321,13 +392,18 @@ function ProfilePage() {
             />
           ))}
         </div>
+        {!profile.hasData && (
+          <ExampleNote>
+            Example understandings. They'll be replaced by your own as you teach Ciatta.
+          </ExampleNote>
+        )}
       </section>
 
       {/* Your Story */}
       <section className="mt-10">
         <Eyebrow>Your story</Eyebrow>
         <h2 className="mt-3 font-serif text-[26px] leading-tight font-light">
-          Your story so far
+          {profile.hasData ? "Your story so far" : "The first page is blank."}
         </h2>
         {profile.story.map((p) => (
           <p key={p} className="mt-4 text-[15px] leading-relaxed text-muted-foreground">
@@ -349,7 +425,13 @@ function ProfilePage() {
             />
           ))}
         </div>
+        {!profile.hasData && (
+          <ExampleNote>
+            Every area starts here. Confidence rises with each thing you log.
+          </ExampleNote>
+        )}
       </section>
+
 
       {/* Health Snapshot */}
       <section className="mt-10 border-t border-border pt-7">
@@ -364,7 +446,13 @@ function ProfilePage() {
             />
           ))}
         </div>
+        {!profile.hasData && (
+          <ExampleNote>
+            These numbers fill in as Ciatta observes you. Nothing here is estimated.
+          </ExampleNote>
+        )}
       </section>
+
 
       {/* How Ciatta Learns You */}
       <section className="mt-10 border-t border-border pt-7">
@@ -438,7 +526,15 @@ function ProfilePage() {
             </li>
           ))}
         </ol>
+        {profile.timeline.length <= 1 && (
+          <Invitation
+            line="Your timeline starts with one log."
+            body="As understanding deepens, each milestone Ciatta crosses is recorded here, month by month."
+            action="Add your first entry"
+          />
+        )}
       </section>
+
 
       {/* Intelligence Preferences */}
       <section className="mt-10 border-t border-border pt-7">
@@ -546,6 +642,79 @@ function ProfilePage() {
             ),
           )}
         </div>
+      </section>
+    </div>
+  );
+}
+
+/** The portrait's silhouette, held while stored understanding is read. */
+function ProfileSkeleton() {
+  return (
+    <div className="px-6 pt-10 pb-6" aria-busy="true" aria-live="polite">
+      <header>
+        <h1 className="font-serif text-[46px] leading-[1.05] font-light tracking-[-0.02em]">
+          Profile
+        </h1>
+        <p className="mt-4 font-serif text-[22px] leading-[1.3] font-light">
+          What Ciatta understands about you.
+        </p>
+        <p className="mt-4 text-[14px] leading-relaxed text-muted-foreground">
+          Gathering everything Ciatta has learned so far…
+        </p>
+      </header>
+
+      <section className="mt-10 border-t border-border pt-7">
+        <Eyebrow>Your understanding</Eyebrow>
+        <div className="mt-5 space-y-6">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="space-y-3 border-b border-border pb-6">
+              <Bar w="86%" h={20} />
+              <Bar w="52%" h={20} />
+              <Bar w="34%" h={12} />
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="mt-10">
+        <Eyebrow>Your story</Eyebrow>
+        <div className="mt-4 space-y-3">
+          <Bar w="70%" h={22} />
+          <Bar />
+          <Bar w="92%" />
+          <Bar w="64%" />
+        </div>
+      </section>
+
+      <section className="mt-10 border-t border-border pt-7">
+        <Eyebrow>Areas of understanding</Eyebrow>
+        <SkeletonRows rows={6} />
+      </section>
+
+      <section className="mt-10 border-t border-border pt-7">
+        <Eyebrow>Health snapshot</Eyebrow>
+        <SkeletonRows rows={6} />
+      </section>
+
+      <section className="mt-10 border-t border-border pt-7">
+        <Eyebrow>How Ciatta learns you</Eyebrow>
+        <SkeletonRows rows={5} />
+      </section>
+
+      <section className="mt-10 border-t border-border pt-7">
+        <Eyebrow>Understanding timeline</Eyebrow>
+        <ol className="mt-5 space-y-6 border-l border-border pl-5">
+          {[0, 1, 2].map((i) => (
+            <li key={i} className="relative space-y-2">
+              <span
+                aria-hidden="true"
+                className="absolute top-1.5 -left-[25px] h-[7px] w-[7px] animate-pulse rounded-full bg-secondary"
+              />
+              <Bar w="58%" />
+              <Bar w="28%" h={12} />
+            </li>
+          ))}
+        </ol>
       </section>
     </div>
   );
