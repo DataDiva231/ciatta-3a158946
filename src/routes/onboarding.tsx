@@ -773,18 +773,24 @@ function understandingLines(d: Onboarding): string[] {
   );
   if (symptoms.length) lines.push(`I'll watch for ${symptoms.join(", ").toLowerCase()}.`);
   if (a(d, "conditions").length) lines.push(`I'll read your signals through ${a(d, "conditions").join(" and ")}.`);
-  if (a(d, "meds", ).includes("GLP-1"))
+  if (a(d, "meds").includes("GLP-1"))
     lines.push(
-      `You're on ${one(d, "glp1_which") || "a GLP-1"}${
+      `You're on a GLP-1${
         one(d, "glp1_purpose") ? ` for ${one(d, "glp1_purpose").toLowerCase()}` : ""
       }. I'll separate its effects from yours.`,
     );
   if (d.appleHealthConnected)
     lines.push("Apple Health is connected, so sleep and heart rate arrive on their own.");
   else if (one(d, "sleep_self")) lines.push(`Sleep: ${one(d, "sleep_self").toLowerCase()}.`);
+  if (one(d, "focus"))
+    lines.push(`${one(d, "focus")} is where I'll look first, every day.`);
   if (d.primaryGoal) lines.push(`Everything gets measured against one thing: ${d.primaryGoal.toLowerCase()}.`);
+  const blocker = one(d, "goal_blocker");
+  if (blocker && blocker !== "I don't know yet")
+    lines.push(`And I'll keep an eye on ${blocker.toLowerCase()}, since that's what gets in the way.`);
   return lines;
 }
+
 
 function SummaryScreen({ data, onFinish }: { data: Onboarding; onFinish: () => void }) {
   const lines = understandingLines(data);
