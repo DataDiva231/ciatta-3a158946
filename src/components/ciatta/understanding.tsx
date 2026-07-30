@@ -34,7 +34,6 @@ export function Understanding({
   // Understanding emerges from a soft haze into a defined, luminous presence.
   const presence = 0.72 + c * 0.28;
   const saturation = 0.78 + c * 0.32;
-  const bloom = 0.1 + c * 0.16;
 
   return (
     <span
@@ -42,17 +41,7 @@ export function Understanding({
       className={`relative inline-grid shrink-0 place-items-center ${className}`}
       style={{ width: px, height: px }}
     >
-      {/* Volumetric bloom — the reach of what Ciatta understands. */}
-      <span
-        className="absolute inset-0 rounded-full"
-        style={{
-          background: `radial-gradient(circle at 50% 54%, color-mix(in oklab, var(--clay) ${Math.round(
-            bloom * 100,
-          )}%, transparent) 0%, transparent 70%)`,
-          transform: "scale(1.22)",
-          filter: `blur(${Math.max(6, Math.round(px * 0.07))}px)`,
-        }}
-      />
+
 
       {/* The pearl itself. */}
       <span

@@ -89,15 +89,15 @@ function TodayPage() {
         </Link>
       </header>
 
-      {/* The Understanding, offset — never centred like a logo. */}
-      <div className="relative flex min-h-0 flex-1 items-center justify-end overflow-hidden pr-2 pl-10">
+      {/* The Understanding, centred. */}
+      <div className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden px-7">
         <Understanding
           size={264}
           confidence={narrative.confidence.value}
           active={justTaught}
-          className="translate-x-6"
         />
       </div>
+
 
       <section className="shrink-0 px-7 pb-6">
         <p
