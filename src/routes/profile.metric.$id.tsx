@@ -53,7 +53,7 @@ function MetricDetail() {
     <Screen title={metric.label} subtitle={metric.detail}>
       <div className="rounded-2xl bg-surface px-5 py-6">
         <p className="label-caps">Right now</p>
-        <p className="mt-2 font-serif text-[28px] leading-tight">{metric.value}</p>
+        <p className="mt-2 text-[26px] font-medium leading-tight tabular-nums">{metric.value}</p>
       </div>
 
       {metric.notes.length > 0 && (

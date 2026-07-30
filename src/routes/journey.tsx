@@ -51,7 +51,7 @@ function Rule() {
 function Confidence({ value, tone }: { value: number; tone: OrbTone }) {
   return (
     <p
-      className="font-serif text-[30px] leading-none"
+      className="text-[26px] font-medium leading-none tabular-nums"
       style={{ color: TONE_TEXT[tone] }}
     >
       {value}%
@@ -219,7 +219,7 @@ function JourneyPage() {
         <Eyebrow>Understanding milestones</Eyebrow>
         <div className="mt-5 border-t border-border pt-7 text-center">
           <p className="text-[12px] text-muted-foreground">{journey.milestone.label}</p>
-          <p className="mt-3 flex items-center justify-center gap-4 font-serif text-[28px] leading-none text-moss">
+          <p className="mt-3 flex items-center justify-center gap-4 text-[24px] font-medium leading-none tabular-nums text-moss">
             <span>{journey.milestone.from}%</span>
             <span aria-hidden="true" className="text-[16px] text-muted-foreground">
               →
