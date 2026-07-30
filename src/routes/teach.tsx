@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 
-import orb from "@/assets/ciatta-orb.png";
+import { Understanding } from "@/components/ciatta/understanding";
 import { useCheckIns, useQuickAddEvents } from "@/lib/ciatta-store";
 import { buildNarrative } from "@/lib/narrative";
 import { buildTeachSuggestions, confidenceLine } from "@/lib/teach-suggestions";
