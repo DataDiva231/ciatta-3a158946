@@ -2,10 +2,8 @@ import { useEffect, useState } from "react";
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 
 import { ProfileIcon } from "@/components/ciatta/tab-bar";
+import { Understanding } from "@/components/ciatta/understanding";
 
-
-import figureAsset from "@/assets/ciatta-figure-cut.png.asset.json";
-import figureWebp from "@/assets/ciatta-figure-cut.webp.asset.json";
 import { formatLongDate, today } from "@/lib/ciatta-data";
 import { useCheckIns, useQuickAddEvents } from "@/lib/ciatta-store";
 import { buildNarrative, type NarrativeLine } from "@/lib/narrative";
@@ -27,19 +25,11 @@ export const Route = createFileRoute("/")({
         content: "Ciatta reads your sleep, recovery and cycle signals and tells you what your body is asking for today.",
       },
     ],
-    links: [
-      {
-        rel: "preload",
-        as: "image",
-        href: figureWebp.url,
-        type: "image/webp",
-        fetchpriority: "high",
-      },
-    ],
   }),
 
   component: TodayPage,
 });
+
 
 function TodayPage() {
   const navigate = useNavigate();
