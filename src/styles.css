@@ -11,7 +11,23 @@
  */
 
 @theme inline {
+  /* Ciatta's orb breathes: understanding is always evolving. */
+  --animate-breathe: breathe 6s ease-in-out infinite;
+
+  @keyframes breathe {
+    0%,
+    100% {
+      transform: scale(1);
+      opacity: 0.96;
+    }
+    50% {
+      transform: scale(1.035);
+      opacity: 1;
+    }
+  }
+
   --radius-sm: calc(var(--radius) - 4px);
+
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);

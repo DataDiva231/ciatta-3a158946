@@ -16,6 +16,10 @@ import {
 } from "@/lib/quick-add";
 
 export const Route = createFileRoute("/quick-add")({
+  // Teach can deep-link straight into a category, skipping the first question.
+  validateSearch: (search: Record<string, unknown>) => ({
+    category: typeof search.category === "string" ? search.category : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Quick Add — Ciatta" },
@@ -33,6 +37,7 @@ export const Route = createFileRoute("/quick-add")({
   }),
   component: QuickAddPage,
 });
+
 
 function ProductGlyph({ icon }: { icon: QuickAddOption["icon"] }) {
   const s = { stroke: "var(--muted-foreground)", strokeWidth: 1.3, fill: "none" } as const;
@@ -117,10 +122,13 @@ function continuationFor(steps: { key: string }[], answers: Answers, index: numb
 
 function QuickAddPage() {
   const navigate = useNavigate();
+  const { category: presetCategory } = Route.useSearch();
   const { addEvent, events } = useQuickAddEvents();
-  const [index, setIndex] = useState(0);
+  const [index, setIndex] = useState(presetCategory ? 1 : 0);
   const [direction, setDirection] = useState<"forward" | "back">("forward");
-  const [answers, setAnswers] = useState<Answers>({});
+  const [answers, setAnswers] = useState<Answers>(
+    presetCategory ? { category: presetCategory } : {},
+  );
   /** ISO timestamp of the event. Defaults to now; the time chip can adjust it. */
   const [eventTime, setEventTime] = useState<string | null>(null);
   const [saved, setSaved] = useState<QuickAddEvent | null>(null);
@@ -138,6 +146,20 @@ function QuickAddPage() {
     () => events.find((e) => e.category === "Period Product" && e.metadata),
     [events],
   );
+
+  /**
+   * Categories are ordered by what this woman actually teaches Ciatta, so the
+   * list gets more personal the more it is used.
+   */
+  const options = useMemo(() => {
+    if (step.key !== "category") return step.options;
+    const weight = new Map<string, number>();
+    events.slice(0, 30).forEach((e, i) => {
+      weight.set(e.category, (weight.get(e.category) ?? 0) + 30 - i);
+    });
+    return [...step.options].sort((a, b) => (weight.get(b.label) ?? 0) - (weight.get(a.label) ?? 0));
+  }, [step, events]);
+
 
   /** Records an answer and drops every answer that belonged to a later step. */
   const setAnswer = (stepIndex: number, label: string) => {
@@ -395,7 +417,7 @@ function QuickAddPage() {
 
         {step.layout === "grid" ? (
           <div className={`grid grid-cols-2 gap-3 ${step.key === "category" ? "mt-3" : "mt-8"}`}>
-            {step.options.map((o) => {
+            {options.map((o) => {
               const selected = answers[step.key] === o.label;
               return (
                 <button
@@ -420,7 +442,7 @@ function QuickAddPage() {
           </div>
         ) : (
           <ul className="mt-8 space-y-2.5">
-            {step.options.map((o) => {
+            {options.map((o) => {
               const selected = answers[step.key] === o.label;
               return (
                 <li key={o.label} className="relative">
