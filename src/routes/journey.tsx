@@ -154,6 +154,13 @@ function JourneyPage() {
     <div className="px-6 pt-8 pb-10">
       <section id="discovery" className="scroll-mt-6">
         <DiscoveryDetail d={journey.todaysDiscovery} eyebrow="Discovery" />
+        {!journey.hasData && journey.hydrated ? (
+          <p className="mt-6 text-[12px] leading-[1.7] text-muted-foreground">
+            This is an example story. Teach Ciatta a few more times and Journey starts
+            writing your own.
+          </p>
+        ) : null}
+
         <Link to="/teach" className="mt-8 block border-t border-border pt-5">
           <p className="text-[12px] text-muted-foreground">Help us learn more</p>
           <p className="mt-2 flex items-center justify-between font-serif text-[21px] leading-none font-light">
