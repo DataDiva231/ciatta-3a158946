@@ -1,6 +1,8 @@
 import { useRef, useState } from "react";
 import { useRouter } from "@tanstack/react-router";
 
+import { useBack } from "@/lib/use-back";
+
 import { useQuickAddEvents } from "@/lib/ciatta-store";
 
 /** Downscale a photo so Ciatta can keep a visual memory without hoarding megabytes. */
@@ -51,6 +53,7 @@ export function TeachUpload({
   examples,
 }: TeachUploadProps) {
   const router = useRouter();
+  const { goBack } = useBack("/teach");
   const { addEvent } = useQuickAddEvents();
   const input = useRef<HTMLInputElement>(null);
 
@@ -101,7 +104,7 @@ export function TeachUpload({
     <div className="flex flex-col px-6 pb-10 pt-8">
       <button
         type="button"
-        onClick={() => router.history.back()}
+        onClick={goBack}
         aria-label="Back"
         className="grid h-10 w-10 place-items-center rounded-full bg-secondary text-foreground"
       >

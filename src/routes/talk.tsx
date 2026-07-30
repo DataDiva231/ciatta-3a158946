@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
+
+import { useBack } from "@/lib/use-back";
 
 import {
   Conversation,
@@ -81,7 +83,7 @@ function replyTo(input: string): string {
 }
 
 function TalkPage() {
-  const router = useRouter();
+  const { goBack } = useBack("/");
   const { facts, addFact, removeFact } = useLearnedFacts();
   const [messages, setMessages] = useState<ChatMessage[]>([OPENING]);
   const [pending, setPending] = useState(false);
@@ -126,7 +128,7 @@ function TalkPage() {
       <header className="px-6 pb-4 pt-8">
         <button
           type="button"
-          onClick={() => router.history.back()}
+          onClick={goBack}
           aria-label="Back"
           className="grid h-10 w-10 place-items-center rounded-full bg-secondary text-foreground"
         >

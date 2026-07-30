@@ -1,5 +1,6 @@
-import { useRouter } from "@tanstack/react-router";
 import type { ReactNode } from "react";
+
+import { useBack } from "@/lib/use-back";
 
 /** Shared chrome for every Profile child screen: back affordance + title. */
 export function Screen({
@@ -13,7 +14,7 @@ export function Screen({
   action?: ReactNode;
   children: ReactNode;
 }) {
-  const router = useRouter();
+  const { goBack } = useBack("/profile");
 
   return (
     <div className="pb-10">
@@ -21,7 +22,7 @@ export function Screen({
         <div className="flex items-center justify-between gap-4">
           <button
             type="button"
-            onClick={() => router.history.back()}
+            onClick={goBack}
             className="-ml-1 flex items-center gap-1 rounded-full py-1 pr-3 pl-1 text-[15px] text-accent transition-colors hover:bg-secondary active:bg-secondary"
           >
             <span aria-hidden="true" className="text-[18px] leading-none">
