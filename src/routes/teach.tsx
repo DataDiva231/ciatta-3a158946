@@ -1,6 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 
 import orb from "@/assets/ciatta-orb.png";
+import { useCheckIns, useQuickAddEvents } from "@/lib/ciatta-store";
+import { buildNarrative } from "@/lib/narrative";
+import { buildTeachSuggestions, confidenceLine } from "@/lib/teach-suggestions";
+
 
 export const Route = createFileRoute("/teach")({
   head: () => ({
