@@ -97,7 +97,7 @@ function EditProfile() {
         ) : (
           <span
             aria-hidden="true"
-            className="flex h-[72px] w-[72px] shrink-0 items-center justify-center rounded-full bg-secondary font-serif text-[26px] font-light text-muted-foreground"
+            className="flex h-[72px] w-[72px] shrink-0 items-center justify-center rounded-full bg-secondary font-serif text-[26px] text-muted-foreground"
           >
             {name.charAt(0) || "\u00b7"}
           </span>

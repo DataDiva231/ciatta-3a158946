@@ -51,7 +51,7 @@ function Rule() {
 function Confidence({ value, tone }: { value: number; tone: OrbTone }) {
   return (
     <p
-      className="font-serif text-[30px] leading-none font-light"
+      className="font-serif text-[30px] leading-none"
       style={{ color: TONE_TEXT[tone] }}
     >
       {value}%
@@ -64,7 +64,7 @@ function DiscoveryDetail({ d, eyebrow }: { d: Discovery; eyebrow: string }) {
   return (
     <article>
       <Eyebrow tone={d.tone}>{eyebrow}</Eyebrow>
-      <h2 className="mt-3 font-serif text-[26px] leading-[1.2] font-light tracking-[-0.01em]">
+      <h2 className="mt-3 font-serif text-[26px] leading-[1.2] tracking-[-0.01em]">
         {d.title}
       </h2>
 
@@ -121,7 +121,7 @@ function DiscoveryRow({ d }: { d: Discovery }) {
   return (
     <article className="flex items-start justify-between gap-6 py-5">
       <div className="min-w-0">
-        <h3 className="font-serif text-[19px] leading-[1.3] font-light">{d.title}</h3>
+        <h3 className="font-serif text-[19px] leading-[1.3]">{d.title}</h3>
         <p className="mt-1.5 text-[12px] text-muted-foreground">{d.confidenceLabel}</p>
       </div>
       <p
@@ -163,7 +163,7 @@ function JourneyPage() {
 
         <Link to="/teach" className="mt-8 block border-t border-border pt-5">
           <p className="text-[12px] text-muted-foreground">Help us learn more</p>
-          <p className="mt-2 flex items-center justify-between font-serif text-[21px] leading-none font-light">
+          <p className="mt-2 flex items-center justify-between font-serif text-[21px] leading-none">
             Teach Ciatta More
             <span aria-hidden="true" className="text-[15px] text-muted-foreground">
               →
@@ -195,7 +195,7 @@ function JourneyPage() {
             {journey.emergingInsights.map((i) => (
               <article key={i.id} className="flex items-start justify-between gap-6 py-5">
                 <div className="min-w-0">
-                  <p className="font-serif text-[19px] leading-[1.3] font-light">{i.body}</p>
+                  <p className="font-serif text-[19px] leading-[1.3]">{i.body}</p>
                   <p className="mt-1.5 text-[12px] text-muted-foreground">
                     {i.confidenceLabel}
                   </p>
@@ -219,7 +219,7 @@ function JourneyPage() {
         <Eyebrow>Understanding milestones</Eyebrow>
         <div className="mt-5 border-t border-border pt-7 text-center">
           <p className="text-[12px] text-muted-foreground">{journey.milestone.label}</p>
-          <p className="mt-3 flex items-center justify-center gap-4 font-serif text-[28px] leading-none font-light text-moss">
+          <p className="mt-3 flex items-center justify-center gap-4 font-serif text-[28px] leading-none text-moss">
             <span>{journey.milestone.from}%</span>
             <span aria-hidden="true" className="text-[16px] text-muted-foreground">
               →

@@ -120,7 +120,7 @@ function Lead({ children }: { children: React.ReactNode }) {
 
 function Question({ children }: { children: React.ReactNode }) {
   return (
-    <h1 className="font-serif text-[30px] leading-[1.18] font-light tracking-[-0.015em] text-foreground">
+    <h1 className="font-serif text-[30px] leading-[1.18] tracking-[-0.015em] text-foreground">
       {children}
     </h1>
   );
@@ -560,7 +560,7 @@ function Beat({ line }: { line: string }) {
   return (
     <div className="animate-in fade-in flex h-[100svh] flex-col items-center justify-center px-10 duration-300">
       <span className="animate-breathe mb-7 h-2.5 w-2.5 rounded-full bg-clay/70" />
-      <p className="max-w-[19rem] text-center font-serif text-[21px] leading-[1.35] font-light text-foreground/85">
+      <p className="max-w-[19rem] text-center font-serif text-[21px] leading-[1.35] text-foreground/85">
         {line}
       </p>
     </div>
@@ -665,7 +665,7 @@ function Intro({
         <TopBar />
         <Body>
           <div className="flex h-full flex-col items-center justify-center text-center">
-            <h1 className="font-serif text-[38px] leading-[1.15] font-light tracking-[-0.02em]">
+            <h1 className="font-serif text-[38px] leading-[1.15] tracking-[-0.02em]">
               Every body
               <br />
               has a story.
@@ -686,7 +686,7 @@ function Intro({
       <>
         <TopBar onBack={onBack} />
         <Body>
-          <h1 className="text-center font-serif text-[30px] leading-[1.2] font-light tracking-[-0.015em]">
+          <h1 className="text-center font-serif text-[30px] leading-[1.2] tracking-[-0.015em]">
             Your privacy
             <br />
             comes first.
@@ -789,7 +789,7 @@ function SummaryScreen({ data, onFinish }: { data: Onboarding; onFinish: () => v
     <>
       <TopBar />
       <Body>
-        <h1 className="font-serif text-[30px] leading-tight font-light tracking-[-0.015em]">
+        <h1 className="font-serif text-[30px] leading-tight tracking-[-0.015em]">
           Here&apos;s what I understand, {first(data)}.
         </h1>
         <div className="mt-7 space-y-4">
@@ -853,7 +853,7 @@ function Building({ onDone, data }: { onDone: () => void; data: Onboarding }) {
       <TopBar />
       <Body>
         <div className="flex h-full flex-col justify-center">
-          <h1 className="font-serif text-[26px] leading-tight font-light tracking-[-0.015em]">
+          <h1 className="font-serif text-[26px] leading-tight tracking-[-0.015em]">
             {done >= lines.length ? "Your understanding is ready" : "Putting it together…"}
           </h1>
           <div className="mt-8 space-y-4">

@@ -278,7 +278,7 @@ function Privacy() {
             className="w-full max-w-[398px] rounded-3xl bg-surface p-6 animate-fade-in"
             onClick={(e) => e.stopPropagation()}
           >
-            <p className="font-serif text-[22px] leading-snug font-light">
+            <p className="font-serif text-[22px] leading-snug">
               Delete everything Ciatta knows?
             </p>
             <p className="mt-2 text-[14px] leading-relaxed text-muted-foreground">
@@ -377,7 +377,7 @@ function Help() {
 function About() {
   return (
     <>
-      <p className="font-serif text-[21px] leading-snug font-light">
+      <p className="font-serif text-[21px] leading-snug">
         Ciatta is a continuous understanding of your body, built from what you live.
       </p>
       <p className="mt-4 text-[15px] leading-relaxed text-muted-foreground">
