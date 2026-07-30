@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Link, createFileRoute } from "@tanstack/react-router";
 
-import { todayKey, useCheckIns, usePriorities } from "@/lib/ciatta-store";
-import { useProfile, type Understanding } from "@/lib/profile-data";
+import { usePriorities } from "@/lib/ciatta-store";
+import { useIdentity } from "@/lib/profile-store";
+import { useProfile, type Area, type Understanding } from "@/lib/profile-data";
 
-export const Route = createFileRoute("/profile")({
+export const Route = createFileRoute("/profile/")({
   head: () => ({
     meta: [
       { title: "Profile — What Ciatta understands about you" },
@@ -24,11 +25,6 @@ export const Route = createFileRoute("/profile")({
   }),
   component: ProfilePage,
 });
-
-const SYMPTOMS = ["Cramps", "Headache", "Bloating", "Low mood", "Tender chest", "Brain fog"];
-const MOODS = ["Flat", "Even", "Bright"];
-
-const NAME = "Jenny Alvarez";
 
 /* ---------------------------------------------------------------- primitives */
 
@@ -101,27 +97,13 @@ function ExampleNote({ children }: { children: string }) {
   return <p className="mt-2.5 px-1 text-[13px] leading-relaxed text-fog italic">{children}</p>;
 }
 
+/** Static, non-tappable row: no chevron, no press state. */
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-baseline justify-between gap-4 px-4 py-3.5">
       <span className="text-[15px]">{label}</span>
       <span className="text-[14px] text-muted-foreground">{value}</span>
     </div>
-  );
-}
-
-function LinkRow({ label, detail }: { label: string; detail?: string }) {
-  return (
-    <button
-      type="button"
-      className="flex w-full items-center justify-between gap-4 px-4 py-3.5 text-left text-[15px] transition-colors active:bg-secondary"
-    >
-      {label}
-      <span className="flex items-center gap-2 text-[14px] text-muted-foreground">
-        {detail}
-        <span aria-hidden="true">{"\u203A"}</span>
-      </span>
-    </button>
   );
 }
 
@@ -151,6 +133,23 @@ function Reveal({ open, children }: { open: boolean; children: React.ReactNode }
   );
 }
 
+const pressable =
+  "transition-colors hover:bg-secondary/60 active:bg-secondary focus-visible:outline-none focus-visible:bg-secondary";
+
+function ConfidenceBar({ value }: { value: number }) {
+  return (
+    <span
+      aria-hidden="true"
+      className="mt-2 block h-[3px] w-full max-w-[180px] overflow-hidden rounded-full bg-secondary"
+    >
+      <span
+        className="block h-full rounded-full bg-accent transition-[width] duration-500 ease-out"
+        style={{ width: `${value}%` }}
+      />
+    </span>
+  );
+}
+
 /* ------------------------------------------------------------ understanding */
 
 function UnderstandingBlock({
@@ -170,7 +169,7 @@ function UnderstandingBlock({
         type="button"
         onClick={onToggle}
         aria-expanded={open}
-        className="flex w-full items-start justify-between gap-4 px-4 py-4 text-left"
+        className={`flex w-full items-start justify-between gap-4 px-4 py-4 text-left ${pressable}`}
       >
         <span className="min-w-0">
           <span
@@ -187,15 +186,7 @@ function UnderstandingBlock({
             </span>
             <span className="text-muted-foreground">{u.confidence}%</span>
           </span>
-          <span
-            aria-hidden="true"
-            className="mt-2 block h-[3px] w-full max-w-[180px] overflow-hidden rounded-full bg-secondary"
-          >
-            <span
-              className="block h-full rounded-full bg-accent transition-[width] duration-500 ease-out"
-              style={{ width: `${u.confidence}%` }}
-            />
-          </span>
+          <ConfidenceBar value={u.confidence} />
         </span>
         <Chevron open={open} />
       </button>
@@ -204,7 +195,7 @@ function UnderstandingBlock({
         <div className="px-4 pb-5">
           <p className="text-[15px] leading-relaxed">{u.summary}</p>
 
-          <p className="mt-5 text-[13px] font-medium tracking-wide uppercase">Why this matters</p>
+          <p className="mt-5 text-[13px] font-medium tracking-wide uppercase">Why Ciatta believes this</p>
           <p className="mt-1.5 text-[15px] leading-relaxed text-muted-foreground">
             {u.whyThisMatters}
           </p>
@@ -239,128 +230,160 @@ function UnderstandingBlock({
   );
 }
 
-/* --------------------------------------------------------------- check-in */
+/* ------------------------------------------------------------------- areas */
 
-function CheckInForm() {
-  const { saveCheckIn, latest, hydrated } = useCheckIns();
-  const [sleepFelt, setSleepFelt] = useState(3);
-  const [energy, setEnergy] = useState(3);
-  const [mood, setMood] = useState("Even");
-  const [symptoms, setSymptoms] = useState<string[]>([]);
-  const [cycleStarted, setCycleStarted] = useState(false);
-  const [saved, setSaved] = useState(false);
-
-  const scale = (label: string, value: number, onChange: (v: number) => void) => (
-    <div>
-      <p className="label-caps">{label}</p>
-      <div className="mt-2 flex gap-2">
-        {[1, 2, 3, 4, 5].map((n) => (
-          <button
-            key={n}
-            type="button"
-            onClick={() => onChange(n)}
-            aria-pressed={value === n}
-            className={`h-10 flex-1 rounded-full border text-sm transition-colors ${
-              value === n
-                ? "border-accent bg-accent text-accent-foreground"
-                : "border-border text-muted-foreground hover:border-fog"
-            }`}
-          >
-            {n}
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-
+function AreaBlock({ a, open, onToggle }: { a: Area; open: boolean; onToggle: () => void }) {
   return (
-    <div className="space-y-5 px-4 pb-5">
-      {scale("How sleep felt", sleepFelt, setSleepFelt)}
-      {scale("Energy right now", energy, setEnergy)}
-
-      <div>
-        <p className="label-caps">Mood</p>
-        <div className="mt-2 flex gap-2">
-          {MOODS.map((m) => (
-            <button
-              key={m}
-              type="button"
-              onClick={() => setMood(m)}
-              aria-pressed={mood === m}
-              className={`h-10 flex-1 rounded-full border text-sm transition-colors ${
-                mood === m
-                  ? "border-accent bg-accent text-accent-foreground"
-                  : "border-border text-muted-foreground hover:border-fog"
-              }`}
-            >
-              {m}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div>
-        <p className="label-caps">Anything you're feeling</p>
-        <div className="mt-2 flex flex-wrap gap-2">
-          {SYMPTOMS.map((s) => (
-            <button
-              key={s}
-              type="button"
-              onClick={() =>
-                setSymptoms((p) => (p.includes(s) ? p.filter((x) => x !== s) : [...p, s]))
-              }
-              aria-pressed={symptoms.includes(s)}
-              className={`rounded-full border px-3.5 py-2 text-[13px] transition-colors ${
-                symptoms.includes(s)
-                  ? "border-accent text-accent"
-                  : "border-border text-muted-foreground hover:border-fog"
-              }`}
-            >
-              {s}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <label className="flex items-center justify-between gap-4 text-[15px]">
-        <span>My period started today</span>
-        <button
-          type="button"
-          role="switch"
-          aria-checked={cycleStarted}
-          onClick={() => setCycleStarted((v) => !v)}
-          className={`h-7 w-12 rounded-full border transition-colors ${
-            cycleStarted ? "border-accent bg-accent" : "border-border bg-secondary"
-          }`}
-        >
-          <span
-            className={`block h-5 w-5 rounded-full bg-background transition-transform ${
-              cycleStarted ? "translate-x-6" : "translate-x-1"
-            }`}
-          />
-        </button>
-      </label>
-
+    <div>
       <button
         type="button"
-        onClick={() => {
-          saveCheckIn({ day: todayKey(), sleepFelt, energy, mood, symptoms, cycleStarted });
-          setSaved(true);
-        }}
-        className="h-12 w-full rounded-full bg-foreground text-[15px] font-medium text-background transition-opacity hover:opacity-90"
+        onClick={onToggle}
+        aria-expanded={open}
+        className={`flex w-full items-center justify-between gap-4 px-4 py-3.5 text-left ${pressable}`}
       >
-        Save check-in
+        <span className="text-[15px]">{a.name}</span>
+        <span className="flex shrink-0 items-center gap-2">
+          <span className="text-[14px] text-muted-foreground">{a.tier}</span>
+          <Chevron open={open} />
+        </span>
       </button>
+      <Reveal open={open}>
+        <div className="px-4 pb-5">
+          <div className="flex items-center gap-2 text-[13px]">
+            <span className="text-accent">{a.confidence}% confident</span>
+          </div>
+          <ConfidenceBar value={a.confidence} />
+          <p className="mt-3 text-[15px] leading-relaxed">{a.detail}</p>
+          <p className="mt-4 text-[13px] font-medium tracking-wide uppercase">Recently</p>
+          <p className="mt-1.5 text-[15px] leading-relaxed text-muted-foreground">
+            {a.recentChange}
+          </p>
+          {a.evidence.length > 0 && (
+            <div className="mt-4 flex flex-wrap gap-2">
+              {a.evidence.map((e) => (
+                <span
+                  key={e}
+                  className="rounded-full border border-border px-3 py-1.5 text-[13px] text-muted-foreground"
+                >
+                  {e}
+                </span>
+              ))}
+            </div>
+          )}
+          <Link
+            to="/quick-add"
+            className="mt-5 flex items-center justify-between border-t border-border pt-4 text-[15px] text-accent"
+          >
+            Log something for {a.name.toLowerCase()}
+            <span aria-hidden="true">{"\u203A"}</span>
+          </Link>
+        </div>
+      </Reveal>
+    </div>
+  );
+}
 
-      {saved ? (
-        <p className="text-center text-[13px] text-moss">
-          Saved. Your understanding has been updated.
-        </p>
-      ) : hydrated && latest ? (
-        <p className="text-center text-[13px] text-muted-foreground">
-          Last check-in saved {new Date(latest.savedAt).toLocaleString()}.
-        </p>
-      ) : null}
+/* ------------------------------------------------------------- preferences */
+
+/** Pointer drag-and-drop reordering with a live preview of the new order. */
+function PriorityList({
+  priorities,
+  reorder,
+}: {
+  priorities: string[];
+  reorder: (from: number, to: number) => void;
+}) {
+  const [dragging, setDragging] = useState<number | null>(null);
+  const [over, setOver] = useState<number | null>(null);
+  const rowRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  const indexAt = (y: number) => {
+    for (let i = 0; i < rowRefs.current.length; i += 1) {
+      const el = rowRefs.current[i];
+      if (!el) continue;
+      const r = el.getBoundingClientRect();
+      if (y < r.top + r.height / 2) return i;
+    }
+    return rowRefs.current.length - 1;
+  };
+
+  return (
+    <div className="mt-3 overflow-hidden rounded-2xl bg-surface">
+      <div className="divide-y divide-border">
+        {priorities.map((p, i) => {
+          const isDragging = dragging === i;
+          const shift =
+            dragging === null || over === null || isDragging
+              ? 0
+              : dragging < i && i <= over
+                ? -1
+                : dragging > i && i >= over
+                  ? 1
+                  : 0;
+          return (
+            <div
+              key={p}
+              ref={(el) => {
+                rowRefs.current[i] = el;
+              }}
+              className={`flex touch-none items-center gap-3 bg-surface px-4 py-3.5 text-[15px] transition-transform duration-200 ease-out ${
+                isDragging ? "relative z-10 scale-[1.02] shadow-lg" : ""
+              }`}
+              style={{ transform: `translateY(${shift * 100}%)` }}
+            >
+              <span className="w-4 text-[13px] text-fog tabular-nums">{i + 1}</span>
+              <span className="flex-1">{p}</span>
+              <span className="flex items-center gap-4 text-[13px] text-muted-foreground">
+                <button
+                  type="button"
+                  aria-label={`Move ${p} up`}
+                  disabled={i === 0}
+                  onClick={() => reorder(i, i - 1)}
+                  className="rounded-full px-1 transition-opacity disabled:opacity-25"
+                >
+                  {"\u2303"}
+                </button>
+                <button
+                  type="button"
+                  aria-label={`Move ${p} down`}
+                  disabled={i === priorities.length - 1}
+                  onClick={() => reorder(i, i + 1)}
+                  className="rotate-180 rounded-full px-1 transition-opacity disabled:opacity-25"
+                >
+                  {"\u2303"}
+                </button>
+                <span
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Drag ${p} to reorder`}
+                  onPointerDown={(e) => {
+                    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+                    setDragging(i);
+                    setOver(i);
+                  }}
+                  onPointerMove={(e) => {
+                    if (dragging === null) return;
+                    setOver(indexAt(e.clientY));
+                  }}
+                  onPointerUp={() => {
+                    if (dragging !== null && over !== null && dragging !== over)
+                      reorder(dragging, over);
+                    setDragging(null);
+                    setOver(null);
+                  }}
+                  onPointerCancel={() => {
+                    setDragging(null);
+                    setOver(null);
+                  }}
+                  className="cursor-grab touch-none px-1 text-fog select-none active:cursor-grabbing"
+                >
+                  {"\u2261"}
+                </span>
+              </span>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -368,33 +391,42 @@ function CheckInForm() {
 /* ------------------------------------------------------------------ header */
 
 function ProfileHeader({ since }: { since: string }) {
+  const { identity } = useIdentity();
+
   return (
     <header className="flex items-center gap-4 px-6 pt-8">
-      <span
-        aria-hidden="true"
-        className="flex h-[64px] w-[64px] shrink-0 items-center justify-center rounded-full bg-secondary font-serif text-[24px] font-light text-muted-foreground"
-        style={{
-          backgroundImage:
-            "radial-gradient(circle at 30% 25%, color-mix(in oklab, var(--clay) 22%, transparent), transparent 70%)",
-        }}
-      >
-        {NAME.charAt(0)}
-      </span>
+      {identity.photo ? (
+        <img
+          src={identity.photo}
+          alt={`${identity.name}'s profile photo`}
+          className="h-[64px] w-[64px] shrink-0 rounded-full object-cover"
+        />
+      ) : (
+        <span
+          aria-hidden="true"
+          className="flex h-[64px] w-[64px] shrink-0 items-center justify-center rounded-full bg-secondary font-serif text-[24px] font-light text-muted-foreground"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle at 30% 25%, color-mix(in oklab, var(--clay) 22%, transparent), transparent 70%)",
+          }}
+        >
+          {identity.name.charAt(0)}
+        </span>
+      )}
       <div className="min-w-0 flex-1">
         <h1 className="truncate font-serif text-[26px] leading-tight font-light tracking-[-0.01em]">
-          {NAME}
+          {identity.name}
         </h1>
         <p className="mt-1 truncate text-[13px] text-muted-foreground">
           {since === "Today" ? "Ciatta started learning you today" : `Learning you since ${since}`}
         </p>
-
       </div>
-      <button
-        type="button"
-        className="shrink-0 rounded-full border border-border px-3.5 py-2 text-[13px] text-muted-foreground transition-colors active:bg-secondary"
+      <Link
+        to="/profile/edit"
+        className="shrink-0 rounded-full border border-border px-3.5 py-2 text-[13px] text-muted-foreground transition-colors hover:bg-secondary active:bg-secondary"
       >
         Edit
-      </button>
+      </Link>
     </header>
   );
 }
@@ -403,18 +435,19 @@ function ProfileHeader({ since }: { since: string }) {
 
 function ProfilePage() {
   const profile = useProfile();
+  const { identity } = useIdentity();
   const { priorities, reorder } = usePriorities(profile.defaultPriorities);
 
   const [openUnderstanding, setOpenUnderstanding] = useState<string | null>(
     profile.understandings[0]?.id ?? null,
   );
-  const [openSource, setOpenSource] = useState<string | null>(null);
+  const [openArea, setOpenArea] = useState<string | null>(null);
+  const [openMilestone, setOpenMilestone] = useState<string | null>(null);
 
   if (!profile.hydrated) return <ProfileSkeleton />;
 
-  const since = profile.snapshot.find((s) => s.label === "Learning since")?.value ?? "today";
-  const lifeStage = profile.snapshot.find((s) => s.label === "Life stage")?.value ?? "Cycling";
-  const focus = profile.snapshot.find((s) => s.label === "Looking at next")?.value ?? "Recovery";
+  const since = profile.snapshot.find((s) => s.id === "learning-since")?.value ?? "today";
+  const focus = profile.snapshot.find((s) => s.id === "next")?.value ?? "Recovery";
 
   return (
     <div className="pb-8">
@@ -424,7 +457,11 @@ function ProfilePage() {
       <section className="mt-8 px-6">
         <SectionTitle>About me</SectionTitle>
         <Group>
-          <Row label="Life stage" value={lifeStage} />
+          <Row label="Life stage" value={identity.lifeStage} />
+          <Row
+            label="Goals"
+            value={identity.goals.length ? identity.goals.join(", ") : "Not set"}
+          />
           <Row label="Paying attention to" value={focus} />
           <Row label="Where we are" value={profile.observationSummary} />
         </Group>
@@ -483,7 +520,18 @@ function ProfilePage() {
         </p>
         <Group>
           {profile.snapshot.map((s) => (
-            <Row key={s.label} label={s.label} value={s.value} />
+            <Link
+              key={s.id}
+              to="/profile/metric/$id"
+              params={{ id: s.id }}
+              className={`flex items-baseline justify-between gap-4 px-4 py-3.5 ${pressable}`}
+            >
+              <span className="text-[15px]">{s.label}</span>
+              <span className="flex shrink-0 items-baseline gap-2 text-[14px] text-muted-foreground">
+                {s.value}
+                <Chevron />
+              </span>
+            </Link>
           ))}
         </Group>
         {!profile.hasData && (
@@ -495,7 +543,12 @@ function ProfilePage() {
         </p>
         <Group>
           {profile.areas.map((a) => (
-            <Row key={a.name} label={a.name} value={a.tier} />
+            <AreaBlock
+              key={a.name}
+              a={a}
+              open={openArea === a.name}
+              onToggle={() => setOpenArea((cur) => (cur === a.name ? null : a.name))}
+            />
           ))}
         </Group>
 
@@ -504,68 +557,81 @@ function ProfilePage() {
         </p>
 
         <Group>
-          {profile.sources.map((s) => {
-            const open = openSource === s.id;
-            return (
-              <div key={s.id}>
-                <button
-                  type="button"
-                  onClick={() => setOpenSource((cur) => (cur === s.id ? null : s.id))}
-                  aria-expanded={open}
-                  className="flex w-full items-center justify-between gap-4 px-4 py-3.5 text-left"
-                >
-                  <span className="text-[15px]">{s.name}</span>
-                  <span className="flex shrink-0 items-center gap-2">
-                    <span
-                      className={`text-[13px] ${
-                        s.active ? "text-accent" : "text-muted-foreground"
-                      }`}
-                    >
-                      {s.status}
-                    </span>
-                    <Chevron open={open} />
-                  </span>
-                </button>
-
-                <Reveal open={open}>
-                  {s.id === "checkins" ? (
-                    <CheckInForm />
-                  ) : (
-                    <p className="px-4 pb-4 text-[14px] leading-relaxed text-muted-foreground">
-                      {s.body}
-                    </p>
-                  )}
-                </Reveal>
+          {profile.sources.map((s) =>
+            s.active ? (
+              <Link
+                key={s.id}
+                to="/profile/source/$id"
+                params={{ id: s.id }}
+                className={`flex w-full items-center justify-between gap-4 px-4 py-3.5 text-left ${pressable}`}
+              >
+                <span className="text-[15px]">{s.name}</span>
+                <span className="flex shrink-0 items-center gap-2">
+                  <span className="text-[13px] text-accent">{s.status}</span>
+                  <Chevron />
+                </span>
+              </Link>
+            ) : (
+              <div
+                key={s.id}
+                className="flex w-full items-center justify-between gap-4 px-4 py-3.5"
+              >
+                <span className="text-[15px] text-muted-foreground">{s.name}</span>
+                <span className="rounded-full bg-secondary px-2.5 py-1 text-[12px] text-fog">
+                  Coming soon
+                </span>
               </div>
-            );
-          })}
+            ),
+          )}
         </Group>
 
-        <p className="mt-6 px-1 text-[13px] text-muted-foreground">
-          How the understanding grew
-        </p>
+        <p className="mt-6 px-1 text-[13px] text-muted-foreground">How the understanding grew</p>
         {profile.timeline.length <= 1 ? (
           <Invitation
             line="Nothing to look back on yet."
             body="Each time Ciatta becomes more certain about something, that moment is recorded here."
             action="Teach Ciatta something"
           />
-
         ) : (
           <div className="mt-3 rounded-2xl bg-surface px-5 py-5">
-            <ol className="space-y-5 border-l border-border pl-5">
-              {profile.timeline.map((t) => (
-                <li key={`${t.label}-${t.when}`} className="relative">
-                  <span
-                    aria-hidden="true"
-                    className={`absolute top-1.5 -left-[25px] h-[7px] w-[7px] rounded-full ${
-                      t.current ? "bg-accent" : "bg-fog"
-                    }`}
-                  />
-                  <p className={`text-[15px] ${t.current ? "text-accent" : ""}`}>{t.label}</p>
-                  <p className="mt-0.5 text-[13px] text-muted-foreground">{t.when}</p>
-                </li>
-              ))}
+            <ol className="space-y-1 border-l border-border pl-5">
+              {profile.timeline.map((t) => {
+                const key = `${t.label}-${t.when}`;
+                const open = openMilestone === key;
+                return (
+                  <li key={key} className="relative">
+                    <span
+                      aria-hidden="true"
+                      className={`absolute top-3 -left-[25px] h-[7px] w-[7px] rounded-full ${
+                        t.current ? "bg-accent" : "bg-fog"
+                      }`}
+                    />
+                    <button
+                      type="button"
+                      aria-expanded={open}
+                      onClick={() => setOpenMilestone((cur) => (cur === key ? null : key))}
+                      className="-mx-2 flex w-[calc(100%+1rem)] items-start justify-between gap-3 rounded-lg px-2 py-1.5 text-left transition-colors hover:bg-secondary/60 active:bg-secondary"
+                    >
+                      <span>
+                        <span className={`block text-[15px] ${t.current ? "text-accent" : ""}`}>
+                          {t.label}
+                        </span>
+                        <span className="mt-0.5 block text-[13px] text-muted-foreground">
+                          {t.when}
+                        </span>
+                      </span>
+                      <Chevron open={open} />
+                    </button>
+                    <Reveal open={open}>
+                      <p className="pb-3 text-[14px] leading-relaxed text-muted-foreground">
+                        {t.current
+                          ? `This is where Ciatta is right now. It's watching ${focus.toLowerCase()} most closely, and the next few logs will move this line.`
+                          : `At this point Ciatta had enough repeated evidence to change how it reads your days. Everything after ${t.when} was interpreted with this in mind.`}
+                      </p>
+                    </Reveal>
+                  </li>
+                );
+              })}
             </ol>
           </div>
         )}
@@ -573,46 +639,19 @@ function ProfilePage() {
 
       {/* Preferences */}
       <section className="mt-9 px-6">
-        <SectionTitle note="Tap to reorder">Preferences</SectionTitle>
+        <SectionTitle note="Drag to reorder">Preferences</SectionTitle>
         <p className="mt-3 px-1 text-[14px] leading-relaxed text-muted-foreground">
           Ciatta looks everywhere, but it looks hardest at what's near the top. Move a topic up and
           future insights will lean toward it.
         </p>
 
-        <Group>
-          {priorities.map((p, i) => (
-            <div key={p} className="flex items-center gap-3 px-4 py-3.5 text-[15px]">
-              <span className="w-4 text-[13px] text-fog tabular-nums">{i + 1}</span>
-              <span className="flex-1">{p}</span>
-              <span className="flex gap-4 text-[13px] text-muted-foreground">
-                <button
-                  type="button"
-                  aria-label={`Move ${p} up`}
-                  disabled={i === 0}
-                  onClick={() => reorder(i, i - 1)}
-                  className="disabled:opacity-25"
-                >
-                  {"\u2303"}
-                </button>
-                <button
-                  type="button"
-                  aria-label={`Move ${p} down`}
-                  disabled={i === priorities.length - 1}
-                  onClick={() => reorder(i, i + 1)}
-                  className="rotate-180 disabled:opacity-25"
-                >
-                  {"\u2303"}
-                </button>
-              </span>
-            </div>
-          ))}
-        </Group>
+        <PriorityList priorities={priorities} reorder={reorder} />
 
         <Group>
-          <LinkRow label="Notifications" detail="On" />
-          <LinkRow label="Appearance" detail="Light" />
-          <LinkRow label="Connected apps" detail="2" />
-          <LinkRow label="Privacy" />
+          <SettingsLink section="notifications" label="Notifications" />
+          <SettingsLink section="appearance" label="Appearance" />
+          <SettingsLink section="apps" label="Connected apps" />
+          <SettingsLink section="privacy" label="Privacy" />
         </Group>
       </section>
 
@@ -620,9 +659,9 @@ function ProfilePage() {
       <section className="mt-9 px-6">
         <SectionTitle>Support</SectionTitle>
         <Group>
-          <LinkRow label="Help" />
-          <LinkRow label="About Ciatta" />
-          <LinkRow label="Legal" />
+          <SettingsLink section="help" label="Help" />
+          <SettingsLink section="about" label="About Ciatta" />
+          <SettingsLink section="legal" label="Legal" />
         </Group>
         <p className="mt-4 px-1 text-[13px] leading-relaxed text-muted-foreground">
           Your understanding belongs to you. It is never sold, and can always be exported or
@@ -630,6 +669,19 @@ function ProfilePage() {
         </p>
       </section>
     </div>
+  );
+}
+
+function SettingsLink({ section, label }: { section: string; label: string }) {
+  return (
+    <Link
+      to="/profile/settings/$section"
+      params={{ section }}
+      className={`flex w-full items-center justify-between gap-4 px-4 py-3.5 text-left text-[15px] ${pressable}`}
+    >
+      {label}
+      <Chevron />
+    </Link>
   );
 }
 
