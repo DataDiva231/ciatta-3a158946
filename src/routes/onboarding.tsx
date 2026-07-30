@@ -265,6 +265,8 @@ function OnboardingPage() {
 
   const [history, setHistory] = useState<string[]>(["welcome"]);
   const [dir, setDir] = useState<1 | -1>(1);
+  const [beat, setBeat] = useState<string | null>(null);
+  const usedAcks = useRef<string[]>([]);
   const resumed = useRef(false);
 
   useEffect(() => {
@@ -277,11 +279,8 @@ function OnboardingPage() {
   const node = nodeById(id) ?? FLOW[0];
   const { total, index } = progress(data, id);
 
-  const advance = useCallback(
-    (from?: Onboarding) => {
-      const state = from ?? data;
-      const nextId = nextNodeId(state, id);
-      if (!nextId) return;
+  const commit = useCallback(
+    (nextId: string) => {
       setDir(1);
       setHistory((h) => {
         const next = [...h, nextId];
@@ -289,7 +288,31 @@ function OnboardingPage() {
         return next;
       });
     },
-    [data, id, save],
+    [save],
+  );
+
+  const advance = useCallback(
+    (from?: Onboarding) => {
+      const state = from ?? data;
+      const nextId = nextNodeId(state, id);
+      if (!nextId) return;
+      const current = nodeById(id);
+      const conversational =
+        current &&
+        ["text", "birth", "body", "single", "multi"].includes(current.kind);
+      if (!conversational) {
+        commit(nextId);
+        return;
+      }
+      const line = current?.reflect?.(state) ?? ackFor(usedAcks.current);
+      usedAcks.current = [...usedAcks.current, line];
+      setBeat(line);
+      window.setTimeout(() => {
+        setBeat(null);
+        commit(nextId);
+      }, 1150);
+    },
+    [data, id, commit],
   );
 
   const back = () => {
@@ -308,7 +331,7 @@ function OnboardingPage() {
     if (key === "lifestage") patch.lifeStage = values[0] ?? "";
     if (key === "conditions") patch.conditions = values;
     if (key === "meds") patch.medications = values;
-    if (key === "priorities") patch.priorities = values;
+    if (key === "focus") patch.priorities = values;
     if (key === "goal") patch.primaryGoal = values[0] ?? "";
     save(patch);
     return { ...data, ...patch } as Onboarding;
@@ -321,6 +344,7 @@ function OnboardingPage() {
       saveIdentity({ lifeStage: data.lifeStage });
     navigate({ to: "/" });
   };
+
 
   const bar = (
     <TopBar
