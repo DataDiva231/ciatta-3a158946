@@ -455,7 +455,7 @@ export const FLOW: FlowNode[] = [
     id: "goal_blocker",
     kind: "single",
     key: "goal_blocker",
-    ask: (d) => `What tends to get in the way of that?`,
+    ask: () => "What tends to get in the way of that?",
     lead: (d) => (d.primaryGoal ? `Last one about ${d.primaryGoal.toLowerCase()}.` : undefined),
     optional: true,
     options: (d) => {
