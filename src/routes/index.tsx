@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
 
 import figureAsset from "@/assets/ciatta-figure-cut.png.asset.json";
 import figureWebp from "@/assets/ciatta-figure-cut.webp.asset.json";
