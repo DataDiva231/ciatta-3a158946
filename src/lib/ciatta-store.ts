@@ -143,6 +143,32 @@ export function useLearnedFacts() {
   return { facts: value, addFact, removeFact, hydrated };
 }
 
+export function useQuickAddEvents() {
+  const { value, update, hydrated } = usePersistentState<QuickAddEvent[]>(EVENTS_KEY, []);
+
+  const addEvent = useCallback(
+    (entry: Omit<QuickAddEvent, "id" | "type" | "createdAt">) => {
+      const event: QuickAddEvent = {
+        id: `qa-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+        type: "quick_add",
+        createdAt: new Date().toISOString(),
+        ...entry,
+      };
+      update([event, ...value]);
+      return event;
+    },
+    [value, update],
+  );
+
+  const removeEvent = useCallback(
+    (id: string) => update(value.filter((e) => e.id !== id)),
+    [value, update],
+  );
+
+  return { events: value, latest: value[0] ?? null, addEvent, removeEvent, hydrated };
+}
+
 export function todayKey() {
+
   return "2026-07-29";
 }
