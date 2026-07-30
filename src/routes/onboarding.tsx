@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
+import { Understanding } from "@/components/ciatta/understanding";
 import {
   MONTHS,
   useOnboarding,
