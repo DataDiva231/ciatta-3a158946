@@ -705,7 +705,15 @@ function Summary({ label, items }: { label: string; items: string[] }) {
 /** What Ciatta learned, written back as understanding rather than a receipt. */
 function understandingLines(d: Onboarding): string[] {
   const lines: string[] = [];
-  if (d.lifeStage) lines.push(`You're ${d.lifeStage.toLowerCase()}, so that frames everything else.`);
+  const stagePhrase: Record<string, string> = {
+    Cycling: "You're still cycling, so your month frames everything else.",
+    "Trying to conceive": "You're trying to conceive, so I'll follow ovulation closely.",
+    "Pregnant or postpartum": "You're pregnant or postpartum, so I'll stay gentle and watch recovery.",
+    Perimenopause: "You're in perimenopause, so I'll read shifts rather than a fixed rhythm.",
+    Menopause: "You're through menopause, so symptoms and recovery matter more than cycles.",
+    "I'm not sure": "You're between definitions, so I'll learn the shape of it from your signals.",
+  };
+  if (d.lifeStage) lines.push(stagePhrase[d.lifeStage] ?? `You're ${d.lifeStage.toLowerCase()}.`);
   const cycle = one(d, "cycle_regularity");
   if (cycle === "Irregular") lines.push("Your cycles vary, so I'll learn your rhythm before judging it.");
   if (cycle === "Regular") lines.push("Your cycles are steady, which gives me a baseline fast.");
