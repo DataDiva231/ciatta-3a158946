@@ -542,13 +542,16 @@ function ProfilePage() {
           })}
         </Group>
 
-        <p className="mt-6 px-1 text-[13px] text-muted-foreground">Understanding timeline</p>
+        <p className="mt-6 px-1 text-[13px] text-muted-foreground">
+          How the understanding grew
+        </p>
         {profile.timeline.length <= 1 ? (
           <Invitation
-            line="Your timeline starts with one log."
-            body="As understanding deepens, each milestone Ciatta crosses is recorded here, month by month."
-            action="Add your first entry"
+            line="Nothing to look back on yet."
+            body="Each time Ciatta becomes more certain about something, that moment is recorded here."
+            action="Teach Ciatta something"
           />
+
         ) : (
           <div className="mt-3 rounded-2xl bg-surface px-5 py-5">
             <ol className="space-y-5 border-l border-border pl-5">
