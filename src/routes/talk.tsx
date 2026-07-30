@@ -20,6 +20,7 @@ import {
 } from "@/components/ai-elements/prompt-input";
 import { Shimmer } from "@/components/ai-elements/shimmer";
 import { useLearnedFacts } from "@/lib/ciatta-store";
+import { useVoiceMemo } from "@/lib/voice-memo";
 
 export const Route = createFileRoute("/talk")({
   head: () => ({
