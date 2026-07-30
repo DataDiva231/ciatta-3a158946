@@ -42,6 +42,24 @@ function TodayPage() {
   const narrative = buildNarrative(latest, events);
   const primaryLabels = ["Sleep quality", "Resting heart rate"];
   const primaryLines = narrative.lines.filter((l) => primaryLabels.includes(l.label));
+  // Set by Quick Add so the insight visibly re-forms when the user lands back here.
+  const [justTaught, setJustTaught] = useState(false);
+
+  useEffect(() => {
+    let flagged = false;
+    try {
+      flagged = sessionStorage.getItem("ciatta:just-taught") !== null;
+      sessionStorage.removeItem("ciatta:just-taught");
+    } catch {
+      /* storage unavailable */
+    }
+    if (!flagged) return;
+    setJustTaught(true);
+    const t = setTimeout(() => setJustTaught(false), 2600);
+    return () => clearTimeout(t);
+  }, []);
+
+
 
   return (
     <div className="flex h-[calc(100svh-76px)] min-h-[calc(100svh-76px)] flex-col">
