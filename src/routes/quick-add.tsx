@@ -388,16 +388,15 @@ function QuickAddPage() {
           })}
         </ul>
       )}
-
-
+      </div>
 
       <div className="mt-auto flex items-center gap-3 pt-8">
-        <span className="text-[12px] text-muted-foreground">
+        <span className="text-[12px] tabular-nums text-muted-foreground">
           {index + 1} of {total}
         </span>
         <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-secondary">
           <span
-            className="block h-full rounded-full transition-all"
+            className="block h-full rounded-full transition-[width] duration-500 ease-out"
             style={{
               width: `${((index + 1) / total) * 100}%`,
               background: "linear-gradient(90deg, var(--clay), oklch(0.72 0.17 45))",
@@ -405,6 +404,7 @@ function QuickAddPage() {
           />
         </span>
       </div>
+
     </div>
   );
 }
