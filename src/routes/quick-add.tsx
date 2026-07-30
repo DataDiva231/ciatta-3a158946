@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
-import orb from "@/assets/ciatta-orb.png";
+import { Understanding } from "@/components/ciatta/understanding";
 import { useQuickAddEvents, type QuickAddEvent } from "@/lib/ciatta-store";
 import {
   buildSteps,
