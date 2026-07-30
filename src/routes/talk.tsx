@@ -142,7 +142,7 @@ function TalkPage() {
             />
           </svg>
         </button>
-        <h1 className="mt-5 font-serif text-[30px] leading-tight font-light">Talk to Ciatta</h1>
+        <h1 className="mt-5 font-serif text-[32px] leading-[1.12] tracking-[-0.015em]">Talk to Ciatta</h1>
         <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">
           The more it knows, the less it guesses.
         </p>
