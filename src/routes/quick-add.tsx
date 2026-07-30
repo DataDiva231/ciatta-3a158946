@@ -365,7 +365,27 @@ function QuickAddPage() {
           )}
         </p>
 
+        {step.key === "category" && lastProduct && (
+          <button
+            type="button"
+            onClick={repeatLast}
+            className="mt-8 flex w-full items-center gap-3.5 rounded-[18px] bg-surface px-4 py-3.5 text-left ring-1 ring-accent/40 transition-all duration-200 active:scale-[0.99]"
+          >
+            <span className="min-w-0 flex-1">
+              <span className="block text-[15px] leading-tight text-accent">Same as last time</span>
+              <span className="mt-1 block truncate text-[12px] leading-none text-muted-foreground">
+                {[lastProduct.value, lastProduct.metadata?.Absorbency, lastProduct.metadata?.Flow]
+                  .filter(Boolean)
+                  .join(" · ")}
+              </span>
+            </span>
+            <span className="shrink-0 text-[12px] leading-none text-muted-foreground">1 tap</span>
+          </button>
+        )}
+
         {step.key === "category" && <p className="label-caps mt-8">Today's suggestions</p>}
+
+
 
         {step.layout === "grid" ? (
           <div className={`grid grid-cols-2 gap-3 ${step.key === "category" ? "mt-3" : "mt-8"}`}>
