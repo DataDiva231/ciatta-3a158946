@@ -19,6 +19,8 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProfileIndexRouteImport } from './routes/profile.index'
 import { Route as ProfileEditRouteImport } from './routes/profile.edit'
 import { Route as ApiTranscribeRouteImport } from './routes/api/transcribe'
+import { Route as ProfileSourceIdRouteImport } from './routes/profile.source.$id'
+import { Route as ProfileMetricIdRouteImport } from './routes/profile.metric.$id'
 
 const TeachRoute = TeachRouteImport.update({
   id: '/teach',
@@ -70,6 +72,16 @@ const ApiTranscribeRoute = ApiTranscribeRouteImport.update({
   path: '/api/transcribe',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProfileSourceIdRoute = ProfileSourceIdRouteImport.update({
+  id: '/profile/source/$id',
+  path: '/profile/source/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileMetricIdRoute = ProfileMetricIdRouteImport.update({
+  id: '/profile/metric/$id',
+  path: '/profile/metric/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -82,6 +94,8 @@ export interface FileRoutesByFullPath {
   '/api/transcribe': typeof ApiTranscribeRoute
   '/profile/edit': typeof ProfileEditRoute
   '/profile/': typeof ProfileIndexRoute
+  '/profile/metric/$id': typeof ProfileMetricIdRoute
+  '/profile/source/$id': typeof ProfileSourceIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -94,6 +108,8 @@ export interface FileRoutesByTo {
   '/api/transcribe': typeof ApiTranscribeRoute
   '/profile/edit': typeof ProfileEditRoute
   '/profile': typeof ProfileIndexRoute
+  '/profile/metric/$id': typeof ProfileMetricIdRoute
+  '/profile/source/$id': typeof ProfileSourceIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -107,6 +123,8 @@ export interface FileRoutesById {
   '/api/transcribe': typeof ApiTranscribeRoute
   '/profile/edit': typeof ProfileEditRoute
   '/profile/': typeof ProfileIndexRoute
+  '/profile/metric/$id': typeof ProfileMetricIdRoute
+  '/profile/source/$id': typeof ProfileSourceIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -121,6 +139,8 @@ export interface FileRouteTypes {
     | '/api/transcribe'
     | '/profile/edit'
     | '/profile/'
+    | '/profile/metric/$id'
+    | '/profile/source/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -133,6 +153,8 @@ export interface FileRouteTypes {
     | '/api/transcribe'
     | '/profile/edit'
     | '/profile'
+    | '/profile/metric/$id'
+    | '/profile/source/$id'
   id:
     | '__root__'
     | '/'
@@ -145,6 +167,8 @@ export interface FileRouteTypes {
     | '/api/transcribe'
     | '/profile/edit'
     | '/profile/'
+    | '/profile/metric/$id'
+    | '/profile/source/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -158,6 +182,8 @@ export interface RootRouteChildren {
   ApiTranscribeRoute: typeof ApiTranscribeRoute
   ProfileEditRoute: typeof ProfileEditRoute
   ProfileIndexRoute: typeof ProfileIndexRoute
+  ProfileMetricIdRoute: typeof ProfileMetricIdRoute
+  ProfileSourceIdRoute: typeof ProfileSourceIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -232,6 +258,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiTranscribeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/profile/source/$id': {
+      id: '/profile/source/$id'
+      path: '/profile/source/$id'
+      fullPath: '/profile/source/$id'
+      preLoaderRoute: typeof ProfileSourceIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile/metric/$id': {
+      id: '/profile/metric/$id'
+      path: '/profile/metric/$id'
+      fullPath: '/profile/metric/$id'
+      preLoaderRoute: typeof ProfileMetricIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -246,6 +286,8 @@ const rootRouteChildren: RootRouteChildren = {
   ApiTranscribeRoute: ApiTranscribeRoute,
   ProfileEditRoute: ProfileEditRoute,
   ProfileIndexRoute: ProfileIndexRoute,
+  ProfileMetricIdRoute: ProfileMetricIdRoute,
+  ProfileSourceIdRoute: ProfileSourceIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
