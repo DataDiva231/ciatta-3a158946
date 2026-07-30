@@ -11,7 +11,7 @@ export const Route = createFileRoute("/profile")({
       {
         name: "description",
         content:
-          "A living summary of what Ciatta has learned about your body: understandings, your story, areas of confidence, and how Ciatta learns you.",
+          "A living summary of what Ciatta has learned about your body: understandings, health snapshot, connected sources, and your preferences.",
       },
       { property: "og:title", content: "Profile — Ciatta" },
       {
@@ -28,11 +28,28 @@ export const Route = createFileRoute("/profile")({
 const SYMPTOMS = ["Cramps", "Headache", "Bloating", "Low mood", "Tender chest", "Brain fog"];
 const MOODS = ["Flat", "Even", "Bright"];
 
-function Eyebrow({ children }: { children: string }) {
-  return <p className="label-caps">{children}</p>;
+const NAME = "Jenny Alvarez";
+
+/* ---------------------------------------------------------------- primitives */
+
+function SectionTitle({ children, note }: { children: string; note?: string }) {
+  return (
+    <div className="flex items-baseline justify-between gap-4">
+      <p className="label-caps">{children}</p>
+      {note && <span className="text-[12px] text-fog">{note}</span>}
+    </div>
+  );
 }
 
-/** A quiet shimmering placeholder used while stored understanding is read. */
+/** A grouped iOS-style block: hairline card, rows divided inside. */
+function Group({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="mt-3 overflow-hidden rounded-2xl bg-surface">
+      <div className="divide-y divide-border">{children}</div>
+    </div>
+  );
+}
+
 function Bar({ w = "100%", h = 14 }: { w?: string; h?: number }) {
   return (
     <span
@@ -45,7 +62,7 @@ function Bar({ w = "100%", h = 14 }: { w?: string; h?: number }) {
 
 function SkeletonRows({ rows = 4 }: { rows?: number }) {
   return (
-    <div className="mt-4 space-y-4">
+    <div className="mt-3 space-y-4 rounded-2xl bg-surface px-4 py-5">
       {Array.from({ length: rows }).map((_, i) => (
         <div key={i} className="flex items-center justify-between gap-6">
           <Bar w={`${38 + ((i * 13) % 26)}%`} />
@@ -56,7 +73,6 @@ function SkeletonRows({ rows = 4 }: { rows?: number }) {
   );
 }
 
-/** Shown when a section has nothing honest to say yet. */
 function Invitation({
   line,
   body,
@@ -67,7 +83,7 @@ function Invitation({
   action?: string;
 }) {
   return (
-    <div className="mt-4 rounded-2xl bg-surface px-4 py-5">
+    <div className="mt-3 rounded-2xl bg-surface px-4 py-5">
       <p className="font-serif text-[19px] leading-snug font-light">{line}</p>
       <p className="mt-2 text-[14px] leading-relaxed text-muted-foreground">{body}</p>
       <Link
@@ -81,32 +97,31 @@ function Invitation({
   );
 }
 
-/** A soft caption marking content Ciatta hasn't earned from real data yet. */
 function ExampleNote({ children }: { children: string }) {
-  return (
-    <p className="mt-3 text-[13px] leading-relaxed text-fog italic">{children}</p>
-  );
+  return <p className="mt-2.5 px-1 text-[13px] leading-relaxed text-fog italic">{children}</p>;
 }
 
-
-function Row({
-  label,
-  value,
-  last,
-}: {
-  label: string;
-  value: string;
-  last?: boolean;
-}) {
+function Row({ label, value }: { label: string; value: string }) {
   return (
-    <div
-      className={`flex items-baseline justify-between gap-4 py-3.5 ${
-        last ? "" : "border-b border-border"
-      }`}
-    >
+    <div className="flex items-baseline justify-between gap-4 px-4 py-3.5">
       <span className="text-[15px]">{label}</span>
       <span className="text-[14px] text-muted-foreground">{value}</span>
     </div>
+  );
+}
+
+function LinkRow({ label, detail }: { label: string; detail?: string }) {
+  return (
+    <button
+      type="button"
+      className="flex w-full items-center justify-between gap-4 px-4 py-3.5 text-left text-[15px] transition-colors active:bg-secondary"
+    >
+      {label}
+      <span className="flex items-center gap-2 text-[14px] text-muted-foreground">
+        {detail}
+        <span aria-hidden="true">{"\u203A"}</span>
+      </span>
+    </button>
   );
 }
 
@@ -114,16 +129,30 @@ function Chevron({ open }: { open?: boolean }) {
   return (
     <span
       aria-hidden="true"
-      className={`mt-1 shrink-0 text-[15px] leading-none text-muted-foreground transition-transform duration-300 ${
-        open ? "-rotate-180" : ""
+      className={`mt-0.5 shrink-0 text-[15px] leading-none text-fog transition-transform duration-300 ease-out ${
+        open ? "-rotate-90" : ""
       }`}
     >
-      {open ? "\u2303" : "\u203A"}
+      {"\u203A"}
     </span>
   );
 }
 
-/** One health understanding that opens inline to reveal Ciatta's reasoning. */
+/** Inline expansion that keeps the row anchored, so scroll position never jumps. */
+function Reveal({ open, children }: { open: boolean; children: React.ReactNode }) {
+  return (
+    <div
+      className={`grid transition-[grid-template-rows,opacity] duration-300 ease-out ${
+        open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+      }`}
+    >
+      <div className="overflow-hidden">{children}</div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------ understanding */
+
 function UnderstandingBlock({
   u,
   open,
@@ -136,82 +165,82 @@ function UnderstandingBlock({
   lead: boolean;
 }) {
   return (
-    <div className="border-b border-border">
+    <div>
       <button
         type="button"
         onClick={onToggle}
         aria-expanded={open}
-        className="flex w-full items-start justify-between gap-4 py-5 text-left"
+        className="flex w-full items-start justify-between gap-4 px-4 py-4 text-left"
       >
-        <span>
+        <span className="min-w-0">
           <span
             className={`block font-serif font-light leading-[1.25] tracking-[-0.01em] ${
-              lead ? "text-[22px]" : "text-[19px]"
+              lead ? "text-[21px]" : "text-[18px]"
             }`}
           >
             {u.title}
           </span>
-          <span className="mt-2 flex items-baseline justify-between gap-4">
-            <span className="text-[13px] text-accent">{u.tier}</span>
-            {lead && (
-              <span className="text-[13px] text-muted-foreground">{u.confidence}%</span>
-            )}
-          </span>
-          {!lead && (
-            <span className="mt-1 block text-[13px] text-muted-foreground">
-              {u.confidence}% confidence
+          <span className="mt-2 flex items-center gap-2 text-[13px]">
+            <span className="text-accent">{u.tier}</span>
+            <span aria-hidden="true" className="text-fog">
+              &middot;
             </span>
-          )}
+            <span className="text-muted-foreground">{u.confidence}%</span>
+          </span>
+          <span
+            aria-hidden="true"
+            className="mt-2 block h-[3px] w-full max-w-[180px] overflow-hidden rounded-full bg-secondary"
+          >
+            <span
+              className="block h-full rounded-full bg-accent transition-[width] duration-500 ease-out"
+              style={{ width: `${u.confidence}%` }}
+            />
+          </span>
         </span>
         <Chevron open={open} />
       </button>
 
-      <div
-        className={`grid transition-[grid-template-rows,opacity] duration-300 ease-out ${
-          open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
-        }`}
-      >
-        <div className="overflow-hidden">
-          <div className="mb-5 rounded-2xl bg-surface px-4 py-5">
-            <p className="text-[15px] leading-relaxed">{u.summary}</p>
+      <Reveal open={open}>
+        <div className="px-4 pb-5">
+          <p className="text-[15px] leading-relaxed">{u.summary}</p>
 
-            <p className="mt-5 text-[14px] font-medium">Why this matters</p>
-            <p className="mt-1 text-[15px] leading-relaxed text-muted-foreground">
-              {u.whyThisMatters}
-            </p>
+          <p className="mt-5 text-[13px] font-medium tracking-wide uppercase">Why this matters</p>
+          <p className="mt-1.5 text-[15px] leading-relaxed text-muted-foreground">
+            {u.whyThisMatters}
+          </p>
 
-            <p className="mt-5 text-[14px] font-medium">Signals contributing</p>
-            <div className="mt-2 flex flex-wrap gap-2">
-              {u.signals.map((s) => (
-                <span
-                  key={s}
-                  className="rounded-full border border-border px-3 py-1.5 text-[13px] text-muted-foreground"
-                >
-                  {s}
-                </span>
-              ))}
-            </div>
-
-            <p className="mt-5 text-[14px] font-medium">Still learning</p>
-            <p className="mt-1 text-[15px] leading-relaxed text-muted-foreground">
-              {u.stillLearning}
-            </p>
-
-            <Link
-              to="/teach"
-              className="mt-5 flex items-center justify-between border-t border-border pt-4 text-[15px] text-accent"
-            >
-              Teach Ciatta More
-              <span aria-hidden="true">{"\u203A"}</span>
-            </Link>
+          <p className="mt-5 text-[13px] font-medium tracking-wide uppercase">Evidence</p>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {u.signals.map((s) => (
+              <span
+                key={s}
+                className="rounded-full border border-border px-3 py-1.5 text-[13px] text-muted-foreground"
+              >
+                {s}
+              </span>
+            ))}
           </div>
+
+          <p className="mt-5 text-[13px] font-medium tracking-wide uppercase">Still learning</p>
+          <p className="mt-1.5 text-[15px] leading-relaxed text-muted-foreground">
+            {u.stillLearning}
+          </p>
+
+          <Link
+            to="/teach"
+            className="mt-5 flex items-center justify-between border-t border-border pt-4 text-[15px] text-accent"
+          >
+            Teach Ciatta more
+            <span aria-hidden="true">{"\u203A"}</span>
+          </Link>
         </div>
-      </div>
+      </Reveal>
     </div>
   );
 }
 
-/** The daily check-in, kept inline under its source row. */
+/* --------------------------------------------------------------- check-in */
+
 function CheckInForm() {
   const { saveCheckIn, latest, hydrated } = useCheckIns();
   const [sleepFelt, setSleepFelt] = useState(3);
@@ -245,7 +274,7 @@ function CheckInForm() {
   );
 
   return (
-    <div className="mb-5 space-y-5 rounded-2xl bg-surface px-4 py-5">
+    <div className="space-y-5 px-4 pb-5">
       {scale("How sleep felt", sleepFelt, setSleepFelt)}
       {scale("Energy right now", energy, setEnergy)}
 
@@ -336,6 +365,43 @@ function CheckInForm() {
   );
 }
 
+/* ------------------------------------------------------------------ header */
+
+function ProfileHeader({ since }: { since: string }) {
+  return (
+    <header className="flex items-center gap-4 px-6 pt-8">
+      <span
+        aria-hidden="true"
+        className="flex h-[64px] w-[64px] shrink-0 items-center justify-center rounded-full bg-secondary font-serif text-[24px] font-light text-muted-foreground"
+        style={{
+          backgroundImage:
+            "radial-gradient(circle at 30% 25%, color-mix(in oklab, var(--clay) 22%, transparent), transparent 70%)",
+        }}
+      >
+        {NAME.charAt(0)}
+      </span>
+      <div className="min-w-0 flex-1">
+        <h1 className="truncate font-serif text-[26px] leading-tight font-light tracking-[-0.01em]">
+          {NAME}
+        </h1>
+        <p className="mt-1 truncate text-[13px] text-muted-foreground">
+          {since === "Just started"
+            ? "Understanding begins today"
+            : `Understanding since ${since}`}
+        </p>
+      </div>
+      <button
+        type="button"
+        className="shrink-0 rounded-full border border-border px-3.5 py-2 text-[13px] text-muted-foreground transition-colors active:bg-secondary"
+      >
+        Edit
+      </button>
+    </header>
+  );
+}
+
+/* -------------------------------------------------------------------- page */
+
 function ProfilePage() {
   const profile = useProfile();
   const { priorities, reorder } = usePriorities(profile.defaultPriorities);
@@ -344,30 +410,38 @@ function ProfilePage() {
     profile.understandings[0]?.id ?? null,
   );
   const [openSource, setOpenSource] = useState<string | null>(null);
-  const [dragIndex, setDragIndex] = useState<number | null>(null);
 
   if (!profile.hydrated) return <ProfileSkeleton />;
 
+  const since =
+    profile.snapshot.find((s) => s.label === "Tracking Since")?.value ?? "today";
+  const lifeStage =
+    profile.snapshot.find((s) => s.label === "Current Life Stage")?.value ?? "Cycling";
+  const focus =
+    profile.snapshot.find((s) => s.label === "Current Learning Focus")?.value ?? "Recovery";
+
   return (
+    <div className="pb-8">
+      <ProfileHeader since={since} />
 
-    <div className="px-6 pt-10 pb-6">
-      {/* Hero */}
-      <header>
-        <h1 className="font-serif text-[46px] leading-[1.05] font-light tracking-[-0.02em]">
-          Profile
-        </h1>
-        <p className="mt-4 font-serif text-[22px] leading-[1.3] font-light">
-          What Ciatta understands about you.
+      {/* About me */}
+      <section className="mt-8 px-6">
+        <SectionTitle>About me</SectionTitle>
+        <Group>
+          <Row label="Life stage" value={lifeStage} />
+          <Row label="Learning focus" value={focus} />
+          <Row label="Observations" value={String(profile.observationCount)} />
+        </Group>
+        <p className="mt-3 px-1 text-[14px] leading-relaxed text-muted-foreground">
+          {profile.story[0]}
         </p>
-        <p className="mt-4 max-w-[34ch] text-[14px] leading-relaxed text-muted-foreground">
-          Every conversation, every check-in, every discovery, and every day helps Ciatta build a
-          deeper understanding that's uniquely yours.
-        </p>
-      </header>
+      </section>
 
-      {/* Your Understanding */}
-      <section className="mt-10 border-t border-border pt-7">
-        <Eyebrow>Your understanding</Eyebrow>
+      {/* Your understanding — the centerpiece */}
+      <section className="mt-9 px-6">
+        <SectionTitle note={`${profile.understandings.length} insights`}>
+          Your understanding
+        </SectionTitle>
         {!profile.hasData && (
           <Invitation
             line="Your portrait is still being drawn."
@@ -379,19 +453,17 @@ function ProfilePage() {
             action="Teach Ciatta something"
           />
         )}
-        <div className="mt-3">
+        <Group>
           {profile.understandings.map((u, i) => (
             <UnderstandingBlock
               key={u.id}
               u={u}
               lead={i === 0}
               open={openUnderstanding === u.id}
-              onToggle={() =>
-                setOpenUnderstanding((cur) => (cur === u.id ? null : u.id))
-              }
+              onToggle={() => setOpenUnderstanding((cur) => (cur === u.id ? null : u.id))}
             />
           ))}
-        </div>
+        </Group>
         {!profile.hasData && (
           <ExampleNote>
             Example understandings. They'll be replaced by your own as you teach Ciatta.
@@ -399,82 +471,41 @@ function ProfilePage() {
         )}
       </section>
 
-      {/* Your Story */}
-      <section className="mt-10">
-        <Eyebrow>Your story</Eyebrow>
-        <h2 className="mt-3 font-serif text-[26px] leading-tight font-light">
-          {profile.hasData ? "Your story so far" : "The first page is blank."}
-        </h2>
-        {profile.story.map((p) => (
-          <p key={p} className="mt-4 text-[15px] leading-relaxed text-muted-foreground">
-            {p}
-          </p>
-        ))}
-      </section>
+      {/* Health */}
+      <section className="mt-9 px-6">
+        <SectionTitle>Health</SectionTitle>
 
-      {/* Areas of Understanding */}
-      <section className="mt-10 border-t border-border pt-7">
-        <Eyebrow>Areas of understanding</Eyebrow>
-        <div className="mt-2">
-          {profile.areas.map((a, i) => (
-            <Row
-              key={a.name}
-              label={a.name}
-              value={a.tier}
-              last={i === profile.areas.length - 1}
-            />
+        <p className="mt-4 mb-0 px-1 text-[13px] text-muted-foreground">Snapshot</p>
+        <Group>
+          {profile.snapshot.map((s) => (
+            <Row key={s.label} label={s.label} value={s.value} />
           ))}
-        </div>
+        </Group>
         {!profile.hasData && (
-          <ExampleNote>
-            Every area starts here. Confidence rises with each thing you log.
-          </ExampleNote>
+          <ExampleNote>These fill in as Ciatta observes you. Nothing is estimated.</ExampleNote>
         )}
-      </section>
 
-
-      {/* Health Snapshot */}
-      <section className="mt-10 border-t border-border pt-7">
-        <Eyebrow>Health snapshot</Eyebrow>
-        <div className="mt-2">
-          {profile.snapshot.map((s, i) => (
-            <Row
-              key={s.label}
-              label={s.label}
-              value={s.value}
-              last={i === profile.snapshot.length - 1}
-            />
+        <p className="mt-6 px-1 text-[13px] text-muted-foreground">Areas of understanding</p>
+        <Group>
+          {profile.areas.map((a) => (
+            <Row key={a.name} label={a.name} value={a.tier} />
           ))}
-        </div>
-        {!profile.hasData && (
-          <ExampleNote>
-            These numbers fill in as Ciatta observes you. Nothing here is estimated.
-          </ExampleNote>
-        )}
-      </section>
+        </Group>
 
-
-      {/* How Ciatta Learns You */}
-      <section className="mt-10 border-t border-border pt-7">
-        <Eyebrow>How Ciatta learns you</Eyebrow>
-        <div className="mt-2">
+        <p className="mt-6 px-1 text-[13px] text-muted-foreground">Connected sources</p>
+        <Group>
           {profile.sources.map((s) => {
             const open = openSource === s.id;
             return (
-              <div key={s.id} className="border-b border-border">
+              <div key={s.id}>
                 <button
                   type="button"
                   onClick={() => setOpenSource((cur) => (cur === s.id ? null : s.id))}
                   aria-expanded={open}
-                  className="flex w-full items-start justify-between gap-4 py-4 text-left"
+                  className="flex w-full items-center justify-between gap-4 px-4 py-3.5 text-left"
                 >
-                  <span className="max-w-[62%]">
-                    <span className="block text-[16px]">{s.name}</span>
-                    <span className="mt-1 block text-[13px] leading-relaxed text-muted-foreground">
-                      {s.body}
-                    </span>
-                  </span>
-                  <span className="flex shrink-0 items-start gap-2">
+                  <span className="text-[15px]">{s.name}</span>
+                  <span className="flex shrink-0 items-center gap-2">
                     <span
                       className={`text-[13px] ${
                         s.active ? "text-accent" : "text-muted-foreground"
@@ -486,86 +517,59 @@ function ProfilePage() {
                   </span>
                 </button>
 
-                <div
-                  className={`grid transition-[grid-template-rows,opacity] duration-300 ease-out ${
-                    open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
-                  }`}
-                >
-                  <div className="overflow-hidden">
-                    {s.id === "checkins" ? (
-                      <CheckInForm />
-                    ) : (
-                      <p className="mb-5 rounded-2xl bg-surface px-4 py-4 text-[14px] leading-relaxed text-muted-foreground">
-                        {s.active
-                          ? "This source is contributing to your understanding right now."
-                          : "Not yet available. When it arrives, it will deepen your understanding automatically."}
-                      </p>
-                    )}
-                  </div>
-                </div>
+                <Reveal open={open}>
+                  {s.id === "checkins" ? (
+                    <CheckInForm />
+                  ) : (
+                    <p className="px-4 pb-4 text-[14px] leading-relaxed text-muted-foreground">
+                      {s.body}
+                    </p>
+                  )}
+                </Reveal>
               </div>
             );
           })}
-        </div>
-      </section>
+        </Group>
 
-      {/* Understanding Timeline */}
-      <section className="mt-10 border-t border-border pt-7">
-        <Eyebrow>Understanding timeline</Eyebrow>
-        <ol className="mt-5 space-y-6 border-l border-border pl-5">
-          {profile.timeline.map((t) => (
-            <li key={`${t.label}-${t.when}`} className="relative">
-              <span
-                aria-hidden="true"
-                className={`absolute top-1.5 -left-[25px] h-[7px] w-[7px] rounded-full ${
-                  t.current ? "bg-accent" : "bg-fog"
-                }`}
-              />
-              <p className={`text-[15px] ${t.current ? "text-accent" : ""}`}>{t.label}</p>
-              <p className="mt-0.5 text-[13px] text-muted-foreground">{t.when}</p>
-            </li>
-          ))}
-        </ol>
-        {profile.timeline.length <= 1 && (
+        <p className="mt-6 px-1 text-[13px] text-muted-foreground">Understanding timeline</p>
+        {profile.timeline.length <= 1 ? (
           <Invitation
             line="Your timeline starts with one log."
             body="As understanding deepens, each milestone Ciatta crosses is recorded here, month by month."
             action="Add your first entry"
           />
+        ) : (
+          <div className="mt-3 rounded-2xl bg-surface px-5 py-5">
+            <ol className="space-y-5 border-l border-border pl-5">
+              {profile.timeline.map((t) => (
+                <li key={`${t.label}-${t.when}`} className="relative">
+                  <span
+                    aria-hidden="true"
+                    className={`absolute top-1.5 -left-[25px] h-[7px] w-[7px] rounded-full ${
+                      t.current ? "bg-accent" : "bg-fog"
+                    }`}
+                  />
+                  <p className={`text-[15px] ${t.current ? "text-accent" : ""}`}>{t.label}</p>
+                  <p className="mt-0.5 text-[13px] text-muted-foreground">{t.when}</p>
+                </li>
+              ))}
+            </ol>
+          </div>
         )}
       </section>
 
-
-      {/* Intelligence Preferences */}
-      <section className="mt-10 border-t border-border pt-7">
-        <Eyebrow>Intelligence preferences</Eyebrow>
-        <p className="mt-3 text-[14px] leading-relaxed text-muted-foreground">
-          Choose what Ciatta prioritizes when generating discoveries. Drag to reorder.
+      {/* Preferences */}
+      <section className="mt-9 px-6">
+        <SectionTitle>Preferences</SectionTitle>
+        <p className="mt-3 px-1 text-[14px] leading-relaxed text-muted-foreground">
+          What Ciatta prioritizes when it forms new understanding.
         </p>
-        <ul className="mt-4 overflow-hidden rounded-2xl border border-border">
+        <Group>
           {priorities.map((p, i) => (
-            <li
-              key={p}
-              draggable
-              onDragStart={() => setDragIndex(i)}
-              onDragOver={(e) => e.preventDefault()}
-              onDrop={() => {
-                if (dragIndex !== null && dragIndex !== i) reorder(dragIndex, i);
-                setDragIndex(null);
-              }}
-              onDragEnd={() => setDragIndex(null)}
-              className={`flex items-center gap-4 px-4 py-3.5 text-[15px] transition-colors ${
-                i === priorities.length - 1 ? "" : "border-b border-border"
-              } ${dragIndex === i ? "bg-surface" : ""}`}
-            >
-              <span
-                aria-hidden="true"
-                className="cursor-grab leading-none text-fog select-none active:cursor-grabbing"
-              >
-                {"\u2807"}
-              </span>
+            <div key={p} className="flex items-center gap-3 px-4 py-3.5 text-[15px]">
+              <span className="w-4 text-[13px] text-fog tabular-nums">{i + 1}</span>
               <span className="flex-1">{p}</span>
-              <span className="flex gap-3 text-[13px] text-muted-foreground">
+              <span className="flex gap-4 text-[13px] text-muted-foreground">
                 <button
                   type="button"
                   aria-label={`Move ${p} up`}
@@ -585,63 +589,30 @@ function ProfilePage() {
                   {"\u2303"}
                 </button>
               </span>
-            </li>
+            </div>
           ))}
-        </ul>
+        </Group>
+
+        <Group>
+          <LinkRow label="Notifications" detail="On" />
+          <LinkRow label="Appearance" detail="Light" />
+          <LinkRow label="Connected apps" detail="2" />
+          <LinkRow label="Privacy" />
+        </Group>
       </section>
 
-      {/* Privacy & Intelligence */}
-      <section className="mt-10 border-t border-border pt-7">
-        <Eyebrow>Privacy &amp; intelligence</Eyebrow>
-        <h2 className="mt-3 font-serif text-[24px] leading-tight font-light">
-          Your understanding belongs to you.
-        </h2>
-        <p className="mt-4 text-[14px] leading-relaxed text-muted-foreground">
-          Everything Ciatta learns exists to build your personal understanding and improve your
-          experience. Your information is never sold. Your understanding can always be exported or
+      {/* Support */}
+      <section className="mt-9 px-6">
+        <SectionTitle>Support</SectionTitle>
+        <Group>
+          <LinkRow label="Help" />
+          <LinkRow label="About Ciatta" />
+          <LinkRow label="Legal" />
+        </Group>
+        <p className="mt-4 px-1 text-[13px] leading-relaxed text-muted-foreground">
+          Your understanding belongs to you. It is never sold, and can always be exported or
           permanently deleted.
         </p>
-        <div className="mt-5">
-          {["Export My Data", "Download My Understanding", "Delete My Data", "Privacy Policy"].map(
-            (label, i, arr) => (
-              <button
-                key={label}
-                type="button"
-                className={`flex w-full items-center justify-between py-3 text-left text-[15px] text-accent ${
-                  i === arr.length - 1 ? "" : "border-b border-border"
-                }`}
-              >
-                {label}
-                <span aria-hidden="true" className="text-muted-foreground">
-                  {"\u203A"}
-                </span>
-              </button>
-            ),
-          )}
-        </div>
-      </section>
-
-      {/* Settings */}
-      <section className="mt-10 border-t border-border pt-7">
-        <Eyebrow>Settings</Eyebrow>
-        <div className="mt-2">
-          {["Notifications", "Appearance", "Units", "Language", "Support", "About Ciatta", "Legal"].map(
-            (label, i, arr) => (
-              <button
-                key={label}
-                type="button"
-                className={`flex w-full items-center justify-between py-3 text-left text-[15px] ${
-                  i === arr.length - 1 ? "" : "border-b border-border"
-                }`}
-              >
-                {label}
-                <span aria-hidden="true" className="text-muted-foreground">
-                  {"\u203A"}
-                </span>
-              </button>
-            ),
-          )}
-        </div>
       </section>
     </div>
   );
@@ -650,24 +621,28 @@ function ProfilePage() {
 /** The portrait's silhouette, held while stored understanding is read. */
 function ProfileSkeleton() {
   return (
-    <div className="px-6 pt-10 pb-6" aria-busy="true" aria-live="polite">
-      <header>
-        <h1 className="font-serif text-[46px] leading-[1.05] font-light tracking-[-0.02em]">
-          Profile
-        </h1>
-        <p className="mt-4 font-serif text-[22px] leading-[1.3] font-light">
-          What Ciatta understands about you.
-        </p>
-        <p className="mt-4 text-[14px] leading-relaxed text-muted-foreground">
-          Gathering everything Ciatta has learned so far…
-        </p>
+    <div className="pb-8" aria-busy="true" aria-live="polite">
+      <header className="flex items-center gap-4 px-6 pt-8">
+        <span
+          aria-hidden="true"
+          className="h-[64px] w-[64px] shrink-0 animate-pulse rounded-full bg-secondary"
+        />
+        <div className="flex-1 space-y-2">
+          <Bar w="62%" h={20} />
+          <Bar w="44%" h={12} />
+        </div>
       </header>
 
-      <section className="mt-10 border-t border-border pt-7">
-        <Eyebrow>Your understanding</Eyebrow>
-        <div className="mt-5 space-y-6">
+      <section className="mt-8 px-6">
+        <SectionTitle>About me</SectionTitle>
+        <SkeletonRows rows={3} />
+      </section>
+
+      <section className="mt-9 px-6">
+        <SectionTitle>Your understanding</SectionTitle>
+        <div className="mt-3 space-y-6 rounded-2xl bg-surface px-4 py-5">
           {[0, 1, 2].map((i) => (
-            <div key={i} className="space-y-3 border-b border-border pb-6">
+            <div key={i} className="space-y-3">
               <Bar w="86%" h={20} />
               <Bar w="52%" h={20} />
               <Bar w="34%" h={12} />
@@ -676,45 +651,15 @@ function ProfileSkeleton() {
         </div>
       </section>
 
-      <section className="mt-10">
-        <Eyebrow>Your story</Eyebrow>
-        <div className="mt-4 space-y-3">
-          <Bar w="70%" h={22} />
-          <Bar />
-          <Bar w="92%" />
-          <Bar w="64%" />
-        </div>
-      </section>
-
-      <section className="mt-10 border-t border-border pt-7">
-        <Eyebrow>Areas of understanding</Eyebrow>
+      <section className="mt-9 px-6">
+        <SectionTitle>Health</SectionTitle>
         <SkeletonRows rows={6} />
+        <SkeletonRows rows={4} />
       </section>
 
-      <section className="mt-10 border-t border-border pt-7">
-        <Eyebrow>Health snapshot</Eyebrow>
-        <SkeletonRows rows={6} />
-      </section>
-
-      <section className="mt-10 border-t border-border pt-7">
-        <Eyebrow>How Ciatta learns you</Eyebrow>
-        <SkeletonRows rows={5} />
-      </section>
-
-      <section className="mt-10 border-t border-border pt-7">
-        <Eyebrow>Understanding timeline</Eyebrow>
-        <ol className="mt-5 space-y-6 border-l border-border pl-5">
-          {[0, 1, 2].map((i) => (
-            <li key={i} className="relative space-y-2">
-              <span
-                aria-hidden="true"
-                className="absolute top-1.5 -left-[25px] h-[7px] w-[7px] animate-pulse rounded-full bg-secondary"
-              />
-              <Bar w="58%" />
-              <Bar w="28%" h={12} />
-            </li>
-          ))}
-        </ol>
+      <section className="mt-9 px-6">
+        <SectionTitle>Preferences</SectionTitle>
+        <SkeletonRows rows={4} />
       </section>
     </div>
   );
