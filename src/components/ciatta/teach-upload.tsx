@@ -193,11 +193,11 @@ export function TeachUpload({
         type="button"
         onClick={save}
         disabled={!file}
-        className="mt-8 rounded-full py-4 text-[16px] text-primary-foreground transition-opacity disabled:opacity-40"
-        style={{ background: "linear-gradient(100deg, var(--clay), oklch(0.72 0.17 45))" }}
+        className="mt-8 rounded-full bg-foreground py-4 text-[15px] font-medium text-background transition-opacity hover:opacity-90 disabled:opacity-40"
       >
         Teach Ciatta
       </button>
+
     </div>
   );
 }

@@ -492,13 +492,11 @@ function QuickAddPage() {
           </span>
           <span className="h-1 flex-1 overflow-hidden rounded-full bg-secondary">
             <span
-              className="block h-full rounded-full transition-[width] duration-500 ease-out"
-              style={{
-                width: `${((index + 1) / total) * 100}%`,
-                background: "linear-gradient(90deg, var(--clay), oklch(0.72 0.17 45))",
-              }}
+              className="block h-full rounded-full bg-accent transition-[width] duration-500 ease-out"
+              style={{ width: `${((index + 1) / total) * 100}%` }}
             />
           </span>
+
         </div>
       </div>
 
