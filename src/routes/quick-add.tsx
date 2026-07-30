@@ -315,7 +315,7 @@ function QuickAddPage() {
 
 
   return (
-    <div className="flex min-h-full flex-col px-6 pb-6 pt-6">
+    <div className="flex min-h-full flex-col px-7 pt-6 pb-6">
       <div className="flex min-h-11 items-center gap-3">
         <button
           type="button"
