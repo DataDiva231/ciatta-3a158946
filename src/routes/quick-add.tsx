@@ -230,15 +230,24 @@ function QuickAddPage() {
     const rows = [
       ...steps
         .filter((s) => s.key !== "category" && answers[s.key])
-        .map((s) => ({ key: s.key, label: CONFIRM_LABEL[s.key] ?? LOGGED_LABEL[s.key] ?? "Logged" })),
-      { key: "understanding", label: "Understanding refined" },
+        .map((s) => ({
+          key: s.key,
+          label: CONFIRM_LABEL[s.key] ?? LOGGED_LABEL[s.key] ?? "Logged",
+          value: answers[s.key],
+        })),
+      { key: "understanding", label: "Understanding refined", value: "Leak risk updated" },
     ];
     return (
-      <div className="flex min-h-full flex-col items-center justify-center px-6 pb-16">
-        <div className="relative grid place-items-center">
+      <div className="flex min-h-full flex-col justify-center px-6 pb-10">
+        <div className="relative mx-auto grid place-items-center">
           <span
-            className="absolute h-[170px] w-[170px] animate-ping rounded-full opacity-40"
-            style={{ background: "radial-gradient(circle, var(--clay) 0%, transparent 65%)" }}
+            className="absolute h-[190px] w-[190px] animate-ping rounded-full opacity-40"
+            style={{ background: "radial-gradient(circle, var(--clay) 0%, transparent 62%)" }}
+            aria-hidden="true"
+          />
+          <span
+            className="animate-in zoom-in-50 absolute h-[150px] w-[150px] rounded-full opacity-60 blur-xl duration-700"
+            style={{ background: "radial-gradient(circle, var(--clay) 0%, transparent 70%)" }}
             aria-hidden="true"
           />
           <img
@@ -247,29 +256,38 @@ function QuickAddPage() {
             width={1024}
             height={1024}
             loading="eager"
-            className="animate-in zoom-in-95 relative w-[170px] duration-500"
+            className="animate-in zoom-in-95 relative w-[150px] duration-500"
           />
         </div>
 
-        <h1 className="animate-in fade-in mt-4 text-center font-serif text-[28px] leading-tight duration-300">
+        <h1 className="animate-in fade-in mt-1 text-center font-serif text-[28px] leading-tight duration-300">
           Understanding updated
         </h1>
+        <p className="animate-in fade-in mt-2 text-center text-[13px] leading-relaxed text-muted-foreground duration-500">
+          Thank you! Every update makes Ciatta smarter.
+        </p>
 
-        <ul className="mt-5 space-y-2">
+        <ul className="mt-5 overflow-hidden rounded-2xl border border-border bg-surface">
           {rows.map((r, i) => (
             <li
               key={r.key}
-              className="animate-in fade-in slide-in-from-bottom-2 flex items-center justify-center gap-2 text-[14px] text-foreground duration-300 fill-mode-backwards"
-              style={{ animationDelay: `${120 + i * 110}ms` }}
+              className="animate-in fade-in slide-in-from-bottom-1 fill-mode-backwards flex items-center gap-3 border-t border-border px-4 py-3 duration-300 first:border-t-0"
+              style={{ animationDelay: `${80 + i * 90}ms` }}
             >
-              <CheckIcon className="text-accent" />
-              {r.label}
+              <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-secondary text-accent">
+                <CheckIcon />
+              </span>
+              <span className="min-w-0">
+                <span className="block text-[14px] text-foreground">{r.label}</span>
+                <span className="block truncate text-[12px] text-muted-foreground">{r.value}</span>
+              </span>
             </li>
           ))}
         </ul>
       </div>
     );
   }
+
 
 
   return (
@@ -294,22 +312,25 @@ function QuickAddPage() {
           </svg>
         </button>
         {index > 0 && (
-          <div className="mx-auto flex min-w-0 flex-wrap items-center justify-center gap-1.5">
+          <div className="mx-auto flex min-w-0 items-center gap-1.5 rounded-full bg-secondary px-3 py-1.5 text-[12px] text-accent">
             {answeredSteps.map((s, i) =>
               answers[s.key] ? (
-                <button
-                  key={s.key}
-                  type="button"
-                  onClick={() => goTo(i)}
-                  className="animate-in fade-in zoom-in-95 flex max-w-[120px] items-center gap-1 rounded-full bg-secondary px-2.5 py-1 text-[11px] text-accent duration-300"
-                >
-                  <span className="truncate">{answers[s.key]}</span>
-                  {i === answeredSteps.length - 1 && <CheckIcon className="shrink-0 text-accent" />}
-                </button>
+                <span key={s.key} className="flex min-w-0 items-center gap-1.5">
+                  {i > 0 && <span className="text-fog">•</span>}
+                  <button
+                    type="button"
+                    onClick={() => goTo(i)}
+                    className="animate-in fade-in zoom-in-95 max-w-[110px] truncate duration-300"
+                  >
+                    {answers[s.key]}
+                  </button>
+                </span>
               ) : null,
             )}
+            <CheckIcon className="shrink-0 text-accent" />
           </div>
         )}
+
         <span className="h-10 w-10 shrink-0" />
       </div>
 
@@ -330,9 +351,11 @@ function QuickAddPage() {
           )}
         </p>
 
+      {step.key === "category" && <p className="label-caps mt-6">Today's suggestions</p>}
 
       {step.layout === "grid" ? (
         <div className="mt-6 grid grid-cols-2 gap-3">
+
           {step.options.map((o) => {
             const selected = answers[step.key] === o.label;
             return (
