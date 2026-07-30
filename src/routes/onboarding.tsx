@@ -673,8 +673,7 @@ function Intro({
         <TopBar />
         <Body>
           <div className="flex h-full flex-col items-center justify-center text-center">
-            <p className="text-[12px] tracking-[0.34em] text-muted-foreground">CIATTA</p>
-            <h1 className="mt-10 font-serif text-[38px] leading-[1.15] font-light tracking-[-0.02em]">
+            <h1 className="font-serif text-[38px] leading-[1.15] font-light tracking-[-0.02em]">
               Every body
               <br />
               has a story.
