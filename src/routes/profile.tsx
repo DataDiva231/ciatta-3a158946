@@ -446,7 +446,13 @@ function ProfilePage() {
             />
           ))}
         </div>
+        {!profile.hasData && (
+          <ExampleNote>
+            These numbers fill in as Ciatta observes you. Nothing here is estimated.
+          </ExampleNote>
+        )}
       </section>
+
 
       {/* How Ciatta Learns You */}
       <section className="mt-10 border-t border-border pt-7">
