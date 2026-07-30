@@ -206,3 +206,26 @@ export function todayKey() {
 
   return "2026-07-29";
 }
+
+const PRIORITY_KEY = "ciatta.priorities.v1";
+
+/** User-ordered health priorities Ciatta weighs when generating discoveries. */
+export function usePriorities(defaults: string[]) {
+  const { value, update, hydrated } = usePersistentState<string[]>(PRIORITY_KEY, []);
+
+  // Keep stored order, append anything new, drop anything retired.
+  const order = value.filter((p) => defaults.includes(p));
+  const priorities = [...order, ...defaults.filter((d) => !order.includes(d))];
+
+  const reorder = useCallback(
+    (from: number, to: number) => {
+      const next = [...priorities];
+      const [moved] = next.splice(from, 1);
+      next.splice(to, 0, moved);
+      update(next);
+    },
+    [priorities, update],
+  );
+
+  return { priorities, reorder, hydrated };
+}
