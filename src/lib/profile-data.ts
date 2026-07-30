@@ -31,6 +31,10 @@ export type TimelineStep = { label: string; when: string; current?: boolean };
 
 export type ProfileView = {
   hydrated: boolean;
+  /** False while Ciatta has too little evidence — sections show invitations instead. */
+  hasData: boolean;
+  /** How many logs the portrait is drawn from. */
+  observationCount: number;
   understandings: Understanding[];
   story: string[];
   areas: Area[];
@@ -39,6 +43,7 @@ export type ProfileView = {
   timeline: TimelineStep[];
   defaultPriorities: string[];
 };
+
 
 /** Ciatta's confidence vocabulary — one tier label per confidence band. */
 export function tierFor(v: number) {
