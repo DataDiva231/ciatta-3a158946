@@ -65,8 +65,8 @@ function ClipIcon() {
 
 const OTHER_WAYS = [
   { to: "/talk", label: "Talk", Icon: MicIcon },
-  { to: "/talk", label: "Capture", Icon: CameraIcon },
-  { to: "/talk", label: "Attach", Icon: ClipIcon },
+  { to: "/capture", label: "Capture", Icon: CameraIcon },
+  { to: "/attach", label: "Attach", Icon: ClipIcon },
 ] as const;
 
 function TeachPage() {
