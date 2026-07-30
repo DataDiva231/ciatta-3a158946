@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
+
+import { ProfileIcon } from "@/components/ciatta/tab-bar";
 
 
 import figureAsset from "@/assets/ciatta-figure-cut.png.asset.json";
