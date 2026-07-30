@@ -275,36 +275,20 @@ function QuickAddPage() {
     ];
 
     return (
-      <div className="flex min-h-full flex-col justify-center px-6 pb-12">
-        <div className="relative mx-auto grid place-items-center">
-          <span
-            className="absolute h-[176px] w-[176px] animate-ping rounded-full opacity-30"
-            style={{ background: "radial-gradient(circle, var(--clay) 0%, transparent 62%)" }}
-            aria-hidden="true"
-          />
-          <span
-            className="animate-in zoom-in-50 absolute h-[140px] w-[140px] rounded-full opacity-50 blur-xl duration-700"
-            style={{ background: "radial-gradient(circle, var(--clay) 0%, transparent 70%)" }}
-            aria-hidden="true"
-          />
-          <img
-            src={orb}
-            alt=""
-            width={1024}
-            height={1024}
-            loading="eager"
-            className="animate-in zoom-in-95 relative w-[140px] duration-500"
-          />
+      <div className="flex min-h-full flex-col justify-center px-7 pb-12">
+        <div className="mx-auto">
+          <Understanding size="hero" confidence={88} active className="animate-in fade-in duration-700" />
         </div>
 
-        <h1 className="animate-in fade-in mt-6 text-center font-serif text-[27px] leading-[1.15] tracking-[-0.01em] duration-300">
+        <h1 className="animate-in fade-in mt-8 text-center font-serif text-[30px] leading-[1.12] tracking-[-0.015em] duration-300">
           Understanding updated
         </h1>
-        <p className="animate-in fade-in mt-2.5 text-center text-[13px] leading-relaxed text-muted-foreground duration-500">
-          Thank you! Every update makes Ciatta smarter.
+        <p className="animate-in fade-in mt-3 text-center text-[13px] leading-relaxed text-muted-foreground duration-500">
+          Thank you — every update makes Ciatta more yours.
         </p>
 
-        <ul className="mt-8 overflow-hidden rounded-[20px] bg-surface px-5 shadow-[0_1px_2px_rgba(0,0,0,0.03)]">
+        <ul className="mt-9">
+
           {rows.map((r, i) => (
             <li
               key={r.key}
