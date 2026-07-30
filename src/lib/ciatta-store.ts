@@ -63,6 +63,8 @@ function write(key: string, value: unknown) {
   } catch {
     /* storage unavailable — the demo still works in memory */
   }
+  // Let every mounted reader of this key refresh immediately.
+  window.dispatchEvent(new CustomEvent(SYNC_EVENT, { detail: key }));
 }
 
 /** Hydration-safe: starts at the fallback on both server and first client render. */
@@ -73,6 +75,21 @@ function usePersistentState<T>(key: string, fallback: T) {
   useEffect(() => {
     setValue(read<T>(key, fallback));
     setHydrated(true);
+
+    const sync = (e: Event) => {
+      const changed = (e as CustomEvent<string>).detail;
+      if (changed && changed !== key) return;
+      setValue(read<T>(key, fallback));
+    };
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === key) setValue(read<T>(key, fallback));
+    };
+    window.addEventListener(SYNC_EVENT, sync);
+    window.addEventListener("storage", onStorage);
+    return () => {
+      window.removeEventListener(SYNC_EVENT, sync);
+      window.removeEventListener("storage", onStorage);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key]);
 
@@ -86,6 +103,7 @@ function usePersistentState<T>(key: string, fallback: T) {
 
   return { value, update, hydrated };
 }
+
 
 export function useCheckIns() {
   const { value, update, hydrated } = usePersistentState<CheckIn[]>(CHECKIN_KEY, []);
