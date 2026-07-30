@@ -156,8 +156,19 @@ export function buildNarrative(
   const hrShift = recentShift("restingHr");
   const hrvShift = recentShift("hrv");
 
-  const headline =
-    state === "recover"
+  const impact = buildImpact(events);
+  const confidence = buildConfidence(checkIn, events);
+  const flow = flowShift(events);
+  const heavier = flow ? flow.current > flow.baseline + 0.3 : false;
+
+  // A fresh Quick Add takes the headline: teaching Ciatta must visibly change the read.
+  const headline = heavier
+    ? [
+        { text: "Your flow is running " },
+        { text: "heavier than usual", accent: true },
+        { text: " today." },
+      ]
+    : state === "recover"
       ? [
           { text: "Your body is asking for " },
           { text: "more recovery", accent: true },
@@ -174,6 +185,7 @@ export function buildNarrative(
             { text: "holding steady", accent: true },
             { text: " today." },
           ];
+
 
   const lines: NarrativeLine[] = [
     {
