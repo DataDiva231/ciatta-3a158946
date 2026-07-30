@@ -25,49 +25,12 @@ export const Route = createFileRoute("/teach")({
   component: TeachPage,
 });
 
-function MicIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <rect x="9" y="3" width="6" height="11" rx="3" stroke="currentColor" strokeWidth="1.4" />
-      <path
-        d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3"
-        stroke="currentColor"
-        strokeWidth="1.4"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
-
-function CameraIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <rect x="3" y="6.5" width="18" height="13" rx="3" stroke="currentColor" strokeWidth="1.4" />
-      <circle cx="12" cy="13" r="3.6" stroke="currentColor" strokeWidth="1.4" />
-      <path d="M8.5 6.5 9.7 4.4h4.6L15.5 6.5" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function ClipIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M18.5 11.5 12 18a4 4 0 0 1-5.7-5.7l7-7a2.8 2.8 0 0 1 4 4l-7 7a1.6 1.6 0 0 1-2.3-2.3l6.4-6.4"
-        stroke="currentColor"
-        strokeWidth="1.4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
 const OTHER_WAYS = [
-  { to: "/talk", label: "Talk", Icon: MicIcon },
-  { to: "/capture", label: "Capture", Icon: CameraIcon },
-  { to: "/attach", label: "Attach", Icon: ClipIcon },
+  { to: "/talk", label: "Talk" },
+  { to: "/capture", label: "Capture" },
+  { to: "/attach", label: "Attach" },
 ] as const;
+
 
 function TeachPage() {
   const { latest } = useCheckIns();
