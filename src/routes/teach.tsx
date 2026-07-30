@@ -149,7 +149,4 @@ function TeachPage() {
       </div>
     </div>
   );
-
-    </div>
-  );
 }
