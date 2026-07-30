@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
+
+import { ProfileIcon } from "@/components/ciatta/tab-bar";
 
 
 import figureAsset from "@/assets/ciatta-figure-cut.png.asset.json";
@@ -79,11 +81,20 @@ function TodayPage() {
 
   return (
     <div className="flex h-[calc(100svh-76px)] min-h-[calc(100svh-76px)] flex-col">
-      <header className="shrink-0 px-6 pt-6 [@media(max-height:780px)]:pt-4">
-        <p className="text-[15px] font-medium text-accent">
-          Good morning, Jenny
-        </p>
-        <p className="mt-1 text-sm text-muted-foreground">{formatLongDate(today.date)}</p>
+      <header className="flex shrink-0 items-start justify-between gap-4 px-6 pt-6 [@media(max-height:780px)]:pt-4">
+        <div>
+          <p className="text-[15px] font-medium text-accent">
+            Good morning, Jenny
+          </p>
+          <p className="mt-1 text-sm text-muted-foreground">{formatLongDate(today.date)}</p>
+        </div>
+        <Link
+          to="/profile"
+          aria-label="Profile"
+          className="mt-0.5 inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-surface/70 transition-colors hover:bg-secondary"
+        >
+          <ProfileIcon active={false} />
+        </Link>
       </header>
 
       <div className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden">

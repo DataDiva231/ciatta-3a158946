@@ -46,7 +46,7 @@ function JourneyIcon({ active }: IconProps) {
   );
 }
 
-function ProfileIcon({ active }: IconProps) {
+export function ProfileIcon({ active }: IconProps) {
   return (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <circle cx="12" cy="8.5" r="3.6" stroke={stroke(active)} strokeWidth="1.4" />
@@ -64,7 +64,6 @@ const tabs = [
   { to: "/", label: "Today", Icon: SunriseIcon },
   { to: "/teach", label: "Teach", Icon: TeachIcon },
   { to: "/journey", label: "Journey", Icon: JourneyIcon },
-  { to: "/profile", label: "Profile", Icon: ProfileIcon },
 ] as const;
 
 export function TabBar() {
