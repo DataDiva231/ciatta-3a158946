@@ -42,7 +42,7 @@ export function buildTeachSuggestions(
   confidence: number,
 ): TeachSuggestion[] {
   const phase = phaseForDay(today.cycleDay);
-  const menstrual = phase === "menstrual";
+  const menstrual = phase === "Menstrual";
   const out: TeachSuggestion[] = [];
 
   const sinceProduct = hoursSince(events, "Period Product");
