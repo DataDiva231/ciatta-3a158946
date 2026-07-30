@@ -413,12 +413,9 @@ function ProfilePage() {
 
   if (!profile.hydrated) return <ProfileSkeleton />;
 
-  const since =
-    profile.snapshot.find((s) => s.label === "Tracking Since")?.value ?? "today";
-  const lifeStage =
-    profile.snapshot.find((s) => s.label === "Current Life Stage")?.value ?? "Cycling";
-  const focus =
-    profile.snapshot.find((s) => s.label === "Current Learning Focus")?.value ?? "Recovery";
+  const since = profile.snapshot.find((s) => s.label === "Learning since")?.value ?? "today";
+  const lifeStage = profile.snapshot.find((s) => s.label === "Life stage")?.value ?? "Cycling";
+  const focus = profile.snapshot.find((s) => s.label === "Looking at next")?.value ?? "Recovery";
 
   return (
     <div className="pb-8">
@@ -429,8 +426,8 @@ function ProfilePage() {
         <SectionTitle>About me</SectionTitle>
         <Group>
           <Row label="Life stage" value={lifeStage} />
-          <Row label="Learning focus" value={focus} />
-          <Row label="Observations" value={String(profile.observationCount)} />
+          <Row label="Paying attention to" value={focus} />
+          <Row label="Where we are" value={profile.observationSummary} />
         </Group>
         <p className="mt-3 px-1 text-[14px] leading-relaxed text-muted-foreground">
           {profile.story[0]}
@@ -439,9 +436,16 @@ function ProfilePage() {
 
       {/* Your understanding — the centerpiece */}
       <section className="mt-9 px-6">
-        <SectionTitle note={`${profile.understandings.length} insights`}>
+        <SectionTitle
+          note={
+            profile.understandings.length === 1
+              ? "1 in progress"
+              : `${profile.understandings.length} in progress`
+          }
+        >
           Your understanding
         </SectionTitle>
+
         {!profile.hasData && (
           <Invitation
             line="Your portrait is still being drawn."

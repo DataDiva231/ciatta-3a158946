@@ -152,7 +152,8 @@ function discoveryFromGroup(g: Group): Discovery {
     title:
       count > 1
         ? `${value} is becoming your usual ${label} pattern.`
-        : `You started teaching Ciatta about ${label}.`,
+        : `${value} is the first thing Ciatta knows about your ${label}.`,
+
     confidenceLabel: confidenceLabel(confidence),
     confidence,
     tone: toneFor(g.category),
