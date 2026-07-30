@@ -116,7 +116,7 @@ function TodayPage() {
 
         <h2
           key={narrative.headline.map((p) => p.text).join("")}
-          className="animate-in fade-in slide-in-from-bottom-2 mt-3 font-serif text-[34px] leading-[1.1] tracking-[-0.015em] duration-500 [@media(max-height:780px)]:text-[29px]"
+          className="animate-dissolve mt-3 font-serif text-[34px] leading-[1.1] tracking-[-0.015em] [@media(max-height:780px)]:text-[29px]"
         >
           {narrative.headline.map((part, i) => (
             <span key={i} className={part.accent ? "text-accent" : undefined}>

@@ -72,10 +72,10 @@ function Screen({
   return (
     <div
       key={stepKey}
-      className={`flex h-[100svh] flex-col ${
-        dir === 1 ? "animate-in slide-in-from-right-4" : "animate-in slide-in-from-left-4"
-      } fade-in duration-300 ease-out`}
+      data-dir={dir}
+      className="animate-dissolve flex h-[100svh] flex-col"
     >
+
       {children}
     </div>
   );
@@ -872,7 +872,7 @@ function SummaryScreen({ data, onFinish }: { data: Onboarding; onFinish: () => v
               return (
                 <div
                   key={line}
-                  className="animate-in fade-in slide-in-from-bottom-2 flex gap-3 duration-700"
+                  className="animate-dissolve flex gap-3"
                   style={{ animationDelay: `${i * 110}ms`, animationFillMode: "backwards" }}
                 >
                   <Glyph

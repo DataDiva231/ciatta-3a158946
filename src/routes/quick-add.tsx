@@ -292,7 +292,7 @@ function QuickAddPage() {
           {rows.map((r, i) => (
             <li
               key={r.key}
-              className="animate-in fade-in slide-in-from-bottom-1 fill-mode-backwards flex items-center gap-3.5 border-t border-border/60 py-3.5 duration-300 first:border-t-0"
+              className="animate-dissolve flex items-center gap-3.5 border-t border-border/60 py-3.5 first:border-t-0"
               style={{ animationDelay: `${80 + i * 90}ms` }}
             >
               <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-secondary text-accent">
@@ -344,7 +344,7 @@ function QuickAddPage() {
                   <button
                     type="button"
                     onClick={() => goTo(i)}
-                    className="animate-in fade-in zoom-in-95 max-w-[100px] truncate duration-300"
+                    className="animate-dissolve max-w-[100px] truncate"
                   >
                     {answers[s.key]}
                   </button>
@@ -360,10 +360,10 @@ function QuickAddPage() {
 
       <div
         key={`${step.key}-${index}`}
-        className={`animate-in fade-in duration-300 ease-out ${
-          direction === "forward" ? "slide-in-from-right-4" : "slide-in-from-left-4"
-        }`}
+        data-direction={direction}
+        className="animate-dissolve"
       >
+
         <h1 className="mt-8 font-serif text-[30px] leading-[1.12] tracking-[-0.015em]">
           {step.title}
         </h1>
