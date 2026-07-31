@@ -210,7 +210,46 @@ export function Composer({
           {memo.error ?? (recording ? "Listening… tap to stop." : "Taking it in…")}
         </p>
       )}
+
+      {sheet && (
+        <div className="fixed inset-0 z-50 flex flex-col justify-end">
+          <button
+            type="button"
+            aria-label="Cancel"
+            onClick={() => setSheet(false)}
+            className="animate-in fade-in absolute inset-0 bg-foreground/25 duration-200"
+          />
+          <div className="animate-in fade-in relative px-3 pb-3 duration-200">
+            <div className="overflow-hidden rounded-[18px] bg-surface">
+              {[
+                { label: "Take Photo", action: () => cameraInput.current?.click() },
+                { label: "Scan Document", action: () => scanInput.current?.click() },
+                { label: "Choose from Library", action: () => libraryInput.current?.click() },
+              ].map((o, i) => (
+                <button
+                  key={o.label}
+                  type="button"
+                  onClick={o.action}
+                  className={`w-full px-5 py-4 text-[16px] text-foreground transition-colors active:bg-secondary ${
+                    i > 0 ? "border-t border-border" : ""
+                  }`}
+                >
+                  {o.label}
+                </button>
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={() => setSheet(false)}
+              className="mt-2 w-full rounded-[18px] bg-surface px-5 py-4 text-[16px] font-medium text-foreground transition-colors active:bg-secondary"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
     </div>
+
   );
 }
 
