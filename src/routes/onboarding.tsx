@@ -621,6 +621,22 @@ function OnboardingPage() {
     }
   };
 
+  if (!hydrated) return <div className="min-h-[100svh] bg-background" />;
+
+  if (phase === "splash") return <Splash />;
+
+  if (phase === "auth")
+    return (
+      <div className="min-h-[100svh] bg-background">
+        <Welcome
+          onChoose={(method) => {
+            save({ authMethod: method });
+            setPhase("flow");
+          }}
+        />
+      </div>
+    );
+
   return (
     <div className="min-h-[100svh] bg-background">
       {beat ? (
@@ -641,9 +657,10 @@ function OnboardingPage() {
 function Beat({ line, confidence }: { line: string; confidence: number }) {
   return (
     <div className="animate-in fade-in flex h-[100svh] flex-col items-center justify-center px-10 duration-500">
-      <p className="animate-in fade-in text-[12px] tracking-[0.1em] text-muted-foreground uppercase duration-700">
-        Ciatta is understanding
+      <p className="animate-in fade-in text-[11px] tracking-[0.14em] text-muted-foreground/80 uppercase duration-700">
+        Getting to know you
       </p>
+
       <div className="mt-10">
         <Understanding size={212} confidence={confidence} active />
       </div>
