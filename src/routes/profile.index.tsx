@@ -480,7 +480,9 @@ function ProfilePage() {
         <p className="mt-3 text-[15px] leading-relaxed text-muted-foreground">
           You&rsquo;re {identity.lifeStage.toLowerCase()}, and you came to me wanting to{" "}
           {identity.goals.length
-            ? identity.goals.map((g) => g.toLowerCase()).join(" and ")
+            ? identity.goals
+                .map((g) => g.toLowerCase().replace(/\bmy\b/g, "your"))
+                .join(" and ")
             : "understand your body better"}
           . {clearest ? `Your ${clearest.name.toLowerCase()} is the clearest part of the picture.` : ""}{" "}
           I&rsquo;m still discovering your {focus.toLowerCase()}.
