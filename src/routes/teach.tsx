@@ -30,10 +30,36 @@ export const Route = createFileRoute("/teach")({
 
 
 function TeachPage() {
+  const router = useRouter();
   const { latest } = useCheckIns();
-  const { events } = useQuickAddEvents();
+  const { events, addEvent } = useQuickAddEvents();
   const narrative = buildNarrative(latest, events);
   const suggestions = buildTeachSuggestions(events, narrative.confidence.value);
+  const [saved, setSaved] = useState(false);
+
+  const share = (text: string) => {
+    addEvent({
+      category: "Note",
+      value: text,
+      timestamp: new Date().toISOString(),
+      metadata: { Note: text },
+    });
+    setSaved(true);
+    window.setTimeout(() => router.navigate({ to: "/" }), 1400);
+  };
+
+  if (saved) {
+    return (
+      <div className="animate-dissolve flex min-h-[70vh] flex-col items-center justify-center px-8 text-center">
+        <Understanding size="hero" confidence={narrative.confidence.value} />
+        <h1 className="mt-8 font-serif text-[28px] leading-tight">Got it.</h1>
+        <p className="mt-3 text-[15px] leading-relaxed text-muted-foreground">
+          Tomorrow's understanding just became a little clearer.
+        </p>
+      </div>
+    );
+  }
+
 
   return (
     <div className="flex min-h-full flex-col px-7 pt-6 pb-2">
