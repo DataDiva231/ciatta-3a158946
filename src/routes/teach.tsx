@@ -37,6 +37,12 @@ export const Route = createFileRoute("/teach")({
 
 
 
+/** Where a category sits in what the engine most wants to learn. */
+function rank(wanted: string[], category: string) {
+  const at = wanted.indexOf(category);
+  return at < 0 ? wanted.length : at;
+}
+
 function TeachPage() {
   const router = useRouter();
   const { latest } = useCheckIns();
