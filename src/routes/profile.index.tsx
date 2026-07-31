@@ -1,7 +1,8 @@
 import { useRef, useState } from "react";
-import { Link, createFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 
 import { usePriorities } from "@/lib/ciatta-store";
+import { signOut } from "@/lib/onboarding-store";
 import { useIdentity } from "@/lib/profile-store";
 import { useProfile, type Area, type SourceRow, type Understanding } from "@/lib/profile-data";
 
@@ -579,6 +580,23 @@ function ProfilePage() {
         </p>
       </section>
     </div>
+  );
+}
+
+function SignOutRow() {
+  const navigate = useNavigate();
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        signOut();
+        navigate({ to: "/onboarding", replace: true });
+      }}
+      className={`flex w-full items-center justify-between gap-4 py-3.5 text-left text-[16px] ${pressable}`}
+    >
+      Sign out
+      <Chevron />
+    </button>
   );
 }
 
