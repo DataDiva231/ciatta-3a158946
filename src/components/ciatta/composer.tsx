@@ -72,7 +72,7 @@ export function Composer({
       />
 
 
-      <div className="mt-3 flex items-center gap-1">
+      <div className="mt-2 flex items-center gap-1">
         {[
           { icon: Plus, label: "Add" },
           { icon: Link2, label: "Add a link" },
@@ -83,7 +83,7 @@ export function Composer({
             type="button"
             aria-label={l}
             onClick={send}
-            className="flex h-11 w-11 items-center justify-center rounded-full text-muted-foreground transition-colors active:bg-secondary"
+            className="flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground transition-colors active:bg-secondary"
           >
             <Icon size={18} strokeWidth={1.6} />
           </button>
@@ -95,7 +95,7 @@ export function Composer({
           type="button"
           aria-label="Attach a file"
           onClick={send}
-          className="flex h-11 w-11 items-center justify-center rounded-full text-muted-foreground transition-colors active:bg-secondary"
+          className="flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground transition-colors active:bg-secondary"
         >
           <Paperclip size={18} strokeWidth={1.6} />
         </button>
@@ -106,7 +106,7 @@ export function Composer({
           disabled={transcribing}
           aria-label={recording ? "Stop listening" : "Speak instead"}
           aria-pressed={recording}
-          className="relative flex h-11 w-11 items-center justify-center rounded-full bg-accent text-accent-foreground transition-transform duration-500 disabled:opacity-60"
+          className="relative flex h-10 w-10 items-center justify-center rounded-full bg-accent text-accent-foreground transition-transform duration-500 disabled:opacity-60"
           style={{ transform: recording ? `scale(${1 + memo.level * 0.06})` : "scale(1)" }}
         >
           {recording ? <Waveform level={memo.level} /> : <Mic size={18} strokeWidth={1.7} />}
