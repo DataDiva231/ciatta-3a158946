@@ -81,15 +81,16 @@ export const emergingInsights = [
 ];
 
 export const understandingMilestone = {
-  label: "Recovery Confidence",
+  label: "Recovery",
   from: 63,
   to: 82,
-  note: "We've observed enough consistent evidence to become highly confident.",
+  note: "I've seen the same thing enough times that it's become clear.",
 };
 
 export const journeyTimeline = [
-  { month: "July", note: "Recovery understanding improved." },
-  { month: "June", note: "Cycle prediction became more accurate." },
-  { month: "May", note: "Sleep relationship discovered." },
-  { month: "April", note: "Baseline established." },
+  { month: "July", note: "Your recovery became easier to understand." },
+  { month: "June", note: "Your cycle became easier to recognise." },
+  { month: "May", note: "I noticed how sleep connects to your days." },
+  { month: "April", note: "I began learning your rhythm." },
 ];
+

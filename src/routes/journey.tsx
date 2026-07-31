@@ -175,8 +175,9 @@ function JourneyPage() {
           </div>
         ) : (
           <p className="mt-4 text-[14px] leading-[1.7] text-muted-foreground">
-            Ciatta is still listening. What it's close to understanding appears here first.
+            I'm still listening. What I'm close to understanding appears here first.
           </p>
+
         )}
       </section>
 
