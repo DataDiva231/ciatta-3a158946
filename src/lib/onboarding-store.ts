@@ -54,7 +54,9 @@ export const DEFAULT_ONBOARDING: Onboarding = {
   notifications: "",
   answers: {},
   path: [],
+  authMethod: "",
 };
+
 
 export function useOnboarding() {
   const { value, updateWith, hydrated } = usePersistentState<Onboarding>(
