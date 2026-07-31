@@ -19,6 +19,7 @@ export const Route = createFileRoute("/quick-add")({
   // Teach can deep-link straight into a category, skipping the first question.
   validateSearch: (search: Record<string, unknown>) => ({
     category: typeof search.category === "string" ? search.category : undefined,
+    reason: typeof search.reason === "string" ? search.reason : undefined,
   }),
   head: () => ({
     meta: [
@@ -122,7 +123,7 @@ function continuationFor(steps: { key: string }[], answers: Answers, index: numb
 
 function QuickAddPage() {
   const navigate = useNavigate();
-  const { category: presetCategory } = Route.useSearch();
+  const { category: presetCategory, reason } = Route.useSearch();
   const { addEvent, events } = useQuickAddEvents();
   const [index, setIndex] = useState(presetCategory ? 1 : 0);
   const [direction, setDirection] = useState<"forward" | "back">("forward");
@@ -286,6 +287,11 @@ function QuickAddPage() {
         <p className="animate-in fade-in mt-3 text-center text-[13px] leading-relaxed text-muted-foreground duration-500">
           Tomorrow's understanding just became a little clearer.
         </p>
+        {reason && (
+          <p className="animate-in fade-in mt-2 text-center text-[12.5px] leading-relaxed text-muted-foreground/80 duration-700">
+            {reason}
+          </p>
+        )}
 
         <ul className="mt-9">
 
@@ -377,6 +383,13 @@ function QuickAddPage() {
             step.sub
           )}
         </p>
+
+        {reason && index === (presetCategory ? 1 : 0) && (
+          <p className="animate-in fade-in mt-3 max-w-[34ch] text-[12.5px] leading-relaxed text-accent duration-700">
+            {reason}
+          </p>
+        )}
+
 
         {step.key === "category" && lastProduct && (
           <button
