@@ -4,10 +4,8 @@ import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import { ProfileIcon } from "@/components/ciatta/tab-bar";
 import { Understanding } from "@/components/ciatta/understanding";
 
-import { formatLongDate, today } from "@/lib/ciatta-data";
-import { useCheckIns, useQuickAddEvents } from "@/lib/ciatta-store";
-import type { QuickAddEvent } from "@/lib/ciatta-store";
-import { buildNarrative } from "@/lib/narrative";
+import { formatLongDate } from "@/lib/dates";
+import { useIdentity } from "@/lib/profile-store";
 import { ONBOARDING_KEY } from "@/lib/onboarding-store";
 import { useEngine } from "@/lib/use-engine";
 
@@ -32,25 +30,6 @@ export const Route = createFileRoute("/")({
   component: TodayPage,
 });
 
-/** Turns the newest thing Ciatta was taught into a plain, human sentence. */
-function learnedSentence(event: QuickAddEvent | undefined) {
-  if (!event) return "I learned something new about your day.";
-  const value = (event.value ?? "").toLowerCase();
-  switch (event.category) {
-    case "Sleep":
-      return `I learned you slept ${value || "differently than usual"}.`;
-    case "Symptoms":
-      return `I learned you're feeling ${value}.`;
-    case "Flow":
-      return `I learned your flow is ${value}.`;
-    case "Activity":
-      return `I learned about your ${value} session.`;
-    case "Nutrition":
-      return `I learned about ${value}.`;
-    default:
-      return `I learned about your ${event.category.toLowerCase()}.`;
-  }
-}
 /** Highlights one phrase inside a sentence the engine wrote. */
 function splitAccent(sentence: string, accent: string) {
   const at = accent ? sentence.indexOf(accent) : -1;
@@ -62,17 +41,11 @@ function splitAccent(sentence: string, accent: string) {
   ].filter((p) => p.text.length > 0);
 }
 
-/** How clear today feels, in words rather than a score. */
-function understandingLine(value: number, delta: number) {
-  const state =
-    value >= 85
-      ? "Today feels clear to me"
-      : value >= 70
-        ? "Today is becoming clearer"
-        : value >= 50
-          ? "I'm beginning to understand today"
-          : "I'm still listening to today";
-  return delta > 0 ? `${state} · a little clearer since you shared` : state;
+function greeting() {
+  const h = new Date().getHours();
+  if (h < 12) return "Good morning";
+  if (h < 18) return "Good afternoon";
+  return "Good evening";
 }
 
 function TodayPage() {
@@ -89,25 +62,20 @@ function TodayPage() {
     }
   }, [navigate]);
 
-  const { latest } = useCheckIns();
-  const { events } = useQuickAddEvents();
-  const narrative = buildNarrative(latest, events);
-  const primaryLabels = ["Sleep quality", "Resting heart rate"];
-  const primaryLines = narrative.lines.filter((l) => primaryLabels.includes(l.label));
+  const { identity } = useIdentity();
+  const firstName = identity.name.trim().split(" ")[0];
 
-  // Today is one view into the single understanding. Until the engine answers,
-  // the local reading stands in so the screen is never empty.
+  // Today is one view into the single understanding. Nothing stands in for it:
+  // if the engine has nothing to say, the screen says so honestly.
   const { views } = useEngine();
   const view = views?.today;
-  const headline = view ? splitAccent(view.headline, view.accent) : narrative.headline;
-  const standing = view
-    ? view.standing
-    : understandingLine(narrative.confidence.value, narrative.confidence.delta);
-  const evidence = view
-    ? view.evidence
-    : primaryLines.map((l) => ({ label: l.label, text: l.parts.map((p) => p.text).join("") }));
-  const focus = view ? view.focus : narrative.guidance;
-  const depth = view ? view.depth : narrative.confidence.value;
+  const headline = view?.headline
+    ? splitAccent(view.headline, view.accent)
+    : [{ text: "I don't know you yet.", accent: false }];
+  const standing = view?.standing ?? "I'm still listening.";
+  const evidence = view?.evidence ?? [];
+  const focus = view?.focus ?? null;
+  const depth = view?.depth ?? 0;
   // Set by Quick Add so the insight visibly re-forms when the user lands back here.
   const [justTaught, setJustTaught] = useState(false);
 
@@ -125,16 +93,14 @@ function TodayPage() {
     return () => clearTimeout(t);
   }, []);
 
-  const newest = [...events].sort((a, b) => (a.timestamp < b.timestamp ? 1 : -1))[0];
-
   return (
     <div className="flex min-h-[calc(100svh-76px)] flex-col">
       <header className="flex shrink-0 items-start justify-between gap-4 px-7 pt-8">
         <div>
           <h1 className="font-serif text-[26px] leading-none tracking-[-0.015em]">
-            Good morning, Jenny
+            {firstName ? `${greeting()}, ${firstName}` : greeting()}
           </h1>
-          <p className="mt-2 text-[13px] text-muted-foreground">{formatLongDate(today.date)}</p>
+          <p className="mt-2 text-[13px] text-muted-foreground">{formatLongDate()}</p>
         </div>
         <Link
           to="/profile"
@@ -149,15 +115,10 @@ function TodayPage() {
       <div className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden px-7 py-10 [@media(max-height:780px)]:py-6">
         <Understanding size={268} confidence={depth} active={justTaught} />
 
-        {justTaught && (
+        {justTaught && view?.acknowledgment && (
           <div role="status" className="animate-dissolve absolute inset-x-7 bottom-1 text-center">
             <p className="label-caps text-muted-foreground/70">New today</p>
-            <p className="mt-2 font-serif text-[17px] leading-[1.35]">
-              {view?.acknowledgment ?? learnedSentence(newest)}
-            </p>
-            <p className="mt-1 text-[12px] leading-[1.5] text-muted-foreground">
-              Today's understanding became a little clearer.
-            </p>
+            <p className="mt-2 font-serif text-[17px] leading-[1.35]">{view.acknowledgment}</p>
           </div>
         )}
       </div>
@@ -183,33 +144,38 @@ function TodayPage() {
         </p>
 
         {/* Why Ciatta thinks that. Quiet, non-tappable evidence. */}
-        <div className="mt-9 [@media(max-height:780px)]:mt-7">
-          <p className="label-caps text-muted-foreground/70">What I'm noticing</p>
-          <div className="mt-3 divide-y divide-border/50">
-            {evidence.map((row) => (
-              <div key={row.label + row.text} className="py-3 first:pt-0 last:pb-0">
-                <p className="label-caps text-muted-foreground/60">{row.label}</p>
-                <p className="mt-1 text-[13px] leading-[1.55] text-foreground/80">{row.text}</p>
-              </div>
-            ))}
-            {!view && narrative.impact && (
-              <p
-                key={narrative.impact.text}
-                className="animate-in fade-in py-3 text-[12px] leading-[1.5] text-muted-foreground duration-700"
-              >
-                {narrative.impact.source} · {narrative.impact.text}
-              </p>
-            )}
+        {evidence.length > 0 && (
+          <div className="mt-9 [@media(max-height:780px)]:mt-7">
+            <p className="label-caps text-muted-foreground/70">What I'm noticing</p>
+            <div className="mt-3 divide-y divide-border/50">
+              {evidence.map((row) => (
+                <div key={row.label + row.text} className="py-3 first:pt-0 last:pb-0">
+                  <p className="label-caps text-muted-foreground/60">{row.label}</p>
+                  <p className="mt-1 text-[13px] leading-[1.55] text-foreground/80">{row.text}</p>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
-        {/* The single takeaway. */}
+        {/* The single takeaway, or an honest invitation instead of one. */}
         <div className="mt-10 [@media(max-height:780px)]:mt-8">
-          <p className="label-caps text-accent">Today's focus</p>
-          <p className="mt-3 font-serif text-[22px] leading-[1.3]">
-            {focus.lead} {focus.rest}
-          </p>
-          <p className="mt-2 text-[13px] leading-[1.55] text-muted-foreground">{focus.support}</p>
+          {focus ? (
+            <>
+              <p className="label-caps text-accent">Today's focus</p>
+              <p className="mt-3 font-serif text-[22px] leading-[1.3]">
+                {focus.lead} {focus.rest}
+              </p>
+              <p className="mt-2 text-[13px] leading-[1.55] text-muted-foreground">
+                {focus.support}
+              </p>
+            </>
+          ) : (
+            <Link to="/teach" className="inline-flex items-center gap-1.5 text-[15px] text-accent">
+              Tell me about your day
+              <span aria-hidden="true">{"\u203A"}</span>
+            </Link>
+          )}
         </div>
       </section>
     </div>
