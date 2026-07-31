@@ -39,7 +39,12 @@ function TeachPage() {
   const suggestions = buildTeachSuggestions(events, narrative.confidence.value);
   const [saved, setSaved] = useState(false);
   /** Quick Add lives inside this screen: a sheet over the current question. */
-  const [sheet, setSheet] = useState<{ category?: string; reason?: string } | null>(null);
+  const [sheet, setSheet] = useState<{
+    category?: string;
+    reason?: string;
+    step?: TeachSuggestion["step"];
+  } | null>(null);
+
   /** The short "✓ Flow: Moderate" line shown beneath the question. */
   const [confirmed, setConfirmed] = useState<string | null>(null);
 
