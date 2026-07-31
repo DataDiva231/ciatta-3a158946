@@ -109,16 +109,14 @@ function TeachPage() {
       </Link>
 
 
-      <div className="mt-7 flex items-center justify-between text-[13px]">
-        <span className="text-muted-foreground">Other ways to share</span>
-        <span className="flex items-center gap-5">
-          {OTHER_WAYS.map(({ to, label }) => (
-            <Link key={label} to={to} className="text-accent transition-opacity active:opacity-60">
-              {label}
-            </Link>
-          ))}
-        </span>
+      <div className="mt-7">
+        <Composer
+          label="Anything else?"
+          placeholder="Describe what happened in your own words..."
+          onSubmit={share}
+        />
       </div>
+
     </div>
   );
 }
