@@ -383,7 +383,8 @@ function About() {
         asking for. It gets more useful the longer it knows you.
       </p>
       <p className="mt-4 text-[15px] leading-relaxed text-muted-foreground">
-        Ciatta is not a doctor and does not diagnose. If something feels wrong, speak to a clinician.
+        Ciatta is not a doctor and does not diagnose. If something feels wrong, speak to a
+        clinician.
       </p>
       <Card>
         <div className="flex items-center justify-between px-4 py-3.5 text-[15px]">

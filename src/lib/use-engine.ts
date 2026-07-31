@@ -41,7 +41,8 @@ function fromCheckIns(checkIns: CheckIn[]): ObservationInput[] {
   const out: ObservationInput[] = [];
   for (const c of checkIns) {
     const at = c.savedAt || `${c.day}T08:00:00.000Z`;
-    const felt = ["", "Barely slept", "Restless", "Broken", "Solid", "Deep"][c.sleepFelt] ?? "Solid";
+    const felt =
+      ["", "Barely slept", "Restless", "Broken", "Solid", "Deep"][c.sleepFelt] ?? "Solid";
     out.push({
       externalId: `checkin-${c.day}-sleep`,
       occurredAt: at,
@@ -134,11 +135,7 @@ export function useEngine(): { views: EngineViews | null; loading: boolean } {
   const payload = useMemo(() => {
     const fromOnb = fromOnboarding(onboarding);
     return {
-      observations: [
-        ...fromQuickAdd(events),
-        ...fromCheckIns(checkIns),
-        ...fromOnb.observations,
-      ],
+      observations: [...fromQuickAdd(events), ...fromCheckIns(checkIns), ...fromOnb.observations],
       identity: fromOnb.identity,
     };
   }, [events, checkIns, onboarding]);

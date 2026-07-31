@@ -11,7 +11,6 @@ import { buildNarrative } from "@/lib/narrative";
 import { ONBOARDING_KEY } from "@/lib/onboarding-store";
 import { useEngine } from "@/lib/use-engine";
 
-
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
@@ -27,7 +26,6 @@ export const Route = createFileRoute("/")({
         content:
           "What Ciatta understands about you today, why it thinks so, and what to focus on next.",
       },
-
     ],
   }),
 
@@ -64,7 +62,6 @@ function splitAccent(sentence: string, accent: string) {
   ].filter((p) => p.text.length > 0);
 }
 
-
 /** How clear today feels, in words rather than a score. */
 function understandingLine(value: number, delta: number) {
   const state =
@@ -78,10 +75,9 @@ function understandingLine(value: number, delta: number) {
   return delta > 0 ? `${state} · a little clearer since you shared` : state;
 }
 
-
 function TodayPage() {
   const navigate = useNavigate();
-  
+
   // First run: send new users into their first Teach Session.
   useEffect(() => {
     try {
@@ -138,9 +134,7 @@ function TodayPage() {
           <h1 className="font-serif text-[26px] leading-none tracking-[-0.015em]">
             Good morning, Jenny
           </h1>
-          <p className="mt-2 text-[13px] text-muted-foreground">
-            {formatLongDate(today.date)}
-          </p>
+          <p className="mt-2 text-[13px] text-muted-foreground">{formatLongDate(today.date)}</p>
         </div>
         <Link
           to="/profile"
@@ -156,10 +150,7 @@ function TodayPage() {
         <Understanding size={268} confidence={depth} active={justTaught} />
 
         {justTaught && (
-          <div
-            role="status"
-            className="animate-dissolve absolute inset-x-7 bottom-1 text-center"
-          >
+          <div role="status" className="animate-dissolve absolute inset-x-7 bottom-1 text-center">
             <p className="label-caps text-muted-foreground/70">New today</p>
             <p className="mt-2 font-serif text-[17px] leading-[1.35]">
               {view?.acknowledgment ?? learnedSentence(newest)}
@@ -167,7 +158,6 @@ function TodayPage() {
             <p className="mt-1 text-[12px] leading-[1.5] text-muted-foreground">
               Today's understanding became a little clearer.
             </p>
-
           </div>
         )}
       </div>
@@ -191,7 +181,6 @@ function TodayPage() {
         >
           {standing}
         </p>
-
 
         {/* Why Ciatta thinks that. Quiet, non-tappable evidence. */}
         <div className="mt-9 [@media(max-height:780px)]:mt-7">
@@ -220,9 +209,7 @@ function TodayPage() {
           <p className="mt-3 font-serif text-[22px] leading-[1.3]">
             {focus.lead} {focus.rest}
           </p>
-          <p className="mt-2 text-[13px] leading-[1.55] text-muted-foreground">
-            {focus.support}
-          </p>
+          <p className="mt-2 text-[13px] leading-[1.55] text-muted-foreground">{focus.support}</p>
         </div>
       </section>
     </div>
