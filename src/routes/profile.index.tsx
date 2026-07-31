@@ -72,7 +72,7 @@ function SkeletonRows({ rows = 4 }: { rows?: number }) {
 function Invitation({
   line,
   body,
-  action = "Teach Ciatta",
+  action = "Teach me",
 }: {
   line: string;
   body: string;
@@ -722,12 +722,12 @@ function ProfileSkeleton() {
       </header>
 
       <section className="mt-8 px-6">
-        <SectionTitle>About me</SectionTitle>
+        <SectionTitle>What I&rsquo;m working from</SectionTitle>
         <SkeletonRows rows={3} />
       </section>
 
       <section className="mt-9 px-6">
-        <SectionTitle>Your understanding</SectionTitle>
+        <SectionTitle>What I&rsquo;m beginning to understand</SectionTitle>
         <div className="mt-3 space-y-6 rounded-2xl bg-surface px-4 py-5">
           {[0, 1, 2].map((i) => (
             <div key={i} className="space-y-3">
@@ -740,7 +740,7 @@ function ProfileSkeleton() {
       </section>
 
       <section className="mt-9 px-6">
-        <SectionTitle>Health</SectionTitle>
+        <SectionTitle>How my understanding stands</SectionTitle>
         <SkeletonRows rows={6} />
         <SkeletonRows rows={4} />
       </section>
