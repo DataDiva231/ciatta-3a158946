@@ -162,6 +162,7 @@ function TeachPage() {
       <QuickAddSheet
         open={sheet !== null}
         presetCategory={sheet?.category}
+        presetStep={sheet?.step}
         reason={sheet?.reason}
         onClose={() => setSheet(null)}
         onLogged={logged}
