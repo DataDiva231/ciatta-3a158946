@@ -40,9 +40,7 @@ function timeOfDay(iso: string): string {
 function cycleDay(observations: Observation[]): number | null {
   const start = observations.find(
     (o) =>
-      o.category === "Cycle" ||
-      o.value === "Cycle started" ||
-      o.context["cycleStarted"] === "true",
+      o.category === "Cycle" || o.value === "Cycle started" || o.context["cycleStarted"] === "true",
   );
   if (!start) return null;
   const days = Math.floor((Date.now() - new Date(start.occurredAt).getTime()) / 86_400_000);

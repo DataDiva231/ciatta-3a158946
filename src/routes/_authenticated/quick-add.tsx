@@ -16,7 +16,7 @@ import {
   type QuickAddOption,
 } from "@/lib/quick-add";
 
-export const Route = createFileRoute("/quick-add")({
+export const Route = createFileRoute("/_authenticated/quick-add")({
   // Teach can deep-link straight into a category, skipping the first question.
   validateSearch: (search: Record<string, unknown>) => ({
     category: typeof search.category === "string" ? search.category : undefined,
@@ -39,7 +39,6 @@ export const Route = createFileRoute("/quick-add")({
   }),
   component: QuickAddPage,
 });
-
 
 function ProductGlyph({ icon }: { icon: QuickAddOption["icon"] }) {
   const s = { stroke: "var(--muted-foreground)", strokeWidth: 1.3, fill: "none" } as const;
@@ -75,7 +74,11 @@ function ProductGlyph({ icon }: { icon: QuickAddOption["icon"] }) {
     case "underwear":
       return (
         <svg width="44" height="44" viewBox="0 0 44 44" aria-hidden="true">
-          <path d="M8 14h28l-2 8c-4 1-7 4-8 10h-8c-1-6-4-9-8-10l-2-8Z" {...s} strokeLinejoin="round" />
+          <path
+            d="M8 14h28l-2 8c-4 1-7 4-8 10h-8c-1-6-4-9-8-10l-2-8Z"
+            {...s}
+            strokeLinejoin="round"
+          />
         </svg>
       );
     default:
@@ -90,7 +93,14 @@ function ProductGlyph({ icon }: { icon: QuickAddOption["icon"] }) {
 
 function CheckIcon({ className }: { className?: string }) {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true" className={className}>
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+      className={className}
+    >
       <path
         d="m5 12.5 4.5 4.5L19 7"
         stroke="currentColor"
@@ -174,8 +184,6 @@ function QuickAddPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step]);
 
-
-
   /** Records an answer and drops every answer that belonged to a later step. */
   const setAnswer = (stepIndex: number, label: string) => {
     const keep = steps.slice(0, stepIndex).map((s) => s.key);
@@ -186,7 +194,6 @@ function QuickAddPage() {
       return next;
     });
   };
-
 
   const choose = (option: QuickAddOption) => {
     setDirection("forward");
@@ -205,8 +212,6 @@ function QuickAddPage() {
       choose(option);
     }, 180);
   };
-
-
 
   /** One tap re-logs the last product, absorbency and flow, timestamped now. */
   const repeatLast = () => {
@@ -243,8 +248,6 @@ function QuickAddPage() {
     // Previous selections stay in state, so the step shows what was chosen.
     goTo(index - 1);
   };
-
-
 
   /** Builds the structured event and writes it to the shared store. */
   const save = () => {
@@ -306,7 +309,12 @@ function QuickAddPage() {
     return (
       <div className="flex min-h-full flex-col justify-center px-7 pb-12">
         <div className="mx-auto">
-          <Understanding size="hero" confidence={88} active className="animate-in fade-in duration-700" />
+          <Understanding
+            size="hero"
+            confidence={88}
+            active
+            className="animate-in fade-in duration-700"
+          />
         </div>
 
         <h1 className="animate-in fade-in mt-8 text-center font-serif text-[30px] leading-[1.12] tracking-[-0.015em] duration-300">
@@ -322,7 +330,6 @@ function QuickAddPage() {
         )}
 
         <ul className="mt-9">
-
           {rows.map((r, i) => (
             <li
               key={r.key}
@@ -344,9 +351,6 @@ function QuickAddPage() {
       </div>
     );
   }
-
-
-
 
   return (
     <div className="flex min-h-full flex-col px-7 pt-6 pb-6">
@@ -397,12 +401,10 @@ function QuickAddPage() {
         data-direction={direction}
         className={`animate-dissolve ${step.key === "category" ? "flex flex-1 flex-col" : ""}`}
       >
-
         <h1 className="mt-8 font-serif text-[30px] leading-[1.12] tracking-[-0.015em]">
           {step.title}
         </h1>
         <p className="mt-3 max-w-[34ch] text-[13px] leading-relaxed text-muted-foreground">
-
           {continuation ? (
             <>
               <span className="text-foreground">{continuation}</span> {step.sub}
@@ -424,7 +426,10 @@ function QuickAddPage() {
             {lastProduct && (
               <button
                 type="button"
-                onClick={() => { haptic("confirm"); repeatLast(); }}
+                onClick={() => {
+                  haptic("confirm");
+                  repeatLast();
+                }}
                 className="mb-5 flex w-full items-center gap-3.5 rounded-[18px] bg-surface px-4 py-3.5 text-left shadow-soft ring-1 ring-accent/40 transition-all duration-200 active:scale-[0.99]"
               >
                 <span className="min-w-0 flex-1">
@@ -432,12 +437,18 @@ function QuickAddPage() {
                     Same as last time
                   </span>
                   <span className="mt-1 block truncate text-[12px] leading-none text-muted-foreground">
-                    {[lastProduct.value, lastProduct.metadata?.Absorbency, lastProduct.metadata?.Flow]
+                    {[
+                      lastProduct.value,
+                      lastProduct.metadata?.Absorbency,
+                      lastProduct.metadata?.Flow,
+                    ]
                       .filter(Boolean)
                       .join(" · ")}
                   </span>
                 </span>
-                <span className="shrink-0 text-[12px] leading-none text-muted-foreground">1 tap</span>
+                <span className="shrink-0 text-[12px] leading-none text-muted-foreground">
+                  1 tap
+                </span>
               </button>
             )}
 
@@ -466,23 +477,21 @@ function QuickAddPage() {
           </div>
         )}
 
-
-
-
         {step.key === "category" ? null : step.layout === "grid" ? (
           <div className="mt-8 grid grid-cols-2 gap-3">
-
             {options.map((o) => {
               const selected = answers[step.key] === o.label;
               return (
                 <button
                   key={o.label}
                   type="button"
-                  onClick={() => { haptic("tap"); choose(o); }}
+                  onClick={() => {
+                    haptic("tap");
+                    choose(o);
+                  }}
                   className={`flex min-h-[112px] flex-col items-center justify-center gap-2.5 rounded-[20px] bg-surface px-3 py-5 transition-all duration-200 active:scale-[0.98] ${
                     selected ? "ring-1 ring-accent" : ""
                   }`}
-
                 >
                   <ProductGlyph icon={o.icon} />
                   <span
@@ -502,11 +511,13 @@ function QuickAddPage() {
                 <li key={o.label} className="relative">
                   <button
                     type="button"
-                    onClick={() => { haptic("tap"); choose(o); }}
+                    onClick={() => {
+                      haptic("tap");
+                      choose(o);
+                    }}
                     className={`flex min-h-[60px] w-full items-center gap-3.5 rounded-[18px] px-4 py-3.5 text-left transition-all duration-200 active:scale-[0.99] ${
                       selected ? "bg-surface ring-1 ring-accent" : "bg-surface"
                     }`}
-
                   >
                     {o.glyph && (
                       <span className="w-11 shrink-0 text-[13px] tracking-tight text-muted-foreground">
@@ -539,7 +550,12 @@ function QuickAddPage() {
             <span className="flex items-center gap-2 rounded-full bg-secondary px-3.5 py-2 text-[12px] leading-none text-muted-foreground">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.6" />
-                <path d="M12 7.5V12l3 2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                <path
+                  d="M12 7.5V12l3 2"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                />
               </svg>
               {eventTime ? formatDateTime(eventTime) : "Just now"}
               <span className="text-accent">Change</span>
@@ -566,12 +582,8 @@ function QuickAddPage() {
               style={{ width: `${((index + 1) / total) * 100}%` }}
             />
           </span>
-
         </div>
       </div>
-
-
     </div>
   );
 }
-

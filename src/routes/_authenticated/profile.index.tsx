@@ -1,13 +1,14 @@
 import { useRef, useState } from "react";
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
 
 import { usePriorities } from "@/lib/ciatta-store";
-import { signOut } from "@/lib/onboarding-store";
+import { endSession } from "@/lib/session";
 import { useIdentity } from "@/lib/profile-store";
 import { useProfile, type Area, type SourceRow, type Understanding } from "@/lib/profile-data";
 import { useEngine } from "@/lib/use-engine";
 
-export const Route = createFileRoute("/profile/")({
+export const Route = createFileRoute("/_authenticated/profile/")({
   head: () => ({
     meta: [
       { title: "Profile — Who Ciatta understands you to be" },
@@ -491,7 +492,6 @@ function ProfilePage() {
             body="Your understanding will grow naturally as we spend more time together. Each time my understanding of you shifts, I'll remember the moment here."
             action="Teach me something"
           />
-
         ) : (
           <ol className="mt-4 space-y-1 border-l border-border pl-5">
             {profile.timeline.map((t) => {
@@ -591,12 +591,17 @@ function ProfilePage() {
 
 function SignOutRow() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   return (
     <button
       type="button"
-      onClick={() => {
-        signOut();
-        navigate({ to: "/onboarding", replace: true });
+      onClick={async () => {
+        // Cancel in-flight reads first, then drop everything cached, then end
+        // the session — so nothing protected survives the sign out.
+        await queryClient.cancelQueries();
+        queryClient.clear();
+        await endSession();
+        navigate({ to: "/auth", replace: true });
       }}
       className={`flex w-full items-center justify-between gap-4 py-3.5 text-left text-[16px] ${pressable}`}
     >

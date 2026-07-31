@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
+import { requireUser } from "@/server/auth.server";
+
 /**
  * Voice memo transcription. The browser uploads a complete WAV; we forward it
  * to the Lovable AI gateway and stream the transcript straight back.
@@ -8,6 +10,11 @@ export const Route = createFileRoute("/api/transcribe")({
   server: {
     handlers: {
       POST: async ({ request }) => {
+        // A voice memo is personal health information: only a signed-in person
+        // may send one, and the session is verified here, on the server.
+        const userId = await requireUser(request);
+        if (!userId) return new Response("Unauthorized", { status: 401 });
+
         const key = process.env.LOVABLE_API_KEY;
         if (!key) return new Response("Missing LOVABLE_API_KEY", { status: 500 });
 

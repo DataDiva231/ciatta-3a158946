@@ -41,7 +41,6 @@ export const CATEGORY_STEP: QuickAddStep = {
   ],
 };
 
-
 const PRODUCT_STEP: QuickAddStep = {
   key: "product",
   title: "What are you using?",
@@ -91,7 +90,6 @@ export const TIME_PRESETS: { label: string; minutesAgo: number }[] = [
   { label: "1 hr ago", minutesAgo: 60 },
   { label: "2 hr ago", minutesAgo: 120 },
 ];
-
 
 const GENERIC_STEPS: Record<string, QuickAddStep> = {
   Flow: INTENSITY_STEP,
@@ -197,7 +195,6 @@ export function buildSteps(answers: Answers): QuickAddStep[] {
   return [CATEGORY_STEP, step];
 }
 
-
 export function findOption(step: QuickAddStep, label: string) {
   return step.options.find((o) => o.label === label);
 }
@@ -228,7 +225,6 @@ export const CONFIRM_LABEL: Record<string, string> = {
   activity: "Noted",
   other: "Noted",
 };
-
 
 /** Human field name used inside event metadata. */
 export const META_LABEL: Record<string, string> = {

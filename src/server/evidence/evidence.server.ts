@@ -58,7 +58,11 @@ export function personalizationMatch(record: EvidenceRecord, subject: EvidenceSu
   let score = 0.4;
   if (subject.depth >= 40) score += 0.15;
   if (subject.observationCount >= 8) score += 0.1;
-  if (record.population.some((p) => subject.lifeStage && new RegExp(p.split(" ")[0]!, "i").test(subject.lifeStage)))
+  if (
+    record.population.some(
+      (p) => subject.lifeStage && new RegExp(p.split(" ")[0]!, "i").test(subject.lifeStage),
+    )
+  )
     score += 0.15;
   if (subject.goals.some((g) => new RegExp(record.domain.split(" ")[0]!, "i").test(g)))
     score += 0.1;
@@ -75,8 +79,12 @@ export type MatchResult = {
 export function matchEvidence(u: Understanding, observations: Observation[]): MatchResult {
   const subject = subjectFor(u, observations);
   const candidates: EvidenceCandidate[] = [];
-  const ranked: { record: EvidenceRecord; applicability: number; personalization: number; value: number }[] =
-    [];
+  const ranked: {
+    record: EvidenceRecord;
+    applicability: number;
+    personalization: number;
+    value: number;
+  }[] = [];
 
   for (const record of libraryRecords()) {
     const applicability = Math.round(Math.min(1, record.applies(subject)) * 100) / 100;
@@ -117,7 +125,11 @@ export function matchEvidence(u: Understanding, observations: Observation[]): Ma
   return {
     candidates,
     best: top
-      ? { record: top.record, applicability: top.applicability, personalization: top.personalization }
+      ? {
+          record: top.record,
+          applicability: top.applicability,
+          personalization: top.personalization,
+        }
       : null,
   };
 }

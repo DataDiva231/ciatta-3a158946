@@ -30,9 +30,7 @@ export type Onboarding = {
   /** Ordered ids of the questions Ciatta actually asked this user. */
   path: string[];
   /** How the relationship was started: apple | google | email | existing. */
-  authMethod: string;
 };
-
 
 export const ONBOARDING_KEY = "ciatta.onboarding.v1";
 
@@ -59,10 +57,7 @@ export const DEFAULT_ONBOARDING: Onboarding = {
   notifications: "",
   answers: {},
   path: [],
-  authMethod: "",
 };
-
-
 
 export function useOnboarding() {
   const { value, updateWith, hydrated } = usePersistentState<Onboarding>(
@@ -161,13 +156,3 @@ export const MONTHS = [
   "November",
   "December",
 ];
-
-/**
- * Ends the current session on this device and returns Ciatta to the
- * authentication flow. Nothing Ciatta has learned is deleted.
- */
-export function signOut() {
-  if (typeof window === "undefined") return;
-  window.localStorage.removeItem(ONBOARDING_KEY);
-  window.dispatchEvent(new CustomEvent(SYNC_EVENT, { detail: ONBOARDING_KEY }));
-}

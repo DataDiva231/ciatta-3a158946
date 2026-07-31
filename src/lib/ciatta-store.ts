@@ -52,10 +52,8 @@ export const ALL_KEYS = [
   "ciatta.settings.v1",
 ];
 
-
 /** Nothing is known in advance. Facts only exist once the user teaches them. */
 export const SEED_FACTS: LearnedFact[] = [];
-
 
 function read<T>(key: string, fallback: T): T {
   if (typeof window === "undefined") return fallback;
@@ -126,7 +124,6 @@ export function usePersistentState<T>(key: string, fallback: T) {
 
   return { value, update, updateWith, hydrated };
 }
-
 
 export function useCheckIns() {
   const { value, update, hydrated } = usePersistentState<CheckIn[]>(CHECKIN_KEY, []);
@@ -222,11 +219,9 @@ export function useMilestones() {
   return { milestones: value, latest: value[0] ?? null, recordMilestone, hydrated };
 }
 
-
 export function todayKey() {
   return new Date().toISOString().slice(0, 10);
 }
-
 
 const PRIORITY_KEY = "ciatta.priorities.v1";
 
@@ -250,7 +245,6 @@ export function usePriorities(defaults: string[]) {
 
   return { priorities, reorder, hydrated };
 }
-
 
 /** Everything Ciatta holds about you, as a JSON-serialisable object. */
 export function exportAllData() {

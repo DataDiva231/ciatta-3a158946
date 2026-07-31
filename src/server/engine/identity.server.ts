@@ -1,9 +1,9 @@
 /**
  * Identity Service — one continuously evolving profile per person.
  *
- * The MVP identifies a person by a device-scoped key generated in the browser.
- * A real account id can later be attached to the same row (`user_id`) without
- * changing anything downstream: every other module only ever sees `subjectId`.
+ * A person is their authenticated account: `subjects.user_id` is the only
+ * identity Ciatta recognises, and it comes from a server-validated session
+ * token — never from the client. Everything downstream sees only `subjectId`.
  */
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
@@ -13,11 +13,11 @@ export type Subject = {
   createdAt: string;
 };
 
-export async function getOrCreateSubject(deviceKey: string): Promise<Subject> {
+export async function getOrCreateSubject(userId: string): Promise<Subject> {
   const existing = await supabaseAdmin
     .from("subjects")
     .select("id, identity, created_at")
-    .eq("device_key", deviceKey)
+    .eq("user_id", userId)
     .maybeSingle();
   if (existing.error) throw existing.error;
   if (existing.data) {
@@ -30,7 +30,7 @@ export async function getOrCreateSubject(deviceKey: string): Promise<Subject> {
 
   const created = await supabaseAdmin
     .from("subjects")
-    .insert({ device_key: deviceKey })
+    .insert({ user_id: userId })
     .select("id, identity, created_at")
     .single();
   if (created.error) throw created.error;
@@ -67,6 +67,6 @@ export async function mergeIdentity(
     .eq("id", subjectId);
 }
 
-export async function forgetSubject(deviceKey: string): Promise<void> {
-  await supabaseAdmin.from("subjects").delete().eq("device_key", deviceKey);
+export async function forgetSubject(userId: string): Promise<void> {
+  await supabaseAdmin.from("subjects").delete().eq("user_id", userId);
 }

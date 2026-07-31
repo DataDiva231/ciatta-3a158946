@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { TabBar } from "../components/ciatta/tab-bar";
 import { useAppearance } from "../lib/use-appearance";
+import { supabase } from "@/integrations/supabase/client";
 
 function NotFoundComponent() {
   return (
@@ -85,11 +86,31 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { title: "Today — Ciatta" },
       { property: "og:title", content: "Today — Ciatta" },
       { name: "twitter:title", content: "Today — Ciatta" },
-      { name: "description", content: "Ciatta listens to your sleep, rhythm and cycle, and shares what it's beginning to understand about your body." },
-      { property: "og:description", content: "Ciatta listens to your sleep, rhythm and cycle, and shares what it's beginning to understand about your body." },
-      { name: "twitter:description", content: "Ciatta listens to your sleep, rhythm and cycle, and shares what it's beginning to understand about your body." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/acac960c-52f4-41d7-a3ac-b90ca4473cb2/id-preview-0e3355b1--b08088c5-97b7-47cc-8b5a-1ae97a03e2e8.lovable.app-1785362990144.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/acac960c-52f4-41d7-a3ac-b90ca4473cb2/id-preview-0e3355b1--b08088c5-97b7-47cc-8b5a-1ae97a03e2e8.lovable.app-1785362990144.png" },
+      {
+        name: "description",
+        content:
+          "Ciatta listens to your sleep, rhythm and cycle, and shares what it's beginning to understand about your body.",
+      },
+      {
+        property: "og:description",
+        content:
+          "Ciatta listens to your sleep, rhythm and cycle, and shares what it's beginning to understand about your body.",
+      },
+      {
+        name: "twitter:description",
+        content:
+          "Ciatta listens to your sleep, rhythm and cycle, and shares what it's beginning to understand about your body.",
+      },
+      {
+        property: "og:image",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/acac960c-52f4-41d7-a3ac-b90ca4473cb2/id-preview-0e3355b1--b08088c5-97b7-47cc-8b5a-1ae97a03e2e8.lovable.app-1785362990144.png",
+      },
+      {
+        name: "twitter:image",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/acac960c-52f4-41d7-a3ac-b90ca4473cb2/id-preview-0e3355b1--b08088c5-97b7-47cc-8b5a-1ae97a03e2e8.lovable.app-1785362990144.png",
+      },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -99,7 +120,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap",
       },
-
 
       { rel: "icon", href: "/favicon.png", type: "image/png" },
     ],
@@ -126,7 +146,20 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const router = useRouter();
   useAppearance();
+
+  // One listener for the whole app: when identity changes, everything Ciatta
+  // is showing is re-derived for the person now signed in.
+  useEffect(() => {
+    const { data } = supabase.auth.onAuthStateChange((event) => {
+      if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
+      router.invalidate();
+      if (event !== "SIGNED_OUT") queryClient.invalidateQueries();
+    });
+    return () => data.subscription.unsubscribe();
+  }, [router, queryClient]);
+
 
   return (
     <QueryClientProvider client={queryClient}>

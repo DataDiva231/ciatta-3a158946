@@ -66,7 +66,6 @@ export type ProfileView = {
   defaultPriorities: string[];
 };
 
-
 /** Ciatta's learning vocabulary — one plain-language state per band. */
 export function tierFor(v: number) {
   if (v >= 90) return "Clear to me";
@@ -82,16 +81,16 @@ export function tierFor(v: number) {
  * Rank varies the wording so several quiet areas never read identically.
  */
 export function areaStatus(v: number, rank: number) {
-  if (v >= 85)
-    return ["Well understood", "Clear to me", "Confirmed over time"][rank % 3];
-  if (v >= 65)
-    return ["Pattern holding", "Repeating consistently", "Taking clear shape"][rank % 3];
-  if (v >= 45) return ["Connections forming", "Starting to line up", "A shape is emerging"][rank % 3];
+  if (v >= 85) return ["Well understood", "Clear to me", "Confirmed over time"][rank % 3];
+  if (v >= 65) return ["Pattern holding", "Repeating consistently", "Taking clear shape"][rank % 3];
+  if (v >= 45)
+    return ["Connections forming", "Starting to line up", "A shape is emerging"][rank % 3];
   if (v >= 25)
     return ["Beginning to notice", "Watching for repeats", "Early threads only"][rank % 3];
-  return ["Listening, nothing yet", "Waiting on your first stories", "I don't know enough yet"][rank % 3];
+  return ["Listening, nothing yet", "Waiting on your first stories", "I don't know enough yet"][
+    rank % 3
+  ];
 }
-
 
 const AREAS = ["Recovery", "Sleep", "Cycle", "Stress", "Nutrition", "Mood"];
 
@@ -104,7 +103,6 @@ const AREA_WORDS: Record<string, string[]> = {
   Nutrition: ["nutrition", "food", "meal", "hydration", "water", "coffee"],
   Mood: ["mood", "feeling", "brain fog", "low mood"],
 };
-
 
 function monthYear(iso: string) {
   return new Date(iso).toLocaleDateString("en-US", { month: "long", year: "numeric" });
@@ -120,8 +118,7 @@ function toUnderstanding(d: Discovery): Understanding {
     whyThisMatters: d.whyThisMatters[0] ?? d.whyWeNoticed,
     signals: d.signals,
     stillLearning:
-      d.whyThisMatters[1] ??
-      `I'm still learning what else shapes this connection. ${d.whatToTry}`,
+      d.whyThisMatters[1] ?? `I'm still learning what else shapes this connection. ${d.whatToTry}`,
   };
 }
 
@@ -154,9 +151,7 @@ export function useProfile(): ProfileView {
     const areas: Area[] = AREAS.map((name) => {
       const words = AREA_WORDS[name];
       const matches = discoveries.filter((d) =>
-        [d.title, ...d.signals].some((s) =>
-          words.some((w) => s.toLowerCase().includes(w)),
-        ),
+        [d.title, ...d.signals].some((s) => words.some((w) => s.toLowerCase().includes(w))),
       );
       const base = matches.length
         ? Math.max(...matches.map((d) => d.confidence))
@@ -220,7 +215,6 @@ export function useProfile(): ProfileView {
           ? "These have appeared more than once, but not often enough for me to lean on them yet. I'm listening for the next repeat."
           : "Nothing is forming yet. Two moments of the same kind is usually where a shape begins.",
         notes: understandings.filter((u) => u.confidence < 70).map((u) => u.title),
-
       },
       {
         id: "watching",
@@ -235,7 +229,9 @@ export function useProfile(): ProfileView {
       {
         id: "clearest-area",
         label: "Clearest area",
-        value: strongest ? `${strongest.name} \u2014 ${strongest.tier.toLowerCase()}` : "Still forming",
+        value: strongest
+          ? `${strongest.name} \u2014 ${strongest.tier.toLowerCase()}`
+          : "Still forming",
         detail: strongest
           ? `${strongest.name} is where my understanding of you is clearest right now. ${strongest.detail}`
           : "No single area is clearer than the others yet.",
@@ -289,8 +285,7 @@ export function useProfile(): ProfileView {
     ];
 
     const timeline: TimelineStep[] = [];
-    if (first)
-      timeline.push({ label: "I started listening", when: monthYear(first) });
+    if (first) timeline.push({ label: "I started listening", when: monthYear(first) });
     if (journey.observationCount >= 3 && times[2])
       timeline.push({
         label: "First sense of your normal",
@@ -322,10 +317,7 @@ export function useProfile(): ProfileView {
     });
 
     const months = first
-      ? Math.max(
-          1,
-          Math.round((Date.now() - new Date(first).getTime()) / (30 * 86_400_000)),
-        )
+      ? Math.max(1, Math.round((Date.now() - new Date(first).getTime()) / (30 * 86_400_000)))
       : 0;
 
     const observationSummary = !journey.observationCount
@@ -345,14 +337,12 @@ export function useProfile(): ProfileView {
       "Every moment you share leaves me less to guess at.",
     ];
 
-
     return {
       hydrated: journey.hydrated,
       hasData: journey.hasData,
       observationCount: journey.observationCount,
       observationSummary,
       understandings,
-
 
       story,
       areas,

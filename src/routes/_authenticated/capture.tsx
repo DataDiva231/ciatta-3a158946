@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { TeachUpload } from "@/components/ciatta/teach-upload";
 
-export const Route = createFileRoute("/capture")({
+export const Route = createFileRoute("/_authenticated/capture")({
   head: () => ({
     meta: [
       { title: "Capture — Ciatta" },

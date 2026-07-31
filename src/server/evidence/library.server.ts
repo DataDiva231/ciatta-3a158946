@@ -9,11 +9,7 @@
  * Adding evidence is additive: append a record, bump LIBRARY_VERSION. The
  * engine architecture never changes.
  */
-import type {
-  EvidenceQuality,
-  EvidenceStatus,
-  RecommendationStrength,
-} from "@/lib/evidence-types";
+import type { EvidenceQuality, EvidenceStatus, RecommendationStrength } from "@/lib/evidence-types";
 
 export const LIBRARY_VERSION = "2026.07.1";
 
@@ -84,7 +80,8 @@ const RECORDS: EvidenceRecord[] = [
     guidance: {
       lead: "Stay ahead of it.",
       rest: "Heavier days usually mean changing sooner than usual, and iron-rich food helps more today than most days.",
-      support: "Heavy days are the ones worth planning around — that's well established, not a guess.",
+      support:
+        "Heavy days are the ones worth planning around — that's well established, not a guess.",
     },
   },
   {
@@ -121,7 +118,8 @@ const RECORDS: EvidenceRecord[] = [
     status: "active",
     domain: "Menstrual health",
     population: ["Menstruating adults", "Late luteal phase"],
-    intervention: "Keep training load moderate in the late luteal phase and raise fluid and carbohydrate intake",
+    intervention:
+      "Keep training load moderate in the late luteal phase and raise fluid and carbohydrate intake",
     expectedOutcome: "Steadier perceived effort and fewer symptom flares before bleeding starts",
     evidenceQuality: "moderate",
     recommendationStrength: "conditional",
@@ -187,7 +185,8 @@ const RECORDS: EvidenceRecord[] = [
       "Kanaley et al., Exercise/physical activity in individuals with type 2 diabetes and midlife women (ACSM, 2022)",
     ],
     dateReviewed: "2026-06-01",
-    applicabilityCriteria: "Someone who has told Ciatta they are perimenopausal or in the transition.",
+    applicabilityCriteria:
+      "Someone who has told Ciatta they are perimenopausal or in the transition.",
     applies: (s) => {
       if (!s.lifeStage) return 0;
       return /peri|menopaus/i.test(s.lifeStage) ? 0.8 : 0;
@@ -195,7 +194,8 @@ const RECORDS: EvidenceRecord[] = [
     guidance: {
       lead: "Keep the strength work.",
       rest: "Loading your muscles a couple of times a week, and keeping the room cool at night, matter more now than they used to.",
-      support: "This is the part of the picture that holds up best across the research for this stage.",
+      support:
+        "This is the part of the picture that holds up best across the research for this stage.",
     },
   },
   {

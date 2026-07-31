@@ -20,11 +20,7 @@ import wordmark from "@/assets/ciatta-wordmark.png.asset.json";
 import { Composer } from "@/components/ciatta/composer";
 import { Understanding } from "@/components/ciatta/understanding";
 
-import {
-  MONTHS,
-  useOnboarding,
-  type Onboarding,
-} from "@/lib/onboarding-store";
+import { MONTHS, useOnboarding, type Onboarding } from "@/lib/onboarding-store";
 import {
   a,
   ackFor,
@@ -39,7 +35,7 @@ import {
 } from "@/lib/onboarding-flow";
 import { useIdentity } from "@/lib/profile-store";
 
-export const Route = createFileRoute("/onboarding")({
+export const Route = createFileRoute("/_authenticated/onboarding")({
   head: () => ({
     meta: [
       { title: "Your first Teach Session — Ciatta" },
@@ -73,12 +69,7 @@ function Screen({
   stepKey: string;
 }) {
   return (
-    <div
-      key={stepKey}
-      data-dir={dir}
-      className="animate-dissolve flex h-[100svh] flex-col"
-    >
-
+    <div key={stepKey} data-dir={dir} className="animate-dissolve flex h-[100svh] flex-col">
       {children}
     </div>
   );
@@ -110,13 +101,7 @@ function TopBar({ onBack, ratio }: { onBack?: () => void; ratio?: number }) {
   );
 }
 
-function Body({
-  children,
-  center = false,
-}: {
-  children: React.ReactNode;
-  center?: boolean;
-}) {
+function Body({ children, center = false }: { children: React.ReactNode; center?: boolean }) {
   return (
     <div
       className={`flex-1 overflow-y-auto px-8 pt-2 pb-4 ${
@@ -129,7 +114,15 @@ function Body({
 }
 
 /** The Understanding, at onboarding scale. Only used while Ciatta is forming. */
-function Orb({ size = 168, confidence = 42, active }: { size?: number; confidence?: number; active?: boolean }) {
+function Orb({
+  size = 168,
+  confidence = 42,
+  active,
+}: {
+  size?: number;
+  confidence?: number;
+  active?: boolean;
+}) {
   return (
     <div className="flex justify-center">
       <Understanding size={size} confidence={confidence} active={active} />
@@ -145,8 +138,6 @@ function Eyebrow({ children }: { children: React.ReactNode }) {
     </p>
   );
 }
-
-
 
 function Question({ children }: { children: React.ReactNode }) {
   return (
@@ -212,9 +203,7 @@ function Footer({
           {skipLabel}
         </button>
       )}
-      {note && (
-        <p className="mt-4 text-center text-[12px] text-muted-foreground">{note}</p>
-      )}
+      {note && <p className="mt-4 text-center text-[12px] text-muted-foreground">{note}</p>}
     </div>
   );
 }
@@ -264,7 +253,6 @@ function Suggestion({
           : "bg-surface shadow-[0_8px_20px_-18px_rgba(60,45,35,0.5)]"
       } ${dimmed ? "opacity-35" : ""}`}
     >
-
       <Glyph
         size={16}
         strokeWidth={1.6}
@@ -308,118 +296,7 @@ function Wordmark({ width = 132 }: { width?: number }) {
   );
 }
 
-/**
- * Splash — "I've arrived." The mark inside a soft halo of contained light.
- * No orb, no loader, no copy. The wordmark arrives a beat later.
- */
-function Splash() {
-  const [named, setNamed] = useState(false);
-  useEffect(() => {
-    const t = window.setTimeout(() => setNamed(true), 1700);
-    return () => window.clearTimeout(t);
-  }, []);
-
-  return (
-    <div className="flex h-[100svh] flex-col items-center justify-center bg-background">
-      <div
-        className="animate-in fade-in animate-breathe relative flex items-center justify-center duration-[1600ms]"
-        style={{ width: 232, height: 232, animationFillMode: "backwards" }}
-      >
-        {/* Halo: one soft circle, holding coral / blush / lavender / pale blue */}
-        <span
-          aria-hidden="true"
-          className="absolute inset-0 rounded-full"
-          style={{
-            background:
-              "radial-gradient(circle at 36% 32%, color-mix(in oklab, var(--clay) 7%, transparent) 0%, transparent 52%)," +
-              "radial-gradient(circle at 70% 30%, oklch(0.88 0.04 340 / 0.07) 0%, transparent 54%)," +
-              "radial-gradient(circle at 70% 72%, oklch(0.85 0.05 292 / 0.06) 0%, transparent 56%)," +
-              "radial-gradient(circle at 30% 74%, oklch(0.88 0.04 232 / 0.07) 0%, transparent 56%)",
-            maskImage: "radial-gradient(circle, black 34%, transparent 70%)",
-            filter: "blur(14px)",
-
-          }}
-        />
-        <img
-          src={mark.url}
-          alt=""
-          aria-hidden="true"
-          className="relative dark:invert"
-          style={{ width: 104, height: 104 }}
-        />
-      </div>
-
-      <div
-        className={`mt-12 transition-opacity duration-[1200ms] ${named ? "opacity-100" : "opacity-0"}`}
-      >
-        <Wordmark width={116} />
-      </div>
-    </div>
-  );
-}
-
-
-/**
- * The beginning of the relationship rather than an account screen: one
- * editorial line, then three quiet ways in.
- */
-function Welcome({ onChoose }: { onChoose: (method: string) => void }) {
-  const ways: { label: string; method: string }[] = [
-    { label: "Continue with Apple", method: "apple" },
-    { label: "Continue with Google", method: "google" },
-    { label: "Continue with Email", method: "email" },
-  ];
-
-  return (
-    <div className="animate-in fade-in slide-in-from-bottom-1 flex h-[100svh] flex-col duration-[900ms]">
-      <div className="flex-1 overflow-y-auto px-8 pt-20">
-        <img
-          src={mark.url}
-          alt="Ciatta"
-          className="dark:invert"
-          style={{ width: 44, height: 44 }}
-        />
-        <h1 className="animate-in fade-in mt-12 max-w-[17rem] font-serif text-[34px] leading-[1.12] tracking-[-0.02em] duration-700">
-          I don&apos;t know you yet.
-        </h1>
-        <p className="animate-in fade-in mt-4 max-w-[19rem] text-[14.5px] leading-relaxed text-muted-foreground duration-700">
-          That&apos;s where we start. Everything you share helps me understand you a little more, and
-          that understanding becomes more personal every day.
-        </p>
-      </div>
-
-      <div className="shrink-0 px-8 pb-10">
-        <div className="space-y-2.5">
-          {ways.map(({ label, method }, i) => (
-            <button
-              key={method}
-              type="button"
-              onClick={() => onChoose(method)}
-              className={`w-full rounded-full px-6 py-[15px] text-[15px] transition-all duration-200 active:scale-[0.99] ${
-                i === 0
-                  ? "bg-foreground font-medium text-background"
-                  : "bg-surface text-foreground ring-1 ring-border/60 ring-inset"
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-
-        <button
-          type="button"
-          onClick={() => onChoose("existing")}
-          className="mx-auto mt-5 block px-3 py-1 text-[13.5px] text-muted-foreground"
-        >
-          I already have an account
-        </button>
-      </div>
-    </div>
-  );
-}
-
 /* ------------------------------------------------------------------ the flow */
-
 
 function OnboardingPage() {
   const navigate = useNavigate();
@@ -429,7 +306,6 @@ function OnboardingPage() {
   const [history, setHistory] = useState<string[]>(["welcome"]);
   const [dir, setDir] = useState<1 | -1>(1);
   const [beat, setBeat] = useState<string | null>(null);
-  const [phase, setPhase] = useState<"splash" | "auth" | "flow">("splash");
   const usedAcks = useRef<string[]>([]);
   const resumed = useRef(false);
 
@@ -438,17 +314,6 @@ function OnboardingPage() {
     resumed.current = true;
     if (data.path?.length && !data.completed) setHistory(data.path);
   }, [hydrated, data.path, data.completed]);
-
-  // The splash exists only to establish identity; it never blocks anyone.
-  useEffect(() => {
-    if (!hydrated || phase !== "splash") return;
-    const t = window.setTimeout(
-      () => setPhase(data.authMethod ? "flow" : "auth"),
-      2600,
-    );
-    return () => window.clearTimeout(t);
-  }, [hydrated, phase, data.authMethod]);
-
 
   const id = history[history.length - 1];
   const node = nodeById(id) ?? FLOW[0];
@@ -473,8 +338,7 @@ function OnboardingPage() {
       if (!nextId) return;
       const current = nodeById(id);
       const conversational =
-        current &&
-        ["text", "birth", "body", "single", "multi"].includes(current.kind);
+        current && ["text", "birth", "body", "single", "multi"].includes(current.kind);
       if (!conversational) {
         commit(nextId);
         return;
@@ -521,7 +385,6 @@ function OnboardingPage() {
     navigate({ to: data.firstObservationDone ? "/" : "/first-observation" });
   };
 
-
   const ratio = total ? (index + 1) / total : 0;
   const bar = <TopBar onBack={history.length > 1 ? back : undefined} ratio={ratio} />;
   const confidence = Math.round(30 + ratio * 55);
@@ -544,7 +407,6 @@ function OnboardingPage() {
             <Body center>
               <Eyebrow>We haven&apos;t met yet</Eyebrow>
               <div>
-
                 <Question>{node.ask?.(data)}</Question>
                 {node.why?.(data) && <Support>{node.why(data)}</Support>}
               </div>
@@ -570,7 +432,6 @@ function OnboardingPage() {
             {bar}
             <Body center>
               <div>
-
                 <Question>{node.ask?.(data)}</Question>
                 {node.why?.(data) && <Support>{node.why(data)}</Support>}
               </div>
@@ -597,7 +458,6 @@ function OnboardingPage() {
                           <option key={o}>{o}</option>
                         ))}
                       </select>
-
                     </label>
                   </Field>
                 ))}
@@ -613,7 +473,6 @@ function OnboardingPage() {
             {bar}
             <Body center>
               <div>
-
                 <Question>{node.ask?.(data)}</Question>
                 {node.lead?.(data) && <Support>{node.lead(data)}</Support>}
               </div>
@@ -674,7 +533,6 @@ function OnboardingPage() {
             onAnswer={answer}
             onNext={advance}
           />
-
         );
 
       case "connect":
@@ -688,7 +546,6 @@ function OnboardingPage() {
                   If you share it, I&apos;ll notice your sleep, heart rate and movement quietly on
                   my own — and I won&apos;t ask you about them again.
                 </Support>
-
               </div>
               <div className="mx-auto mt-6 flex max-w-[19rem] flex-wrap justify-center gap-2">
                 {["Sleep", "Heart rate", "Activity", "Workouts", "Recovery"].map((o) => (
@@ -730,10 +587,7 @@ function OnboardingPage() {
             <Body center>
               <div>
                 <Question>Should I tell you when something changes?</Question>
-                <Support>
-                  One quiet note a day, and only when something has really shifted.
-                </Support>
-
+                <Support>One quiet note a day, and only when something has really shifted.</Support>
               </div>
               <div className="mx-auto mt-7 w-full max-w-[19rem] space-y-2.5">
                 {(
@@ -768,20 +622,6 @@ function OnboardingPage() {
   };
 
   if (!hydrated) return <div className="min-h-[100svh] bg-background" />;
-
-  if (phase === "splash") return <Splash />;
-
-  if (phase === "auth")
-    return (
-      <div className="min-h-[100svh] bg-background">
-        <Welcome
-          onChoose={(method) => {
-            save({ authMethod: method });
-            setPhase("flow");
-          }}
-        />
-      </div>
-    );
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-2 min-h-[100svh] bg-background duration-[900ms]">
@@ -857,7 +697,6 @@ function QuestionScreen({
       {bar}
       <div className="flex-1 overflow-y-auto px-8 pt-6 pb-4">
         <div>
-
           <Question>{node.ask?.(data)}</Question>
           {(node.lead?.(data) || node.why?.(data)) && (
             <Support>{node.lead?.(data) ?? node.why?.(data)}</Support>
@@ -903,15 +742,7 @@ function QuestionScreen({
 
 /* ------------------------------------------------------------------- screens */
 
-function Intro({
-  id,
-  onBack,
-  onNext,
-}: {
-  id: string;
-  onBack?: () => void;
-  onNext: () => void;
-}) {
+function Intro({ id, onBack, onNext }: { id: string; onBack?: () => void; onNext: () => void }) {
   if (id === "welcome")
     return (
       <>
@@ -967,12 +798,11 @@ function Intro({
       <div className="flex-1 overflow-y-auto px-8 pt-16">
         <h1 className="animate-in fade-in max-w-[17rem] font-serif text-[30px] leading-[1.16] tracking-[-0.015em] duration-700">
           Let&apos;s talk for
-          <br />
-          a few minutes.
+          <br />a few minutes.
         </h1>
         <p className="animate-in fade-in mt-5 max-w-[18rem] text-[14.5px] leading-relaxed text-muted-foreground duration-700">
-          One thing at a time. Whatever you say shapes what I ask next, so we can keep this short and
-          come back to the rest later.
+          One thing at a time. Whatever you say shapes what I ask next, so we can keep this short
+          and come back to the rest later.
         </p>
       </div>
       <Footer label="I'm ready" onNext={onNext} />
@@ -980,27 +810,29 @@ function Intro({
   );
 }
 
-
 /** What Ciatta learned, written back as understanding rather than a receipt. */
 function understandingLines(d: Onboarding): string[] {
   const lines: string[] = [];
   const stagePhrase: Record<string, string> = {
     Cycling: "You're still cycling, so your month frames everything else.",
     "Trying to conceive": "You're trying to conceive, so I'll follow ovulation closely.",
-    "Pregnant or postpartum": "You're pregnant or postpartum, so I'll stay gentle and watch recovery.",
+    "Pregnant or postpartum":
+      "You're pregnant or postpartum, so I'll stay gentle and watch recovery.",
     Perimenopause: "You're in perimenopause, so I'll read shifts rather than a fixed rhythm.",
     Menopause: "You're through menopause, so symptoms and recovery matter more than cycles.",
     "I'm not sure": "You're between definitions, so I'll learn the shape of it from your signals.",
   };
   if (d.lifeStage) lines.push(stagePhrase[d.lifeStage] ?? `You're ${d.lifeStage.toLowerCase()}.`);
   const cycle = one(d, "cycle_regularity");
-  if (cycle === "Irregular") lines.push("Your cycles vary, so I'll learn your rhythm before judging it.");
+  if (cycle === "Irregular")
+    lines.push("Your cycles vary, so I'll learn your rhythm before judging it.");
   if (cycle === "Regular") lines.push("Your cycles are steady, which gives me a baseline fast.");
   const symptoms = [...a(d, "cycle_symptoms"), ...a(d, "meno_symptoms")].filter(
     (s) => s !== "Nothing much" && s !== "Nothing yet",
   );
   if (symptoms.length) lines.push(`I'll watch for ${symptoms.join(", ").toLowerCase()}.`);
-  if (a(d, "conditions").length) lines.push(`I'll read your signals through ${a(d, "conditions").join(" and ")}.`);
+  if (a(d, "conditions").length)
+    lines.push(`I'll read your signals through ${a(d, "conditions").join(" and ")}.`);
   if (a(d, "meds").includes("GLP-1"))
     lines.push(
       `You're on a GLP-1${
@@ -1010,12 +842,14 @@ function understandingLines(d: Onboarding): string[] {
   if (d.appleHealthConnected)
     lines.push("Apple Health is connected, so sleep and heart rate arrive on their own.");
   else if (one(d, "sleep_self")) lines.push(`Sleep: ${one(d, "sleep_self").toLowerCase()}.`);
-  if (one(d, "focus"))
-    lines.push(`${one(d, "focus")} is where I'll look first, every day.`);
-  if (d.primaryGoal) lines.push(`Everything gets measured against one thing: ${d.primaryGoal.toLowerCase()}.`);
+  if (one(d, "focus")) lines.push(`${one(d, "focus")} is where I'll look first, every day.`);
+  if (d.primaryGoal)
+    lines.push(`Everything gets measured against one thing: ${d.primaryGoal.toLowerCase()}.`);
   const blocker = one(d, "goal_blocker");
   if (blocker && blocker !== "I don't know yet")
-    lines.push(`And I'll keep an eye on ${blocker.toLowerCase()}, since that's what gets in the way.`);
+    lines.push(
+      `And I'll keep an eye on ${blocker.toLowerCase()}, since that's what gets in the way.`,
+    );
   return lines;
 }
 
@@ -1034,8 +868,6 @@ function SummaryScreen({ data, onFinish }: { data: Onboarding; onFinish: () => v
         <div className="mt-7">
           <Orb size={104} confidence={92} active />
         </div>
-
-
 
         <div className="mx-auto mt-7 max-w-[21rem] rounded-[26px] bg-surface px-5 py-5 shadow-[0_18px_44px_-32px_rgba(60,45,35,0.55)]">
           <div className="space-y-4">
@@ -1063,11 +895,9 @@ function SummaryScreen({ data, onFinish }: { data: Onboarding; onFinish: () => v
         <p className="mx-auto mt-6 max-w-[19rem] text-center text-[13px] leading-relaxed text-muted-foreground">
           This will change as I get to know you, {first(data)}.
         </p>
-
       </div>
       <div className="shrink-0 px-8 pt-3 pb-10">
         <PrimaryButton label="Start with me" onClick={onFinish} />
-
       </div>
     </>
   );
@@ -1087,7 +917,6 @@ function Building({ onDone, data }: { onDone: () => void; data: Onboarding }) {
     out.push("I have somewhere to begin");
     return out;
   }, [data]);
-
 
   const [done, setDone] = useState(0);
 
@@ -1126,9 +955,7 @@ function Building({ onDone, data }: { onDone: () => void; data: Onboarding }) {
               >
                 <span
                   className={`flex h-[18px] w-[18px] items-center justify-center rounded-full transition-colors duration-500 ${
-                    complete
-                      ? "bg-accent"
-                      : "shadow-[inset_0_0_0_1px_var(--fog)]"
+                    complete ? "bg-accent" : "shadow-[inset_0_0_0_1px_var(--fog)]"
                   } ${active ? "animate-breathe" : ""}`}
                 >
                   {complete && (

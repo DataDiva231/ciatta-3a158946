@@ -8,11 +8,7 @@ import {
   ConversationContent,
   ConversationScrollButton,
 } from "@/components/ai-elements/conversation";
-import {
-  Message,
-  MessageContent,
-  MessageResponse,
-} from "@/components/ai-elements/message";
+import { Message, MessageContent, MessageResponse } from "@/components/ai-elements/message";
 import {
   PromptInput,
   PromptInputFooter,
@@ -24,7 +20,7 @@ import { Shimmer } from "@/components/ai-elements/shimmer";
 import { useLearnedFacts } from "@/lib/ciatta-store";
 import { useVoiceMemo } from "@/lib/voice-memo";
 
-export const Route = createFileRoute("/talk")({
+export const Route = createFileRoute("/_authenticated/talk")({
   head: () => ({
     meta: [
       { title: "Talk to Ciatta — Ciatta" },
@@ -97,10 +93,7 @@ function TalkPage() {
     const trimmed = text.trim();
     if (!trimmed || pending) return;
 
-    setMessages((prev) => [
-      ...prev,
-      { id: `u-${Date.now()}`, role: "user", text: trimmed },
-    ]);
+    setMessages((prev) => [...prev, { id: `u-${Date.now()}`, role: "user", text: trimmed }]);
     setPending(true);
 
     window.setTimeout(() => {
@@ -122,7 +115,6 @@ function TalkPage() {
   const recording = memo.state === "recording";
   const busy = pending || memo.state === "transcribing";
 
-
   return (
     <div className="flex flex-col pt-0">
       <header className="px-6 pb-4 pt-8">
@@ -142,7 +134,9 @@ function TalkPage() {
             />
           </svg>
         </button>
-        <h1 className="mt-5 font-serif text-[32px] leading-[1.12] tracking-[-0.015em]">Talk to Ciatta</h1>
+        <h1 className="mt-5 font-serif text-[32px] leading-[1.12] tracking-[-0.015em]">
+          Talk to Ciatta
+        </h1>
         <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">
           The more it knows, the less it guesses.
         </p>
@@ -163,9 +157,7 @@ function TalkPage() {
               </MessageContent>
             </Message>
           ))}
-          {pending && (
-            <Shimmer className="text-[15px] text-muted-foreground">Listening…</Shimmer>
-          )}
+          {pending && <Shimmer className="text-[15px] text-muted-foreground">Listening…</Shimmer>}
         </ConversationContent>
         <ConversationScrollButton />
       </Conversation>
@@ -191,7 +183,9 @@ function TalkPage() {
             ref={textareaRef}
             autoFocus
             placeholder={
-              recording ? "Listening — tap the mic when you're done…" : "Tell Ciatta something about your body…"
+              recording
+                ? "Listening — tap the mic when you're done…"
+                : "Tell Ciatta something about your body…"
             }
             disabled={recording}
           />
@@ -203,16 +197,28 @@ function TalkPage() {
               aria-label={recording ? "Stop recording" : "Record a voice memo"}
               aria-pressed={recording}
               className={`grid h-9 w-9 place-items-center rounded-full transition-colors disabled:opacity-40 ${
-                recording ? "bg-accent text-primary-foreground" : "bg-secondary text-muted-foreground"
+                recording
+                  ? "bg-accent text-primary-foreground"
+                  : "bg-secondary text-muted-foreground"
               }`}
               style={
                 recording
-                  ? { boxShadow: `0 0 0 ${4 + memo.level * 10}px color-mix(in oklab, var(--clay) 18%, transparent)` }
+                  ? {
+                      boxShadow: `0 0 0 ${4 + memo.level * 10}px color-mix(in oklab, var(--clay) 18%, transparent)`,
+                    }
                   : undefined
               }
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <rect x="9" y="3" width="6" height="11" rx="3" stroke="currentColor" strokeWidth="1.5" />
+                <rect
+                  x="9"
+                  y="3"
+                  width="6"
+                  height="11"
+                  rx="3"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                />
                 <path
                   d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3"
                   stroke="currentColor"
@@ -221,7 +227,10 @@ function TalkPage() {
                 />
               </svg>
             </button>
-            <PromptInputSubmit status={busy ? "submitted" : undefined} disabled={busy || recording} />
+            <PromptInputSubmit
+              status={busy ? "submitted" : undefined}
+              disabled={busy || recording}
+            />
           </PromptInputFooter>
         </PromptInput>
         {(recording || memo.state === "transcribing" || memo.error) && (
@@ -234,7 +243,6 @@ function TalkPage() {
           </p>
         )}
       </div>
-
 
       <section className="mt-8 px-6">
         <p className="label-caps">What Ciatta has learned</p>

@@ -68,7 +68,13 @@ const tabs = [
 
 export function TabBar() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  if (pathname.startsWith("/quick-add") || pathname.startsWith("/onboarding")) return null;
+  if (
+    pathname.startsWith("/quick-add") ||
+    pathname.startsWith("/onboarding") ||
+    pathname.startsWith("/first-observation") ||
+    pathname.startsWith("/auth")
+  )
+    return null;
 
   return (
     <nav

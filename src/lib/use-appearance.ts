@@ -19,5 +19,9 @@ export function useAppearance() {
     return () => media.removeEventListener("change", apply);
   }, [choice]);
 
-  return { choice, setChoice: (v: "light" | "dark" | "system") => save({ appearance: v }), hydrated };
+  return {
+    choice,
+    setChoice: (v: "light" | "dark" | "system") => save({ appearance: v }),
+    hydrated,
+  };
 }

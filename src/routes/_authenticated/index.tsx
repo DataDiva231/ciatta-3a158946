@@ -9,7 +9,7 @@ import { useIdentity } from "@/lib/profile-store";
 import { ONBOARDING_KEY } from "@/lib/onboarding-store";
 import { useEngine } from "@/lib/use-engine";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/_authenticated/")({
   head: () => ({
     meta: [
       { title: "Today — Ciatta" },

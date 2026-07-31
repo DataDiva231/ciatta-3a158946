@@ -7,9 +7,8 @@ import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { engineTrace } from "@/lib/engine.functions";
-import { deviceKey } from "@/lib/use-engine";
 
-export const Route = createFileRoute("/engine-trace")({
+export const Route = createFileRoute("/_authenticated/engine-trace")({
   head: () => ({
     meta: [
       { title: "Engine trace · Ciatta" },
@@ -66,7 +65,7 @@ function EngineTracePage() {
   const query = useQuery({
     queryKey: ["engine-trace"],
     enabled: typeof window !== "undefined",
-    queryFn: () => engineTrace({ data: { deviceKey: deviceKey() } }),
+    queryFn: () => engineTrace(),
   });
 
   if (query.isPending)
@@ -102,12 +101,8 @@ function EngineTracePage() {
             </div>
           ))}
         </dl>
-        <p className="text-muted-foreground">
-          holding: {u.beliefsHolding.join(" · ") || "none"}
-        </p>
-        <p className="text-muted-foreground">
-          forming: {u.beliefsForming.join(" · ") || "none"}
-        </p>
+        <p className="text-muted-foreground">holding: {u.beliefsHolding.join(" · ") || "none"}</p>
+        <p className="text-muted-foreground">forming: {u.beliefsForming.join(" · ") || "none"}</p>
       </Section>
 
       <Section label="Uncertainty (never collapsed)">
@@ -125,8 +120,8 @@ function EngineTracePage() {
             <li key={c.evidenceId} className="rounded-lg border border-border/60 p-3">
               <p className="font-medium">{c.evidenceId}</p>
               <p className="text-muted-foreground">
-                {c.domain} · {c.evidenceQuality} quality · {c.recommendationStrength} · applicability{" "}
-                {c.applicabilityScore} · match {c.personalizationMatch}
+                {c.domain} · {c.evidenceQuality} quality · {c.recommendationStrength} ·
+                applicability {c.applicabilityScore} · match {c.personalizationMatch}
               </p>
               <p className={c.rejectedBecause ? "text-muted-foreground" : "text-foreground"}>
                 {c.rejectedBecause ?? "applicable"}
@@ -228,7 +223,9 @@ function EngineTracePage() {
           <ul className="space-y-1">
             {trace.explain.memories.map((m) => (
               <li key={m.key}>
-                <span className="text-muted-foreground">{m.kind} · {m.key} — </span>
+                <span className="text-muted-foreground">
+                  {m.kind} · {m.key} —{" "}
+                </span>
                 {m.summary}
               </li>
             ))}
@@ -274,7 +271,6 @@ function EngineTracePage() {
       </Section>
 
       <Section label="Reasoning chain">
-
         <ol className="space-y-2">
           {trace.chain.map((step, i) => (
             <li key={`${step.layer}-${i}`}>
