@@ -21,6 +21,7 @@ export function Composer({
   label?: string;
 }) {
   const [text, setText] = useState("");
+  const [expanded, setExpanded] = useState(false);
   const memo = useVoiceMemo((t) => {
     const clean = t.trim();
     if (clean) onSubmit(clean);
@@ -40,18 +41,21 @@ export function Composer({
     <div className="rounded-[24px] bg-surface px-4 pt-3.5 pb-3 shadow-[0_10px_30px_-24px_rgba(60,45,35,0.5)]">
       <p className="text-[14px] text-foreground">{label}</p>
 
-      <input
+      <textarea
         value={text}
+        rows={expanded ? 4 : 1}
+        onFocus={() => setExpanded(true)}
+        onBlur={() => setExpanded(text.trim().length > 0)}
         onChange={(e) => setText(e.target.value)}
         onKeyDown={(e) => {
-          if (e.key === "Enter") {
+          if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
             send();
           }
         }}
         placeholder={placeholder}
         aria-label={label}
-        className="mt-2 w-full bg-transparent text-[15px] leading-relaxed outline-none placeholder:text-fog"
+        className="mt-2 w-full resize-none bg-transparent text-[15px] leading-relaxed outline-none transition-all duration-300 placeholder:text-fog"
       />
 
       <div className="mt-3 flex items-center gap-1">
