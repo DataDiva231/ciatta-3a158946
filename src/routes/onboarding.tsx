@@ -468,8 +468,8 @@ function OnboardingPage() {
           <>
             {bar}
             <Body center>
-              <Orb size={132} confidence={confidence} />
-              <div className="mt-7">
+              <div>
+
                 <Question>{node.ask?.(data)}</Question>
                 {node.lead?.(data) && <Support>{node.lead(data)}</Support>}
               </div>
