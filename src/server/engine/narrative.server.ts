@@ -126,7 +126,7 @@ export function profileSummary(u: Understanding): string {
 }
 
 export function journeyOpening(u: Understanding): string {
-  if (!u.observationCount) return "Our story hasn't started yet.";
+  if (!u.observationCount) return "Our story is only just starting.";
   if (u.daysKnown < 1) return "We met today. This is everything so far.";
   return `We've known each other ${u.daysKnown === 1 ? "a day" : `${u.daysKnown} days`}. Here's what's changed.`;
 }
