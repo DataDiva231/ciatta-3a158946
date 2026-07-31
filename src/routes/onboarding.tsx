@@ -291,7 +291,99 @@ function Field({ children }: { children: React.ReactNode }) {
   );
 }
 
+/* ------------------------------------------------------- identity & beginning */
+
+/** Wordmark only. Sized in ems so it sits like type, not like an image. */
+function Wordmark({ width = 132 }: { width?: number }) {
+  return (
+    <img
+      src={wordmark.url}
+      alt="Ciatta"
+      width={1920}
+      height={562}
+      className="dark:invert"
+      style={{ width, height: "auto" }}
+    />
+  );
+}
+
+/**
+ * Splash. Identity and one slow breath — no copy, no controls, no indicator.
+ */
+function Splash() {
+  return (
+    <div className="animate-dissolve flex h-[100svh] flex-col items-center justify-center bg-background">
+      <div
+        className="animate-in fade-in duration-[1400ms]"
+        style={{ animationFillMode: "backwards" }}
+      >
+        <Understanding size={168} confidence={20} />
+      </div>
+      <div
+        className="animate-in fade-in mt-14 duration-[1600ms]"
+        style={{ animationDelay: "500ms", animationFillMode: "backwards" }}
+      >
+        <Wordmark width={124} />
+      </div>
+    </div>
+  );
+}
+
+/**
+ * The beginning of the relationship rather than an account screen: one
+ * editorial line, then three quiet ways in.
+ */
+function Welcome({ onChoose }: { onChoose: (method: string) => void }) {
+  const ways: { label: string; method: string }[] = [
+    { label: "Continue with Apple", method: "apple" },
+    { label: "Continue with Google", method: "google" },
+    { label: "Continue with Email", method: "email" },
+  ];
+
+  return (
+    <div className="animate-dissolve flex h-[100svh] flex-col">
+      <div className="flex-1 overflow-y-auto px-8 pt-20">
+        <Wordmark width={104} />
+        <h1 className="animate-in fade-in mt-14 max-w-[17rem] font-serif text-[34px] leading-[1.12] tracking-[-0.02em] duration-700">
+          I don&apos;t know you yet.
+        </h1>
+        <p className="animate-in fade-in mt-4 max-w-[18rem] text-[14.5px] leading-relaxed text-muted-foreground duration-700">
+          That&apos;s where we start. Everything you share teaches me a little more, and it becomes
+          more personal every day.
+        </p>
+      </div>
+
+      <div className="shrink-0 px-8 pb-10">
+        <div className="space-y-2.5">
+          {ways.map(({ label, method }, i) => (
+            <button
+              key={method}
+              type="button"
+              onClick={() => onChoose(method)}
+              className={`w-full rounded-full px-6 py-[15px] text-[15px] transition-all duration-200 active:scale-[0.99] ${
+                i === 0
+                  ? "bg-accent font-medium text-accent-foreground shadow-[0_12px_28px_-20px_color-mix(in_oklab,var(--clay)_70%,transparent)]"
+                  : "bg-surface text-foreground shadow-[0_8px_20px_-18px_rgba(60,45,35,0.5)]"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+        <button
+          type="button"
+          onClick={() => onChoose("existing")}
+          className="mx-auto mt-5 block px-3 py-1 text-[13.5px] text-muted-foreground"
+        >
+          I already have an account
+        </button>
+      </div>
+    </div>
+  );
+}
+
 /* ------------------------------------------------------------------ the flow */
+
 
 function OnboardingPage() {
   const navigate = useNavigate();
