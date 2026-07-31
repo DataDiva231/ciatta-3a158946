@@ -82,11 +82,27 @@ export function Composer({
       />
 
 
+      {files.length > 0 && (
+        <p className="animate-in fade-in mt-2 text-[12.5px] text-muted-foreground duration-300">
+          {files.join(", ")}
+        </p>
+      )}
+
+      <input
+        ref={imageInput}
+        type="file"
+        accept="image/*"
+        multiple
+        hidden
+        onChange={(e) => pick(e.target.files)}
+      />
+      <input ref={fileInput} type="file" multiple hidden onChange={(e) => pick(e.target.files)} />
+
       <div className="mt-2 flex items-center gap-1">
         <button
           type="button"
           aria-label="Add a photo"
-          onClick={send}
+          onClick={() => imageInput.current?.click()}
           className="flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground transition-colors active:bg-secondary"
         >
           <ImageIcon size={18} strokeWidth={1.6} />
@@ -95,7 +111,7 @@ export function Composer({
         <button
           type="button"
           aria-label="Attach a file"
-          onClick={send}
+          onClick={() => fileInput.current?.click()}
           className="flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground transition-colors active:bg-secondary"
         >
           <Paperclip size={18} strokeWidth={1.6} />
@@ -103,19 +119,32 @@ export function Composer({
 
         <span className="flex-1" />
 
-
-        <button
-          type="button"
-          onClick={() => (recording ? void memo.stop() : void memo.start())}
-          disabled={transcribing}
-          aria-label={recording ? "Stop listening" : "Speak instead"}
-          aria-pressed={recording}
-          className="relative flex h-10 w-10 items-center justify-center rounded-full bg-accent text-accent-foreground transition-transform duration-500 disabled:opacity-60"
-          style={{ transform: recording ? `scale(${1 + memo.level * 0.06})` : "scale(1)" }}
-        >
-          {recording ? <Waveform level={memo.level} /> : <Mic size={18} strokeWidth={1.7} />}
-        </button>
+        {hasContent ? (
+          <button
+            key="send"
+            type="button"
+            onClick={send}
+            aria-label="Share this"
+            className="animate-in fade-in flex h-10 w-10 items-center justify-center rounded-full bg-accent text-accent-foreground duration-300"
+          >
+            <ArrowUp size={18} strokeWidth={1.8} />
+          </button>
+        ) : (
+          <button
+            key="voice"
+            type="button"
+            onClick={() => (recording ? void memo.stop() : void memo.start())}
+            disabled={transcribing}
+            aria-label={recording ? "Stop listening" : "Speak instead"}
+            aria-pressed={recording}
+            className="animate-in fade-in relative flex h-10 w-10 items-center justify-center rounded-full bg-accent text-accent-foreground transition-transform duration-500 disabled:opacity-60"
+            style={{ transform: recording ? `scale(${1 + memo.level * 0.06})` : "scale(1)" }}
+          >
+            {recording ? <Waveform level={memo.level} /> : <Mic size={18} strokeWidth={1.7} />}
+          </button>
+        )}
       </div>
+
 
       {(recording || transcribing || memo.error) && (
         <p className="animate-in fade-in mt-2 text-[12.5px] text-muted-foreground duration-300">
