@@ -457,16 +457,27 @@ function ProfilePage() {
     <div className="pb-8">
       <ProfileHeader since={since} />
 
-      {/* About me */}
+      {/* The framing: this page is the understanding, not a record */}
+      <section className="mt-7 px-6">
+        <p className="font-serif text-[24px] leading-[1.25] tracking-[-0.01em]">
+          Here&rsquo;s what I&rsquo;m beginning to understand about you.
+        </p>
+        <p className="mt-2.5 text-[14px] leading-relaxed text-muted-foreground">
+          This isn&rsquo;t a record of what you&rsquo;ve told me &mdash; it&rsquo;s what I&rsquo;ve
+          made of it so far. It changes as I learn.
+        </p>
+      </section>
+
+      {/* What you've told me */}
       <section className="mt-8 px-6">
-        <SectionTitle>About me</SectionTitle>
+        <SectionTitle note="You told me this">What I&rsquo;m working from</SectionTitle>
         <Group>
           <Row label="Life stage" value={identity.lifeStage} />
           <Row
             label="Goals"
             value={identity.goals.length ? identity.goals.join(", ") : "Not set"}
           />
-          <Row label="Paying attention to" value={focus} />
+          <Row label="Paying closest attention to" value={focus} />
           <Row label="Where we are" value={profile.observationSummary} />
         </Group>
         <p className="mt-3 px-1 text-[14px] leading-relaxed text-muted-foreground">
@@ -479,22 +490,22 @@ function ProfilePage() {
         <SectionTitle
           note={
             profile.understandings.length === 1
-              ? "1 in progress"
-              : `${profile.understandings.length} in progress`
+              ? "1 still forming"
+              : `${profile.understandings.length} still forming`
           }
         >
-          Your understanding
+          What I&rsquo;m beginning to understand
         </SectionTitle>
 
         {!profile.hasData && (
           <Invitation
-            line="Your portrait is still being drawn."
-            body={`Ciatta needs a few more moments with you before it can say anything true. ${
+            line="I don't understand you well enough to say yet."
+            body={`I'd rather wait than guess. ${
               profile.observationCount === 0
                 ? "Nothing logged yet."
                 : `${profile.observationCount} logged so far.`
-            } Below is what an understanding will look like.`}
-            action="Teach Ciatta something"
+            } Below is what an understanding will look like once I have one.`}
+            action="Teach me something"
           />
         )}
         <Group>
@@ -510,10 +521,11 @@ function ProfilePage() {
         </Group>
         {!profile.hasData && (
           <ExampleNote>
-            Example understandings. They'll be replaced by your own as you teach Ciatta.
+            Examples only. Yours will replace them as I learn you.
           </ExampleNote>
         )}
       </section>
+
 
       {/* Health */}
       <section className="mt-9 px-6">
