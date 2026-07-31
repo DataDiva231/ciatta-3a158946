@@ -53,6 +53,17 @@ function learnedSentence(event: QuickAddEvent | undefined) {
       return `I learned about your ${event.category.toLowerCase()}.`;
   }
 }
+/** Highlights one phrase inside a sentence the engine wrote. */
+function splitAccent(sentence: string, accent: string) {
+  const at = accent ? sentence.indexOf(accent) : -1;
+  if (at < 0) return [{ text: sentence, accent: false }];
+  return [
+    { text: sentence.slice(0, at), accent: false },
+    { text: accent, accent: true },
+    { text: sentence.slice(at + accent.length), accent: false },
+  ].filter((p) => p.text.length > 0);
+}
+
 
 /** How clear today feels, in words rather than a score. */
 function understandingLine(value: number, delta: number) {
