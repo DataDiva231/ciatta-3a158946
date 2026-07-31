@@ -873,23 +873,19 @@ function Intro({
   if (id === "welcome")
     return (
       <>
-        <TopBar />
-        <Body center>
-          <Orb size={196} confidence={26} />
-          <h1 className="animate-in fade-in mt-12 text-center font-serif text-[36px] leading-[1.12] tracking-[-0.02em] duration-700">
-            Every body
+        <TopBar onBack={onBack} />
+        <div className="flex-1 overflow-y-auto px-8 pt-16">
+          <h1 className="animate-in fade-in max-w-[17rem] font-serif text-[34px] leading-[1.12] tracking-[-0.02em] duration-700">
+            Every body has
             <br />
-            has a story.
+            its own rhythm.
           </h1>
-          <Support>
-            We&apos;ll build your understanding together, one answer at a time.
-          </Support>
-        </Body>
-        <Footer
-          label="Get Started"
-          onNext={onNext}
-          note="Your data is private and secure."
-        />
+          <p className="animate-in fade-in mt-5 max-w-[18rem] text-[14.5px] leading-relaxed text-muted-foreground duration-700">
+            Yours is still a stranger to me. Tell me a few things, and I&apos;ll start listening for
+            it.
+          </p>
+        </div>
+        <Footer label="Begin" onNext={onNext} />
       </>
     );
 
@@ -897,28 +893,28 @@ function Intro({
     return (
       <>
         <TopBar onBack={onBack} />
-        <Body center>
-          <Orb size={150} confidence={30} />
-          <h1 className="mt-10 text-center font-serif text-[30px] leading-[1.18] tracking-[-0.015em]">
-            Your privacy
+        <div className="flex-1 overflow-y-auto px-8 pt-16">
+          <h1 className="animate-in fade-in max-w-[17rem] font-serif text-[30px] leading-[1.16] tracking-[-0.015em] duration-700">
+            What you tell me
             <br />
-            comes first.
+            stays yours.
           </h1>
-          <div className="mx-auto mt-8 max-w-[17rem] space-y-3 text-center text-[14px] leading-relaxed text-foreground/85">
-            {["Your health data belongs to you.", "Encrypted.", "Private.", "Never sold."].map(
-              (line, i) => (
-                <p
-                  key={line}
-                  className="animate-in fade-in duration-700"
-                  style={{ animationDelay: `${i * 110}ms`, animationFillMode: "backwards" }}
-                >
-                  {line}
-                </p>
-              ),
-            )}
+          <div className="mt-8 max-w-[18rem] space-y-3.5 text-[14.5px] leading-relaxed text-foreground/85">
+            {[
+              "Your health is yours, always.",
+              "Nothing is sold or shared.",
+              "You decide what I learn, and what you keep.",
+            ].map((line, i) => (
+              <p
+                key={line}
+                className="animate-in fade-in duration-700"
+                style={{ animationDelay: `${i * 130}ms`, animationFillMode: "backwards" }}
+              >
+                {line}
+              </p>
+            ))}
           </div>
-          <Support>You decide what I learn, and what you keep to yourself.</Support>
-        </Body>
+        </div>
         <Footer onNext={onNext} />
       </>
     );
@@ -926,22 +922,22 @@ function Intro({
   return (
     <>
       <TopBar onBack={onBack} />
-      <Body center>
-        <Orb size={196} confidence={34} />
-        <h1 className="mt-11 text-center font-serif text-[28px] leading-[1.2] tracking-[-0.015em]">
-          This takes just
+      <div className="flex-1 overflow-y-auto px-8 pt-16">
+        <h1 className="animate-in fade-in max-w-[17rem] font-serif text-[30px] leading-[1.16] tracking-[-0.015em] duration-700">
+          Let&apos;s talk for
           <br />
-          a few moments.
+          a few minutes.
         </h1>
-        <Support>
-          I&apos;ll ask one thing at a time. Each answer tells me what to ask next, so this stays
-          short.
-        </Support>
-      </Body>
-      <Footer label="Let's Begin" onNext={onNext} note="Usually two or three minutes." />
+        <p className="animate-in fade-in mt-5 max-w-[18rem] text-[14.5px] leading-relaxed text-muted-foreground duration-700">
+          One thing at a time. Whatever you say shapes what I ask next, so we can keep this short and
+          come back to the rest later.
+        </p>
+      </div>
+      <Footer label="I'm ready" onNext={onNext} />
     </>
   );
 }
+
 
 /** What Ciatta learned, written back as understanding rather than a receipt. */
 function understandingLines(d: Onboarding): string[] {
