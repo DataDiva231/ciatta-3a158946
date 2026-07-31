@@ -6,8 +6,8 @@
  * confident it currently is — so the ask shrinks as understanding grows.
  */
 
-import { phaseForDay, today } from "./ciatta-data";
 import type { QuickAddEvent } from "./ciatta-store";
+
 
 export type TeachSuggestion = {
   /** Quick Add category this jumps straight into. */
@@ -52,8 +52,18 @@ export function buildTeachSuggestions(
   events: QuickAddEvent[],
   confidence: number,
 ): TeachSuggestion[] {
-  const phase = phaseForDay(today.cycleDay);
-  const menstrual = phase === "Menstrual";
+  // Cycle-aware only from what the user actually shared — nothing is simulated.
+  const DAY = 24 * HOUR;
+  const menstrual = events.some((e) => {
+    const age = Date.now() - new Date(e.timestamp).getTime();
+    if (age > 6 * DAY) return false;
+    return (
+      e.category === "Flow" ||
+      e.category === "Period Product" ||
+      (e.category === "Cycle" && /start/i.test(e.value))
+    );
+  });
+
   const evening = new Date().getHours() >= 17;
   const out: TeachSuggestion[] = [];
 

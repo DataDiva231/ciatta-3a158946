@@ -8,14 +8,20 @@ import {
   useQuickAddEvents,
 } from "./ciatta-store";
 import type { CheckIn, LearnedFact, Milestone, QuickAddEvent } from "./ciatta-store";
-import {
-  emergingInsights as demoEmerging,
-  journeyTimeline as demoTimeline,
-  recentDiscoveries as demoRecent,
-  todaysDiscovery as demoToday,
-  understandingMilestone as demoMilestone,
-  type Discovery,
-} from "./journey-content";
+
+/** A pattern Ciatta has derived from what the user actually shared. */
+export type Discovery = {
+  id: string;
+  title: string;
+  confidenceLabel: string;
+  confidence: number;
+  tone: OrbTone;
+  whyWeNoticed: string;
+  signals: string[];
+  whyThisMatters: string[];
+  whatToTry: string;
+};
+
 
 export type EmergingInsight = {
   id: string;
@@ -37,9 +43,10 @@ export type MilestoneView = {
 export type JourneyView = {
   /** True once localStorage has been read on the client. */
   hydrated: boolean;
-  /** False while the user has taught Ciatta too little — the demo story stands in. */
+  /** False until real logs exist — sections show invitations instead. */
   hasData: boolean;
-  todaysDiscovery: Discovery;
+  todaysDiscovery: Discovery | null;
+
   recentDiscoveries: Discovery[];
   emergingInsights: EmergingInsight[];
   milestone: MilestoneView;
@@ -359,17 +366,24 @@ export function useJourney(): JourneyView {
     const hasData = observationCount >= MIN_OBSERVATIONS && discoveries.length > 0;
 
     if (!hasData) {
+      // Nothing is invented. Until there is real evidence, Journey is empty.
       return {
         hydrated,
         hasData: false,
-        todaysDiscovery: demoToday,
-        recentDiscoveries: demoRecent,
-        emergingInsights: demoEmerging as EmergingInsight[],
-        milestone: demoMilestone,
-        timeline: demoTimeline,
+        todaysDiscovery: null,
+        recentDiscoveries: [],
+        emergingInsights: factInsights(facts),
+        milestone: {
+          label: UNDERSTANDING_LABEL,
+          from: 0,
+          to: overall,
+          note: "",
+        },
+        timeline: buildTimeline(events, checkIns, facts, milestones),
         observationCount,
       };
     }
+
 
     const confident = discoveries.filter((d) => d.confidence >= DISCOVERY_THRESHOLD);
     const early = discoveries.filter((d) => d.confidence < DISCOVERY_THRESHOLD);

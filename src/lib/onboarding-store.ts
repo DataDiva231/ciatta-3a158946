@@ -37,11 +37,11 @@ export const DEFAULT_ONBOARDING: Onboarding = {
   step: 0,
   completed: false,
   name: "",
-  birthMonth: "July",
-  birthDay: "30",
-  birthYear: "1992",
-  heightFt: "5",
-  heightIn: "6",
+  birthMonth: "",
+  birthDay: "",
+  birthYear: "",
+  heightFt: "",
+  heightIn: "",
   weight: "",
   lifeStage: "",
   conditions: [],
@@ -49,13 +49,14 @@ export const DEFAULT_ONBOARDING: Onboarding = {
   supplements: [],
   priorities: [],
   primaryGoal: "",
-  appleHealth: ["Sleep", "Heart Rate", "Activity", "Workouts", "Recovery"],
+  appleHealth: [],
   appleHealthConnected: false,
   notifications: "",
   answers: {},
   path: [],
   authMethod: "",
 };
+
 
 
 export function useOnboarding() {

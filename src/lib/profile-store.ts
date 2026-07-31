@@ -40,11 +40,11 @@ export const INTERESTS = [
 ];
 
 export const DEFAULT_IDENTITY: Identity = {
-  name: "Jenny Alvarez",
+  name: "",
   photo: "",
-  lifeStage: "Cycling",
-  goals: ["Recover well", "Understand my cycle"],
-  interests: ["Hormones", "Nutrition"],
+  lifeStage: "",
+  goals: [],
+  interests: [],
 };
 
 export function useIdentity() {
@@ -86,7 +86,7 @@ export const DEFAULT_SETTINGS: Settings = {
     quietHours: true,
   },
   appearance: "light",
-  apps: ["apple-health", "calendar"],
+  apps: [],
   privacy: { onDeviceOnly: true, improveCiatta: false, research: false },
 };
 

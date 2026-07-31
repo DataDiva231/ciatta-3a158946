@@ -5,15 +5,15 @@ import { Composer } from "@/components/ciatta/composer";
 import { QuickAddSheet } from "@/components/ciatta/quick-add-sheet";
 
 
-import { useCheckIns, useQuickAddEvents } from "@/lib/ciatta-store";
+import { useQuickAddEvents } from "@/lib/ciatta-store";
 import { haptic } from "@/lib/haptics";
-import { buildNarrative } from "@/lib/narrative";
 import {
   buildTeachSuggestions,
   confidenceLine,
   type TeachSuggestion,
 } from "@/lib/teach-suggestions";
 import { useEngine } from "@/lib/use-engine";
+
 
 
 export const Route = createFileRoute("/teach")({
@@ -45,13 +45,12 @@ function rank(wanted: string[], category: string) {
 
 function TeachPage() {
   const router = useRouter();
-  const { latest } = useCheckIns();
   const { events, addEvent } = useQuickAddEvents();
-  const narrative = buildNarrative(latest, events);
   // Teach asks the engine what it's still missing, and uses that to order the
   // moments it offers. The sheet steps stay local.
   const { views } = useEngine();
-  const local = buildTeachSuggestions(events, narrative.confidence.value);
+  const local = buildTeachSuggestions(events, views?.today.depth ?? 0);
+
   const wanted = views?.teach.suggestions.map((s) => s.category) ?? [];
   const suggestions: TeachSuggestion[] = wanted.length
     ? [...local].sort((a, b) => rank(wanted, a.category) - rank(wanted, b.category))
