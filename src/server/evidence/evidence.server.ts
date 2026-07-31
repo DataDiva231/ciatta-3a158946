@@ -15,8 +15,8 @@ import {
 } from "@/server/evidence/library.server";
 import type { EvidenceCandidate } from "@/lib/evidence-types";
 
-import type { Observation } from "./observations.server";
-import type { Understanding } from "./understanding.server";
+import type { Observation } from "@/server/engine/observations.server";
+import type { Understanding } from "@/server/engine/understanding.server";
 
 /** Minimum applicability before a record is even considered. */
 const APPLICABILITY_FLOOR = 0.55;
