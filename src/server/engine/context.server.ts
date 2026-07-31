@@ -14,6 +14,8 @@ export type SubjectContext = {
   cyclePhase: string | null;
   cycleDay: number | null;
   medications: string[];
+  /** What this person said they want, used by the Guidance Engine. */
+  goals: string[];
   recentSleep: string | null;
   recentActivity: string | null;
 };
