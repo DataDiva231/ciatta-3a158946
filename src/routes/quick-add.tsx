@@ -133,6 +133,8 @@ function QuickAddPage() {
   /** ISO timestamp of the event. Defaults to now; the time chip can adjust it. */
   const [eventTime, setEventTime] = useState<string | null>(null);
   const [saved, setSaved] = useState<QuickAddEvent | null>(null);
+  /** Chip label held for a beat so the selection registers before the flow moves. */
+  const [pending, setPending] = useState<string | null>(null);
   const timeInput = useRef<HTMLInputElement>(null);
 
   const steps = useMemo(() => buildSteps(answers), [answers]);
