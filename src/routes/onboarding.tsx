@@ -308,26 +308,54 @@ function Wordmark({ width = 132 }: { width?: number }) {
 }
 
 /**
- * Splash. Identity and one slow breath — no copy, no controls, no indicator.
+ * Splash — "I've arrived." The mark inside a soft halo of contained light.
+ * No orb, no loader, no copy. The wordmark arrives a beat later.
  */
 function Splash() {
+  const [named, setNamed] = useState(false);
+  useEffect(() => {
+    const t = window.setTimeout(() => setNamed(true), 1700);
+    return () => window.clearTimeout(t);
+  }, []);
+
   return (
-    <div className="animate-dissolve flex h-[100svh] flex-col items-center justify-center bg-background">
+    <div className="flex h-[100svh] flex-col items-center justify-center bg-background">
       <div
-        className="animate-in fade-in duration-[1400ms]"
-        style={{ animationFillMode: "backwards" }}
+        className="animate-in fade-in animate-breathe relative flex items-center justify-center duration-[1600ms]"
+        style={{ width: 232, height: 232, animationFillMode: "backwards" }}
       >
-        <Understanding size={168} confidence={20} />
+        {/* Halo: one soft circle, holding coral / blush / lavender / pale blue */}
+        <span
+          aria-hidden="true"
+          className="absolute inset-0 rounded-full"
+          style={{
+            background:
+              "radial-gradient(circle at 34% 30%, color-mix(in oklab, var(--clay) 12%, transparent) 0%, transparent 58%)," +
+              "radial-gradient(circle at 72% 28%, oklch(0.86 0.05 340 / 0.14) 0%, transparent 60%)," +
+              "radial-gradient(circle at 70% 74%, oklch(0.82 0.06 292 / 0.13) 0%, transparent 62%)," +
+              "radial-gradient(circle at 28% 76%, oklch(0.85 0.05 232 / 0.14) 0%, transparent 62%)," +
+              "radial-gradient(circle at 50% 50%, color-mix(in oklab, var(--surface) 92%, transparent) 0%, transparent 72%)",
+            filter: "blur(2px)",
+          }}
+        />
+        <img
+          src={mark.url}
+          alt=""
+          aria-hidden="true"
+          className="relative dark:invert"
+          style={{ width: 104, height: 104 }}
+        />
       </div>
+
       <div
-        className="animate-in fade-in mt-14 duration-[1600ms]"
-        style={{ animationDelay: "500ms", animationFillMode: "backwards" }}
+        className={`mt-12 transition-opacity duration-[1200ms] ${named ? "opacity-100" : "opacity-0"}`}
       >
-        <Wordmark width={124} />
+        <Wordmark width={116} />
       </div>
     </div>
   );
 }
+
 
 /**
  * The beginning of the relationship rather than an account screen: one
