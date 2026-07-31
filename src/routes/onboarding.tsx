@@ -525,10 +525,10 @@ function OnboardingPage() {
             node={node}
             data={data}
             bar={bar}
-            confidence={confidence}
             onAnswer={answer}
             onNext={advance}
           />
+
         );
 
       case "connect":
