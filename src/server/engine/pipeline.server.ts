@@ -68,7 +68,7 @@ export async function runLearningLoop(
     await recordMilestones(subject.id, understanding);
   }
 
-  return { subjectId: subject.id, createdAt: subject.createdAt, understanding };
+  return { subjectId: subject.id, createdAt: subject.createdAt, understanding, observations: history };
 }
 
 /** Relationship milestones, recorded the moment they happen. */
