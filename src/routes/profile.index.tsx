@@ -448,8 +448,8 @@ function ProfilePage() {
         ) : (
           <>
             <Invitation
-              line="I don't understand you well enough to say yet."
-              body={`I'd rather wait than guess. ${
+              line="I'm just beginning to understand you."
+              body={`We don't know enough yet, but every observation helps us build a clearer picture. ${
                 profile.observationCount === 0
                   ? "Nothing shared yet."
                   : `${profile.observationCount} things shared so far.`
@@ -487,10 +487,11 @@ function ProfilePage() {
         <SectionTitle>Our story</SectionTitle>
         {profile.timeline.length <= 1 ? (
           <Invitation
-            line="Nothing to look back on yet."
-            body="Each time my understanding of you shifts, I'll remember the moment here."
+            line="Our story is only just starting."
+            body="Your understanding will grow naturally as we spend more time together. Each time my understanding of you shifts, I'll remember the moment here."
             action="Teach me something"
           />
+
         ) : (
           <ol className="mt-4 space-y-1 border-l border-border pl-5">
             {profile.timeline.map((t) => {
