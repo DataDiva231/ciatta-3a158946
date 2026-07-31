@@ -23,11 +23,23 @@ export function Composer({
   const [text, setText] = useState("");
   const [expanded, setExpanded] = useState(false);
   const [files, setFiles] = useState<string[]>([]);
+  /** True once a transcript lands, so we can invite a quick correction. */
+  const [fromVoice, setFromVoice] = useState(false);
   const imageInput = useRef<HTMLInputElement>(null);
   const fileInput = useRef<HTMLInputElement>(null);
+  const textarea = useRef<HTMLTextAreaElement>(null);
   const memo = useVoiceMemo((t) => {
     const clean = t.trim();
-    if (clean) setText((prev) => (prev ? `${prev} ${clean}` : clean));
+    if (!clean) return;
+    setText((prev) => (prev ? `${prev} ${clean}` : clean));
+    setFromVoice(true);
+    setExpanded(true);
+    window.setTimeout(() => {
+      const el = textarea.current;
+      if (!el) return;
+      el.focus();
+      el.setSelectionRange(el.value.length, el.value.length);
+    }, 60);
   });
 
   const recording = memo.state === "recording";
