@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
 
 import { Composer } from "@/components/ciatta/composer";
+import { QuickAddSheet } from "@/components/ciatta/quick-add-sheet";
 import { Understanding } from "@/components/ciatta/understanding";
+
 import { useCheckIns, useQuickAddEvents } from "@/lib/ciatta-store";
 import { buildNarrative } from "@/lib/narrative";
 import { buildTeachSuggestions, confidenceLine } from "@/lib/teach-suggestions";
@@ -36,6 +38,10 @@ function TeachPage() {
   const narrative = buildNarrative(latest, events);
   const suggestions = buildTeachSuggestions(events, narrative.confidence.value);
   const [saved, setSaved] = useState(false);
+  /** Quick Add lives inside this screen: a sheet over the current question. */
+  const [sheet, setSheet] = useState<{ category?: string; reason?: string } | null>(null);
+  /** The short "✓ Flow: Moderate" line shown beneath the question. */
+  const [confirmed, setConfirmed] = useState<string | null>(null);
 
   const share = (text: string) => {
     addEvent({
@@ -46,6 +52,12 @@ function TeachPage() {
     });
     setSaved(true);
     window.setTimeout(() => router.navigate({ to: "/" }), 1400);
+  };
+
+  /** A Quick Add is just another answer: confirm it, then move the conversation on. */
+  const logged = (summary: string) => {
+    setConfirmed(summary);
+    window.setTimeout(() => setConfirmed(null), 2400);
   };
 
   if (saved) {
@@ -72,27 +84,43 @@ function TeachPage() {
       </h1>
       <p className="mt-3 text-[13px] leading-relaxed text-muted-foreground">{confidenceLine()}</p>
 
+      {confirmed && (
+        <p className="animate-dissolve mt-3 flex items-center gap-2 text-[13px] leading-none text-accent">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path
+              d="m5 12.5 4.5 4.5L19 7"
+              stroke="currentColor"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+          {confirmed}
+        </p>
+      )}
+
       {suggestions.length > 0 && (
         <div className="mt-7">
           <p className="label-caps">Start with one of these</p>
           <div className="mt-3 flex flex-wrap gap-2">
             {suggestions.map((s) => (
-              <Link
+              <button
                 key={s.category}
-                to="/quick-add"
-                search={{ category: s.category, reason: s.reason }}
+                type="button"
+                onClick={() => setSheet({ category: s.category, reason: s.reason })}
                 className="animate-in fade-in rounded-full bg-surface px-4 py-2.5 text-[13px] leading-none text-foreground shadow-[0_8px_24px_-22px_rgba(60,45,35,0.5)] transition-all duration-200 active:scale-[0.98] active:bg-secondary"
               >
                 {s.label}
-              </Link>
+              </button>
             ))}
           </div>
         </div>
       )}
 
 
-      <Link
-        to="/quick-add"
+      <button
+        type="button"
+        onClick={() => setSheet({})}
         className="mt-8 flex items-center justify-between gap-4 rounded-full bg-foreground px-6 py-4 text-left transition-opacity hover:opacity-90 active:opacity-80"
       >
         <span className="min-w-0">
@@ -104,9 +132,9 @@ function TeachPage() {
           </span>
         </span>
         <span aria-hidden="true" className="text-[16px] text-background/70">
-          →
+          ↑
         </span>
-      </Link>
+      </button>
 
 
       <div className="mt-7">
@@ -117,7 +145,15 @@ function TeachPage() {
         />
       </div>
 
+      <QuickAddSheet
+        open={sheet !== null}
+        presetCategory={sheet?.category}
+        reason={sheet?.reason}
+        onClose={() => setSheet(null)}
+        onLogged={logged}
+      />
     </div>
   );
 }
+
 

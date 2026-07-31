@@ -54,6 +54,21 @@
     }
   }
 
+  /* Sheets rise, they never snap. */
+  --animate-sheet-up: sheet-up 460ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+
+  @keyframes sheet-up {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 14px, 0);
+    }
+    to {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+
 
 
   --radius-sm: calc(var(--radius) - 4px);
