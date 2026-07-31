@@ -71,8 +71,12 @@ export function buildContext(
     medications: Array.isArray(identity["medications"])
       ? (identity["medications"] as string[])
       : [],
-    recentSleep: latestValue(observations, "Sleep"),
-    recentActivity: latestValue(observations, "Activity"),
+    goals: [
+      ...(typeof identity["primaryGoal"] === "string" && identity["primaryGoal"]
+        ? [identity["primaryGoal"] as string]
+        : []),
+      ...(Array.isArray(identity["priorities"]) ? (identity["priorities"] as string[]) : []),
+    ],
   };
 }
 
