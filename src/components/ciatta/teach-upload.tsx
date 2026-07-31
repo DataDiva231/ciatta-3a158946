@@ -195,7 +195,7 @@ export function TeachUpload({
         disabled={!file}
         className="mt-8 rounded-full bg-foreground py-4 text-[15px] font-medium text-background transition-opacity hover:opacity-90 disabled:opacity-40"
       >
-        Teach Ciatta
+        Share this
       </button>
 
     </div>
