@@ -27,11 +27,11 @@ export type LoopResult = {
 
 /** Runs the loop. With no new observations it simply re-reads understanding. */
 export async function runLearningLoop(
-  deviceKey: string,
+  userId: string,
   incoming: ObservationInput[] = [],
   identityPatch: Record<string, unknown> = {},
 ): Promise<LoopResult> {
-  const subject = await getOrCreateSubject(deviceKey);
+  const subject = await getOrCreateSubject(userId);
   if (Object.keys(identityPatch).length) {
     await mergeIdentity(subject.id, identityPatch);
   }
