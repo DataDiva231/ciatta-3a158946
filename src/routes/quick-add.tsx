@@ -3,6 +3,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
 import { Understanding } from "@/components/ciatta/understanding";
 import { useQuickAddEvents, type QuickAddEvent } from "@/lib/ciatta-store";
+import { haptic } from "@/lib/haptics";
 import {
   buildSteps,
   CONFIRM_LABEL,
@@ -196,12 +197,15 @@ function QuickAddPage() {
   /** Chips confirm visually for ~180ms, then hand straight off to the flow. */
   const chooseChip = (option: QuickAddOption) => {
     if (pending) return;
+    haptic("tap");
     setPending(option.label);
     setTimeout(() => {
       setPending(null);
+      haptic("confirm");
       choose(option);
     }, 180);
   };
+
 
 
   /** One tap re-logs the last product, absorbency and flow, timestamped now. */
@@ -420,7 +424,7 @@ function QuickAddPage() {
             {lastProduct && (
               <button
                 type="button"
-                onClick={repeatLast}
+                onClick={() => { haptic("confirm"); repeatLast(); }}
                 className="mb-5 flex w-full items-center gap-3.5 rounded-[18px] bg-surface px-4 py-3.5 text-left shadow-soft ring-1 ring-accent/40 transition-all duration-200 active:scale-[0.99]"
               >
                 <span className="min-w-0 flex-1">
@@ -474,7 +478,7 @@ function QuickAddPage() {
                 <button
                   key={o.label}
                   type="button"
-                  onClick={() => choose(o)}
+                  onClick={() => { haptic("tap"); choose(o); }}
                   className={`flex min-h-[112px] flex-col items-center justify-center gap-2.5 rounded-[20px] bg-surface px-3 py-5 transition-all duration-200 active:scale-[0.98] ${
                     selected ? "ring-1 ring-accent" : ""
                   }`}
@@ -498,7 +502,7 @@ function QuickAddPage() {
                 <li key={o.label} className="relative">
                   <button
                     type="button"
-                    onClick={() => choose(o)}
+                    onClick={() => { haptic("tap"); choose(o); }}
                     className={`flex min-h-[60px] w-full items-center gap-3.5 rounded-[18px] px-4 py-3.5 text-left transition-all duration-200 active:scale-[0.99] ${
                       selected ? "bg-surface ring-1 ring-accent" : "bg-surface"
                     }`}
