@@ -551,11 +551,11 @@ function ProfilePage() {
           ))}
         </Group>
         {!profile.hasData && (
-          <ExampleNote>Each line fills in from what you log. Nothing here is estimated.</ExampleNote>
+          <ExampleNote>Each line fills in from what you log. I don&rsquo;t estimate any of it.</ExampleNote>
         )}
 
         <p className="mt-6 px-1 text-[13px] text-muted-foreground">
-          What Ciatta is learning, area by area
+          What I&rsquo;m still learning, area by area
         </p>
         <Group>
           {profile.areas.map((a) => (
