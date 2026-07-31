@@ -133,6 +133,8 @@ function QuickAddPage() {
   /** ISO timestamp of the event. Defaults to now; the time chip can adjust it. */
   const [eventTime, setEventTime] = useState<string | null>(null);
   const [saved, setSaved] = useState<QuickAddEvent | null>(null);
+  /** Chip label held for a beat so the selection registers before the flow moves. */
+  const [pending, setPending] = useState<string | null>(null);
   const timeInput = useRef<HTMLInputElement>(null);
 
   const steps = useMemo(() => buildSteps(answers), [answers]);
@@ -149,17 +151,28 @@ function QuickAddPage() {
   );
 
   /**
-   * Categories are ordered by what this woman actually teaches Ciatta, so the
-   * list gets more personal the more it is used.
+   * Thumb-first ordering: the categories reached for most often come first, so
+   * the chip group reads the same way every time.
    */
+  const CATEGORY_ORDER = [
+    "Period Product",
+    "Flow",
+    "Symptoms",
+    "Sleep",
+    "Medication",
+    "Nutrition",
+    "Activity",
+    "Something Else",
+  ];
+
   const options = useMemo(() => {
     if (step.key !== "category") return step.options;
-    const weight = new Map<string, number>();
-    events.slice(0, 30).forEach((e, i) => {
-      weight.set(e.category, (weight.get(e.category) ?? 0) + 30 - i);
-    });
-    return [...step.options].sort((a, b) => (weight.get(b.label) ?? 0) - (weight.get(a.label) ?? 0));
-  }, [step, events]);
+    return [...step.options].sort(
+      (a, b) => CATEGORY_ORDER.indexOf(a.label) - CATEGORY_ORDER.indexOf(b.label),
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step]);
+
 
 
   /** Records an answer and drops every answer that belonged to a later step. */
@@ -179,6 +192,17 @@ function QuickAddPage() {
     setAnswer(index, option.label);
     setIndex(index + 1);
   };
+
+  /** Chips confirm visually for ~180ms, then hand straight off to the flow. */
+  const chooseChip = (option: QuickAddOption) => {
+    if (pending) return;
+    setPending(option.label);
+    setTimeout(() => {
+      setPending(null);
+      choose(option);
+    }, 180);
+  };
+
 
   /** One tap re-logs the last product, absorbency and flow, timestamped now. */
   const repeatLast = () => {
@@ -367,7 +391,7 @@ function QuickAddPage() {
       <div
         key={`${step.key}-${index}`}
         data-direction={direction}
-        className="animate-dissolve"
+        className={`animate-dissolve ${step.key === "category" ? "flex flex-1 flex-col" : ""}`}
       >
 
         <h1 className="mt-8 font-serif text-[30px] leading-[1.12] tracking-[-0.015em]">
@@ -390,31 +414,60 @@ function QuickAddPage() {
           </p>
         )}
 
+        {/* Categories sit low on the screen, within easy thumb reach. */}
+        {step.key === "category" && (
+          <div className="mt-auto pt-14 pb-[env(safe-area-inset-bottom)]">
+            {lastProduct && (
+              <button
+                type="button"
+                onClick={repeatLast}
+                className="mb-5 flex w-full items-center gap-3.5 rounded-[18px] bg-surface px-4 py-3.5 text-left shadow-soft ring-1 ring-accent/40 transition-all duration-200 active:scale-[0.99]"
+              >
+                <span className="min-w-0 flex-1">
+                  <span className="block text-[15px] leading-tight text-accent">
+                    Same as last time
+                  </span>
+                  <span className="mt-1 block truncate text-[12px] leading-none text-muted-foreground">
+                    {[lastProduct.value, lastProduct.metadata?.Absorbency, lastProduct.metadata?.Flow]
+                      .filter(Boolean)
+                      .join(" · ")}
+                  </span>
+                </span>
+                <span className="shrink-0 text-[12px] leading-none text-muted-foreground">1 tap</span>
+              </button>
+            )}
 
-        {step.key === "category" && lastProduct && (
-          <button
-            type="button"
-            onClick={repeatLast}
-            className="mt-8 flex w-full items-center gap-3.5 rounded-[18px] bg-surface px-4 py-3.5 text-left ring-1 ring-accent/40 transition-all duration-200 active:scale-[0.99]"
-          >
-            <span className="min-w-0 flex-1">
-              <span className="block text-[15px] leading-tight text-accent">Same as last time</span>
-              <span className="mt-1 block truncate text-[12px] leading-none text-muted-foreground">
-                {[lastProduct.value, lastProduct.metadata?.Absorbency, lastProduct.metadata?.Flow]
-                  .filter(Boolean)
-                  .join(" · ")}
-              </span>
-            </span>
-            <span className="shrink-0 text-[12px] leading-none text-muted-foreground">1 tap</span>
-          </button>
+            <p className="label-caps">Today's suggestions</p>
+
+            <div className="mt-3 flex flex-wrap gap-2">
+              {options.map((o) => {
+                const active = pending === o.label || answers[step.key] === o.label;
+                return (
+                  <button
+                    key={o.label}
+                    type="button"
+                    onClick={() => chooseChip(o)}
+                    aria-pressed={active}
+                    className={`inline-flex h-[38px] items-center rounded-full px-4 text-[14px] leading-none shadow-soft transition-all duration-200 active:scale-[0.97] ${
+                      active
+                        ? "scale-[1.03] bg-accent text-accent-foreground"
+                        : "bg-surface text-foreground ring-1 ring-border/70"
+                    }`}
+                  >
+                    {o.label === "Something Else" ? "More" : o.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         )}
 
-        {step.key === "category" && <p className="label-caps mt-8">Today's suggestions</p>}
 
 
 
-        {step.layout === "grid" ? (
-          <div className={`grid grid-cols-2 gap-3 ${step.key === "category" ? "mt-3" : "mt-8"}`}>
+        {step.key === "category" ? null : step.layout === "grid" ? (
+          <div className="mt-8 grid grid-cols-2 gap-3">
+
             {options.map((o) => {
               const selected = answers[step.key] === o.label;
               return (
