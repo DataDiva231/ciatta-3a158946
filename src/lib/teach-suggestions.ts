@@ -16,7 +16,17 @@ export type TeachSuggestion = {
   label: string;
   /** What sharing it gives back to her. */
   reason: string;
+  /**
+   * The follow-up shown in the sheet for this exact moment, so the sheet opens
+   * on the question the chip implies instead of the generic category step.
+   */
+  step: {
+    title: string;
+    sub: string;
+    options: { label: string; note?: string }[];
+  };
 };
+
 
 const HOUR = 60 * 60 * 1000;
 
