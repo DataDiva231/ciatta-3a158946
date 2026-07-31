@@ -2,23 +2,22 @@ import { Link, createFileRoute, useRouterState } from "@tanstack/react-router";
 import { useEffect } from "react";
 
 import type { OrbTone } from "@/components/ciatta/discovery-orb";
-import { useJourney } from "@/lib/journey-data";
-import { type Discovery } from "@/lib/journey-content";
-
+import { useIdentity } from "@/lib/profile-store";
+import { useJourneyStory } from "@/lib/journey-story";
 
 export const Route = createFileRoute("/journey")({
   head: () => ({
     meta: [
-      { title: "Journey — Where curiosity meets time" },
+      { title: "Journey — Your story is becoming clearer" },
       {
         name: "description",
         content:
-          "Ciatta's evolving story of your body: today's discovery, recent discoveries, emerging insights and milestones of understanding.",
+          "An edited narrative of understanding: what became clearer, why it changed, what's becoming clearer next, and how your story has evolved.",
       },
       { property: "og:title", content: "Journey — Ciatta" },
       {
         property: "og:description",
-        content: "Every day reveals something new about your body.",
+        content: "Not a feed. Not a log. An edited narrative of understanding.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -27,241 +26,224 @@ export const Route = createFileRoute("/journey")({
   component: JourneyPage,
 });
 
-/**
- * One accent, everywhere. Semantic colors are reserved for genuine status,
- * never for decoration — so every Journey eyebrow speaks in Living Clay.
- */
-const TONE_TEXT: Record<OrbTone, string> = {
+/** Accent dots and values only — everything else stays neutral. */
+const TONE: Record<OrbTone, string> = {
   clay: "var(--clay)",
-  moss: "var(--clay)",
-  "stone-blue": "var(--clay)",
-  wheat: "var(--clay)",
+  moss: "var(--moss)",
+  wheat: "var(--wheat)",
+  "stone-blue": "var(--stone-blue)",
   iris: "var(--clay)",
 };
 
-
-/** Small uppercase eyebrow that opens every Journey section. */
-function Eyebrow({ children, tone }: { children: string; tone?: OrbTone }) {
+function Dot({ tone, size = 9 }: { tone: OrbTone; size?: number }) {
   return (
-    <p className="label-caps" style={tone ? { color: TONE_TEXT[tone] } : undefined}>
+    <span
+      aria-hidden="true"
+      className="inline-block shrink-0 rounded-full"
+      style={{ width: size, height: size, background: TONE[tone] }}
+    />
+  );
+}
+
+/** Section opener: a small colored dot beside a serif line. */
+function ActTitle({ tone, children }: { tone: OrbTone; children: string }) {
+  return (
+    <h2 className="flex items-center gap-2.5 font-serif text-[22px] leading-[1.2] tracking-[-0.01em]">
+      <Dot tone={tone} />
+      {children}
+    </h2>
+  );
+}
+
+/** The statement, with only its closing words carrying the accent. */
+function Statement({ text, keyword }: { text: string; keyword: string }) {
+  const at = text.lastIndexOf(keyword);
+  if (at < 0) return <>{text}</>;
+  return (
+    <>
+      {text.slice(0, at)}
+      <span style={{ color: TONE.clay }}>{text.slice(at)}</span>
+    </>
+  );
+}
+
+function Card({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="mt-4 rounded-2xl border border-border bg-card p-4">{children}</div>
+  );
+}
+
+function Caps({ tone, children }: { tone?: OrbTone; children: string }) {
+  return (
+    <p
+      className="text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground"
+      style={tone ? { color: TONE[tone] } : undefined}
+    >
       {children}
     </p>
   );
 }
 
-function Rule() {
-  return <span className="my-7 block h-px w-full bg-border" />;
-}
-
-function Confidence({ value, tone }: { value: number; tone: OrbTone }) {
-  return (
-    <p
-      className="text-[26px] font-medium leading-none tabular-nums"
-      style={{ color: TONE_TEXT[tone] }}
-    >
-      {value}%
-    </p>
-  );
-}
-
-/** A full discovery: headline, orb, and the reasoning beneath it. */
-function DiscoveryDetail({ d, eyebrow }: { d: Discovery; eyebrow: string }) {
-  return (
-    <article>
-      <Eyebrow tone={d.tone}>{eyebrow}</Eyebrow>
-      <h2 className="mt-3 font-serif text-[26px] leading-[1.2] tracking-[-0.01em]">
-        {d.title}
-      </h2>
-
-      <div className="mt-5">
-        <p className="text-[13px] leading-relaxed text-muted-foreground">
-          {d.confidenceLabel}
-        </p>
-        <div className="mt-2">
-          <Confidence value={d.confidence} tone={d.tone} />
-        </div>
-      </div>
-
-      <Rule />
-
-      <Eyebrow tone={d.tone}>Why we noticed</Eyebrow>
-      <p className="mt-2.5 text-[14px] leading-[1.65] text-muted-foreground">
-        {d.whyWeNoticed}
-      </p>
-
-      <Rule />
-
-      <Eyebrow tone={d.tone}>Signals that contributed</Eyebrow>
-      <ul className="mt-2.5 space-y-2">
-        {d.signals.map((s) => (
-          <li key={s} className="text-[14px] leading-[1.65]">
-            {s}
-          </li>
-        ))}
-      </ul>
-
-      <Rule />
-
-      <Eyebrow tone={d.tone}>Why this matters</Eyebrow>
-      <div className="mt-2.5 space-y-3">
-        {d.whyThisMatters.map((p) => (
-          <p key={p} className="text-[14px] leading-[1.65] text-muted-foreground">
-            {p}
-          </p>
-        ))}
-      </div>
-
-      <Rule />
-
-      <Eyebrow tone={d.tone}>What to try</Eyebrow>
-      <p className="mt-2.5 text-[14px] leading-[1.65] text-muted-foreground">
-        {d.whatToTry}
-      </p>
-    </article>
-  );
-}
-
-/** A compact discovery row used in the Recent Discoveries list. */
-function DiscoveryRow({ d }: { d: Discovery }) {
-  return (
-    <article className="flex items-start justify-between gap-6 py-5">
-      <div className="min-w-0">
-        <h3 className="font-serif text-[19px] leading-[1.3]">{d.title}</h3>
-        <p className="mt-1.5 text-[12px] text-muted-foreground">{d.confidenceLabel}</p>
-      </div>
-      <p
-        className="shrink-0 pt-0.5 text-[15px] tabular-nums"
-        style={{ color: TONE_TEXT[d.tone] }}
-      >
-        {d.confidence}%
-      </p>
-    </article>
-  );
-}
-
-function Empty({ children }: { children: string }) {
-  return (
-    <p className="mt-4 text-[13px] leading-[1.7] text-muted-foreground">{children}</p>
-  );
-}
-
 function JourneyPage() {
   const hash = useRouterState({ select: (s) => s.location.hash });
-  const journey = useJourney();
+  const story = useJourneyStory();
+  const { identity } = useIdentity();
+  const firstName = identity.name.split(" ")[0];
 
-  // Deep links like /journey#discovery scroll the section into view.
   useEffect(() => {
     if (hash !== "discovery") return;
     document.getElementById("discovery")?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, [hash]);
 
   return (
-    <div className="px-6 pt-8 pb-10">
-      <section id="discovery" className="scroll-mt-6">
-        <DiscoveryDetail d={journey.todaysDiscovery} eyebrow="Discovery" />
-        {!journey.hasData && journey.hydrated ? (
-          <p className="mt-6 text-[12px] leading-[1.7] text-muted-foreground">
-            This is an example story. Teach Ciatta a few more times and Journey starts
-            writing your own.
-          </p>
-        ) : null}
+    <div className="px-6 pt-6 pb-10">
+      {/* Act one — something became clearer. */}
+      <section id="discovery" className="animate-dissolve scroll-mt-6">
+        <ActTitle tone="clay">Something became clearer.</ActTitle>
+        <p className="mt-3 text-[15px] leading-[1.6]">
+          <Statement text={story.shift.statement} keyword={story.shift.keyword} />
+        </p>
 
-        <Link to="/teach" className="mt-8 block border-t border-border pt-5">
-          <p className="text-[12px] text-muted-foreground">Help us learn more</p>
-          <p className="mt-2 flex items-center justify-between font-serif text-[21px] leading-none">
-            Teach Ciatta More
-            <span aria-hidden="true" className="text-[15px] text-muted-foreground">
+        <Card>
+          <div className="flex items-start gap-4">
+            <div className="min-w-0 flex-1">
+              <Caps>{story.shift.beforeLabel}</Caps>
+              <p className="mt-2 text-[13.5px] leading-[1.55] text-muted-foreground">
+                {story.shift.before}
+              </p>
+            </div>
+            <span aria-hidden="true" className="pt-6 text-[14px] text-muted-foreground">
               →
             </span>
-          </p>
-        </Link>
+            <div className="min-w-0 flex-1">
+              <Caps tone="clay">{story.shift.todayLabel}</Caps>
+              <p className="mt-2 text-[13.5px] leading-[1.55]">{story.shift.today}</p>
+            </div>
+          </div>
+        </Card>
       </section>
 
-      <section className="mt-12">
-        <Eyebrow>Recent discoveries</Eyebrow>
-        {journey.recentDiscoveries.length ? (
-          <div className="mt-3 divide-y divide-border border-t border-border">
-            {journey.recentDiscoveries.map((d) => (
-              <DiscoveryRow key={d.id} d={d} />
-            ))}
+      <span className="my-8 block h-px w-full bg-border" />
+
+      {/* Act two — why it changed. */}
+      <section>
+        <ActTitle tone="clay">Why it changed.</ActTitle>
+        <p className="mt-3 text-[14px] leading-[1.6] text-muted-foreground">
+          {story.why.body}
+        </p>
+        <Card>
+          <div className="flex items-start gap-2.5">
+            <span className="pt-1.5">
+              <Dot tone="clay" size={8} />
+            </span>
+            <p className="text-[13.5px] leading-[1.55]">{story.why.unlock}</p>
           </div>
+        </Card>
+      </section>
+
+      <span className="my-8 block h-px w-full bg-border" />
+
+      {/* Act three — what's becoming clearer next. */}
+      <section>
+        <ActTitle tone="moss">What's becoming clearer next.</ActTitle>
+        {story.next.length ? (
+          <Card>
+            <div className="divide-y divide-border">
+              {story.next.map((n, i) => (
+                <div key={n.id} className={i === 0 ? "pb-4" : "py-4 last:pb-0"}>
+                  <div className="flex items-start gap-2.5">
+                    <span className="pt-1.5">
+                      <Dot tone={n.tone} size={8} />
+                    </span>
+                    <p className="min-w-0 flex-1 text-[13.5px] leading-[1.5] font-medium">
+                      {n.body}
+                    </p>
+                    <div className="shrink-0 text-right">
+                      <p
+                        className="text-[14px] leading-none tabular-nums"
+                        style={{ color: TONE[n.tone] }}
+                      >
+                        {n.confidence}%
+                      </p>
+                      <p className="mt-1 text-[10px] text-muted-foreground">confidence</p>
+                    </div>
+                  </div>
+                  <div className="mt-3 h-[3px] w-full rounded-full bg-border">
+                    <span
+                      className="block h-full rounded-full"
+                      style={{ width: `${n.confidence}%`, background: TONE[n.tone] }}
+                    />
+                  </div>
+                  <p className="mt-2 text-[11.5px] text-muted-foreground">{n.need}</p>
+                </div>
+              ))}
+            </div>
+          </Card>
         ) : (
-          <Empty>
-            Nothing has repeated often enough to become a discovery yet. Keep teaching
-            Ciatta and patterns will surface here.
-          </Empty>
+          <p className="mt-3 text-[13px] leading-[1.7] text-muted-foreground">
+            Ciatta is still watching. What it's close to understanding appears here first.
+          </p>
         )}
       </section>
 
-      <section className="mt-12">
-        <Eyebrow>Emerging insights</Eyebrow>
-        {journey.emergingInsights.length ? (
-          <div className="mt-3 divide-y divide-border border-t border-border">
-            {journey.emergingInsights.map((i) => (
-              <article key={i.id} className="flex items-start justify-between gap-6 py-5">
-                <div className="min-w-0">
-                  <p className="font-serif text-[19px] leading-[1.3]">{i.body}</p>
-                  <p className="mt-1.5 text-[12px] text-muted-foreground">
-                    {i.confidenceLabel}
-                  </p>
-                  <p className="mt-2 text-[13px] text-accent">Continue teaching Ciatta.</p>
-                </div>
-                <p
-                  className="shrink-0 pt-0.5 text-[15px] tabular-nums"
-                  style={{ color: TONE_TEXT[i.tone] }}
-                >
-                  {i.confidence}%
+      <span className="my-8 block h-px w-full bg-border" />
+
+      {/* Act four — your story. */}
+      <section>
+        <ActTitle tone="stone-blue">Your story.</ActTitle>
+        {story.chapters.length ? (
+          <div className="-mx-6 mt-4 flex gap-3 overflow-x-auto px-6 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {story.chapters.map((c) => (
+              <article
+                key={c.id}
+                className="w-[43%] min-w-[136px] shrink-0 rounded-2xl border border-border bg-card p-4"
+              >
+                <p className="flex items-center gap-2">
+                  <Dot tone={c.tone} size={7} />
+                  <span
+                    className="text-[10px] font-medium uppercase tracking-[0.14em]"
+                    style={{ color: TONE[c.tone] }}
+                  >
+                    {c.month}
+                  </span>
+                </p>
+                <p className="mt-2.5 text-[13px] leading-[1.5] text-muted-foreground">
+                  {c.note}
                 </p>
               </article>
             ))}
           </div>
         ) : (
-          <Empty>Ciatta is still watching. New relationships appear here first.</Empty>
+          <p className="mt-3 text-[13px] leading-[1.7] text-muted-foreground">
+            Your story begins with your first log.
+          </p>
         )}
       </section>
 
-      <section className="mt-12">
-        <Eyebrow>Understanding milestones</Eyebrow>
-        <div className="mt-5 border-t border-border pt-7 text-center">
-          <p className="text-[12px] text-muted-foreground">{journey.milestone.label}</p>
-          <p className="mt-3 flex items-center justify-center gap-4 text-[24px] font-medium leading-none tabular-nums text-moss">
-            <span>{journey.milestone.from}%</span>
-            <span aria-hidden="true" className="text-[16px] text-muted-foreground">
-              →
-            </span>
-            <span>{journey.milestone.to}%</span>
-          </p>
-          <p className="mx-auto mt-4 max-w-[30ch] text-[13px] leading-[1.7] text-muted-foreground">
-            {journey.milestone.note}
-          </p>
-        </div>
-      </section>
+      {/* The quiet understanding line. */}
+      <Link
+        to="/teach"
+        className="mt-8 flex items-center gap-4 rounded-2xl border border-border bg-card px-4 py-4"
+      >
+        <span className="text-[13.5px]">Understanding</span>
+        <span
+          className="font-serif text-[22px] leading-none tabular-nums"
+          style={{ color: TONE.clay }}
+        >
+          {story.understanding}%
+        </span>
+        <span className="ml-auto flex items-center gap-2 text-[12.5px] text-muted-foreground">
+          Keep going, {firstName}.
+          <span aria-hidden="true">→</span>
+        </span>
+      </Link>
 
-      <section className="mt-12">
-        <Eyebrow>Journey timeline</Eyebrow>
-        {journey.timeline.length ? (
-          <dl className="mt-3 divide-y divide-border border-t border-border">
-            {journey.timeline.map((t) => (
-              <div key={t.month} className="flex items-baseline gap-6 py-4">
-                <dt className="w-16 shrink-0 text-[13px] font-medium">{t.month}</dt>
-                <dd className="text-[13px] leading-[1.6] text-muted-foreground">{t.note}</dd>
-              </div>
-            ))}
-          </dl>
-        ) : (
-          <Empty>Your timeline begins with your first log.</Empty>
-        )}
-      </section>
-
-
-      <span className="my-10 block h-px w-full border-t border-dotted border-border" />
-
-      <footer className="pb-2 text-center">
-        <p className="mx-auto max-w-[24ch] text-[14px] leading-[1.9] text-muted-foreground">
-          You've reached today. Every day adds another chapter to your story. See you
-          tomorrow.
+      {!story.hasData && story.hydrated ? (
+        <p className="mt-6 text-[12px] leading-[1.7] text-muted-foreground">
+          This is an example story. Teach Ciatta a few more times and Journey starts
+          writing your own.
         </p>
-      </footer>
+      ) : null}
     </div>
   );
 }
