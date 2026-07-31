@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Link, createFileRoute, notFound } from "@tanstack/react-router";
+import { Link, createFileRoute, notFound, useNavigate } from "@tanstack/react-router";
 
 import { Card, Chip, Screen, Toggle } from "@/components/ciatta/screen";
 import { deleteAllData, exportAllData } from "@/lib/ciatta-store";
+import { signOut } from "@/lib/onboarding-store";
 import { CONNECTED_APPS, useSettings } from "@/lib/profile-store";
 import { useAppearance } from "@/lib/use-appearance";
 
@@ -180,13 +181,13 @@ function Apps() {
 }
 
 function Privacy() {
+  const navigate = useNavigate();
   const { settings, save } = useSettings();
   const p = settings.privacy;
   const set = (k: keyof typeof p, v: boolean) => save({ privacy: { ...p, [k]: v } });
 
   const [exportState, setExportState] = useState<"idle" | "working" | "done" | "error">("idle");
   const [confirmDelete, setConfirmDelete] = useState(false);
-  const [deleted, setDeleted] = useState(false);
 
   const onExport = () => {
     setExportState("working");
@@ -251,57 +252,50 @@ function Privacy() {
         <button
           type="button"
           onClick={() => setConfirmDelete(true)}
-          className="flex w-full items-center justify-between px-4 py-3.5 text-left text-[15px] text-destructive transition-colors hover:bg-secondary/60 active:bg-secondary"
+          className="flex w-full items-center justify-between px-4 py-3.5 text-left text-[15px] transition-colors hover:bg-secondary/60 active:bg-secondary"
         >
-          Delete everything Ciatta knows
-          <span aria-hidden="true" className="text-[13px]">
+          Delete my data
+          <span aria-hidden="true" className="text-[13px] text-muted-foreground">
             {"\u203A"}
           </span>
         </button>
       </Card>
 
-      {deleted && (
-        <p className="mt-3 px-1 text-[13px] text-moss">
-          Deleted. Ciatta has forgotten everything and is starting over.
-        </p>
-      )}
-
       {confirmDelete && (
         <div
           role="dialog"
           aria-modal="true"
-          aria-label="Delete all data"
+          aria-label="Delete your data"
           className="fixed inset-0 z-50 flex items-end justify-center bg-foreground/25 px-4 pb-8"
           onClick={() => setConfirmDelete(false)}
         >
           <div
-            className="w-full max-w-[398px] rounded-3xl bg-surface p-6 animate-fade-in"
+            className="animate-fade-in w-full max-w-[398px] rounded-3xl bg-surface p-6"
             onClick={(e) => e.stopPropagation()}
           >
-            <p className="font-serif text-[22px] leading-snug">
-              Delete everything Ciatta knows?
-            </p>
+            <p className="font-serif text-[22px] leading-snug">Delete your data?</p>
             <p className="mt-2 text-[14px] leading-relaxed text-muted-foreground">
-              Every log, check-in, pattern and milestone will be permanently removed from this
-              device. This cannot be undone.
+              This will permanently delete everything Ciatta has learned about you and remove it
+              from your account. This can&rsquo;t be undone.
             </p>
             <button
               type="button"
               onClick={() => {
                 deleteAllData();
-                setDeleted(true);
+                signOut();
                 setConfirmDelete(false);
+                navigate({ to: "/onboarding", replace: true });
               }}
               className="mt-6 h-12 w-full rounded-full bg-destructive text-[15px] font-medium text-background transition-opacity hover:opacity-90"
             >
-              Delete permanently
+              Delete my data
             </button>
             <button
               type="button"
               onClick={() => setConfirmDelete(false)}
               className="mt-2 h-12 w-full rounded-full text-[15px] text-muted-foreground transition-colors hover:bg-secondary"
             >
-              Keep my data
+              Cancel
             </button>
           </div>
         </div>

@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 
-import { usePersistentState } from "./ciatta-store";
+import { SYNC_EVENT, usePersistentState } from "./ciatta-store";
 
 export type Onboarding = {
   /** Index of the furthest step the user reached, so progress resumes. */
@@ -155,3 +155,13 @@ export const MONTHS = [
   "November",
   "December",
 ];
+
+/**
+ * Ends the current session on this device and returns Ciatta to the
+ * authentication flow. Nothing Ciatta has learned is deleted.
+ */
+export function signOut() {
+  if (typeof window === "undefined") return;
+  window.localStorage.removeItem(ONBOARDING_KEY);
+  window.dispatchEvent(new CustomEvent(SYNC_EVENT, { detail: ONBOARDING_KEY }));
+}

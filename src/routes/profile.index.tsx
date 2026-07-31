@@ -1,7 +1,8 @@
 import { useRef, useState } from "react";
-import { Link, createFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 
 import { usePriorities } from "@/lib/ciatta-store";
+import { signOut } from "@/lib/onboarding-store";
 import { useIdentity } from "@/lib/profile-store";
 import { useProfile, type Area, type SourceRow, type Understanding } from "@/lib/profile-data";
 
@@ -553,23 +554,49 @@ function ProfilePage() {
         </Stack>
       </section>
 
-      {/* Supporting */}
+      {/* Settings */}
       <section className="mt-10 px-6">
-        <div className="divide-y divide-border/70">
+        <SectionTitle>Settings</SectionTitle>
+        <div className="mt-2 divide-y divide-border/70">
           <SettingsLink section="notifications" label="Notifications" />
           <SettingsLink section="appearance" label="Appearance" />
           <SettingsLink section="apps" label="Connected apps" />
+        </div>
+      </section>
+
+      {/* Account */}
+      <section className="mt-10 px-6">
+        <SectionTitle>Account</SectionTitle>
+        <div className="mt-2 divide-y divide-border/70">
+          <SignOutRow />
           <SettingsLink section="privacy" label="Privacy" />
           <SettingsLink section="help" label="Help" />
           <SettingsLink section="about" label="About Ciatta" />
           <SettingsLink section="legal" label="Legal" />
         </div>
-        <p className="mt-5 text-[13px] leading-relaxed text-muted-foreground">
+        <p className="mt-6 text-[13px] leading-relaxed text-muted-foreground">
           What I understand about you belongs to you. It is never sold, and can always be exported
           or permanently deleted.
         </p>
       </section>
     </div>
+  );
+}
+
+function SignOutRow() {
+  const navigate = useNavigate();
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        signOut();
+        navigate({ to: "/onboarding", replace: true });
+      }}
+      className={`flex w-full items-center justify-between gap-4 py-3.5 text-left text-[16px] ${pressable}`}
+    >
+      Sign out
+      <Chevron />
+    </button>
   );
 }
 
