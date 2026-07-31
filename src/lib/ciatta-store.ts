@@ -224,9 +224,9 @@ export function useMilestones() {
 
 
 export function todayKey() {
-
-  return "2026-07-29";
+  return new Date().toISOString().slice(0, 10);
 }
+
 
 const PRIORITY_KEY = "ciatta.priorities.v1";
 
