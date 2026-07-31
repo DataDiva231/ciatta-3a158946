@@ -1019,12 +1019,13 @@ function SummaryScreen({ data, onFinish }: { data: Onboarding; onFinish: () => v
         </div>
 
         <p className="mx-auto mt-6 max-w-[19rem] text-center text-[13px] leading-relaxed text-muted-foreground">
-          I&apos;ll keep learning and update this as we go, {first(data)}.
+          This will change as I get to know you, {first(data)}.
         </p>
 
       </div>
       <div className="shrink-0 px-8 pt-3 pb-10">
-        <PrimaryButton label="Go to Today" onClick={onFinish} />
+        <PrimaryButton label="Start with me" onClick={onFinish} />
+
       </div>
     </>
   );
