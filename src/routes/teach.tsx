@@ -107,8 +107,11 @@ function TeachPage() {
               <button
                 key={s.category}
                 type="button"
-                onClick={() => setSheet({ category: s.category, reason: s.reason })}
-                className="animate-in fade-in rounded-full bg-surface px-4 py-2.5 text-[13px] leading-none text-foreground shadow-[0_8px_24px_-22px_rgba(60,45,35,0.5)] transition-all duration-200 active:scale-[0.98] active:bg-secondary"
+                onClick={() => {
+                  haptic("tap");
+                  setSheet({ category: s.category, reason: s.reason, step: s.step });
+                }}
+                className="animate-in fade-in inline-flex h-[38px] items-center rounded-full bg-background px-4 text-[14px] leading-none text-foreground shadow-soft ring-1 ring-border/70 transition-all duration-200 active:scale-[0.97] active:bg-secondary"
               >
                 {s.label}
               </button>
@@ -116,6 +119,7 @@ function TeachPage() {
           </div>
         </div>
       )}
+
 
 
       <button
