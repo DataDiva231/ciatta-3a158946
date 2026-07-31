@@ -331,12 +331,13 @@ function Splash() {
           className="absolute inset-0 rounded-full"
           style={{
             background:
-              "radial-gradient(circle at 34% 30%, color-mix(in oklab, var(--clay) 12%, transparent) 0%, transparent 58%)," +
-              "radial-gradient(circle at 72% 28%, oklch(0.86 0.05 340 / 0.14) 0%, transparent 60%)," +
-              "radial-gradient(circle at 70% 74%, oklch(0.82 0.06 292 / 0.13) 0%, transparent 62%)," +
-              "radial-gradient(circle at 28% 76%, oklch(0.85 0.05 232 / 0.14) 0%, transparent 62%)," +
-              "radial-gradient(circle at 50% 50%, color-mix(in oklab, var(--surface) 92%, transparent) 0%, transparent 72%)",
-            filter: "blur(2px)",
+              "radial-gradient(circle at 36% 32%, color-mix(in oklab, var(--clay) 7%, transparent) 0%, transparent 52%)," +
+              "radial-gradient(circle at 70% 30%, oklch(0.88 0.04 340 / 0.07) 0%, transparent 54%)," +
+              "radial-gradient(circle at 70% 72%, oklch(0.85 0.05 292 / 0.06) 0%, transparent 56%)," +
+              "radial-gradient(circle at 30% 74%, oklch(0.88 0.04 232 / 0.07) 0%, transparent 56%)",
+            maskImage: "radial-gradient(circle, black 34%, transparent 70%)",
+            filter: "blur(14px)",
+
           }}
         />
         <img
