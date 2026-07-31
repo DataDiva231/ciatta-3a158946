@@ -73,8 +73,7 @@ function TeachPage() {
   if (saved) {
     return (
       <div className="animate-dissolve flex min-h-[70vh] flex-col items-center justify-center px-8 text-center">
-        <Understanding size="hero" confidence={narrative.confidence.value} />
-        <h1 className="mt-8 font-serif text-[28px] leading-tight">Got it.</h1>
+        <h1 className="font-serif text-[28px] leading-tight">Got it.</h1>
         <p className="mt-3 text-[15px] leading-relaxed text-muted-foreground">
           Tomorrow's understanding just became a little clearer.
         </p>
@@ -84,15 +83,17 @@ function TeachPage() {
 
 
   return (
-    <div className="flex min-h-full flex-col px-7 pt-6 pb-2">
-      <div className="flex flex-1 items-center justify-center py-2">
-        <Understanding size="hero" confidence={narrative.confidence.value} />
-      </div>
-
+    <div className="flex min-h-full flex-col px-7 pt-10 pb-2">
       <h1 className="font-serif text-[32px] leading-[1.12] tracking-[-0.015em]">
         What happened today?
       </h1>
-      <p className="mt-3 text-[13px] leading-relaxed text-muted-foreground">{confidenceLine()}</p>
+      <p className="mt-3 max-w-[19rem] text-[13px] leading-relaxed text-muted-foreground">
+        {confidenceLine()}
+      </p>
+
+      {/* Deliberate quiet between the invitation and the tools to answer it. */}
+      <div aria-hidden="true" className="min-h-[18vh] flex-1" />
+
 
       {confirmed && (
         <p className="animate-dissolve mt-3 flex items-center gap-2 text-[13px] leading-none text-accent">
