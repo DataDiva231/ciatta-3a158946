@@ -45,25 +45,26 @@ function TeachPage() {
       </div>
 
       <h1 className="font-serif text-[32px] leading-[1.12] tracking-[-0.015em]">
-        What's changed since we last checked in?
+        What happened today?
       </h1>
-      <p className="mt-3 text-[13px] leading-relaxed text-muted-foreground">
-        {confidenceLine(narrative.confidence.value, suggestions.length)}
-      </p>
+      <p className="mt-3 text-[13px] leading-relaxed text-muted-foreground">{confidenceLine()}</p>
 
       {suggestions.length > 0 && (
-        <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2">
-          {suggestions.map((s) => (
-            <Link
-              key={s.category}
-              to="/quick-add"
-              search={{ category: s.category }}
-              className="animate-in fade-in text-[13px] leading-none transition-opacity active:opacity-60"
-            >
-              <span className="text-accent">{s.label}</span>{" "}
-              <span className="text-muted-foreground">{s.reason}</span>
-            </Link>
-          ))}
+        <div className="mt-7">
+          <p className="label-caps">Suggested moments</p>
+          <div className="mt-3 flex flex-col gap-2.5">
+            {suggestions.map((s) => (
+              <Link
+                key={s.category}
+                to="/quick-add"
+                search={{ category: s.category }}
+                className="animate-in fade-in text-[13px] leading-snug transition-opacity active:opacity-60"
+              >
+                <span className="text-accent">{s.label}</span>{" "}
+                <span className="text-muted-foreground">{s.reason}</span>
+              </Link>
+            ))}
+          </div>
         </div>
       )}
 
