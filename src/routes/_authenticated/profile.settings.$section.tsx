@@ -4,7 +4,7 @@ import { Link, createFileRoute, notFound, useNavigate } from "@tanstack/react-ro
 import { Card, Chip, Screen, Toggle } from "@/components/ciatta/screen";
 import { deleteAllData, exportAllData } from "@/lib/ciatta-store";
 import { forgetEverything } from "@/lib/engine.functions";
-import { signOut } from "@/lib/onboarding-store";
+import { endSession } from "@/lib/session";
 import { CONNECTED_APPS, useSettings } from "@/lib/profile-store";
 import { useAppearance } from "@/lib/use-appearance";
 
@@ -281,13 +281,14 @@ function Privacy() {
             </p>
             <button
               type="button"
-              onClick={() => {
-                // Forget on the device and in Ciatta's own memory.
-                void forgetEverything().catch(() => {});
+              onClick={async () => {
+                // Forget in Ciatta's own memory, then on the device, then end
+                // the session.
+                await forgetEverything().catch(() => {});
                 deleteAllData();
-                signOut();
+                await endSession();
                 setConfirmDelete(false);
-                navigate({ to: "/onboarding", replace: true });
+                navigate({ to: "/auth", replace: true });
               }}
               className="mt-6 h-12 w-full rounded-full bg-destructive text-[15px] font-medium text-background transition-opacity hover:opacity-90"
             >
