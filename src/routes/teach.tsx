@@ -77,7 +77,7 @@ function TeachPage() {
             Quick Add
           </span>
           <span className="mt-1.5 block text-[12px] leading-snug text-background/70">
-            The fastest way to teach Ciatta something new.
+            The fastest way to share a moment.
           </span>
         </span>
         <span aria-hidden="true" className="text-[16px] text-background/70">
@@ -87,7 +87,7 @@ function TeachPage() {
 
 
       <div className="mt-7 flex items-center justify-between text-[13px]">
-        <span className="text-muted-foreground">Or teach another way</span>
+        <span className="text-muted-foreground">Other ways to share</span>
         <span className="flex items-center gap-5">
           {OTHER_WAYS.map(({ to, label }) => (
             <Link key={label} to={to} className="text-accent transition-opacity active:opacity-60">
