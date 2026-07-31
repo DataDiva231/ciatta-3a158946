@@ -14,6 +14,8 @@ export type SubjectContext = {
   cyclePhase: string | null;
   cycleDay: number | null;
   medications: string[];
+  /** What this person said they want, used by the Guidance Engine. */
+  goals: string[];
   recentSleep: string | null;
   recentActivity: string | null;
 };
@@ -69,6 +71,12 @@ export function buildContext(
     medications: Array.isArray(identity["medications"])
       ? (identity["medications"] as string[])
       : [],
+    goals: [
+      ...(typeof identity["primaryGoal"] === "string" && identity["primaryGoal"]
+        ? [identity["primaryGoal"] as string]
+        : []),
+      ...(Array.isArray(identity["priorities"]) ? (identity["priorities"] as string[]) : []),
+    ],
     recentSleep: latestValue(observations, "Sleep"),
     recentActivity: latestValue(observations, "Activity"),
   };

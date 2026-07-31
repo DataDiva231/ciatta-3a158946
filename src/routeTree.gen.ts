@@ -14,6 +14,7 @@ import { Route as TalkRouteImport } from './routes/talk'
 import { Route as QuickAddRouteImport } from './routes/quick-add'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as JourneyRouteImport } from './routes/journey'
+import { Route as EngineTraceRouteImport } from './routes/engine-trace'
 import { Route as CaptureRouteImport } from './routes/capture'
 import { Route as AttachRouteImport } from './routes/attach'
 import { Route as IndexRouteImport } from './routes/index'
@@ -45,6 +46,11 @@ const OnboardingRoute = OnboardingRouteImport.update({
 const JourneyRoute = JourneyRouteImport.update({
   id: '/journey',
   path: '/journey',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EngineTraceRoute = EngineTraceRouteImport.update({
+  id: '/engine-trace',
+  path: '/engine-trace',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CaptureRoute = CaptureRouteImport.update({
@@ -87,6 +93,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/attach': typeof AttachRoute
   '/capture': typeof CaptureRoute
+  '/engine-trace': typeof EngineTraceRoute
   '/journey': typeof JourneyRoute
   '/onboarding': typeof OnboardingRoute
   '/quick-add': typeof QuickAddRoute
@@ -101,6 +108,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/attach': typeof AttachRoute
   '/capture': typeof CaptureRoute
+  '/engine-trace': typeof EngineTraceRoute
   '/journey': typeof JourneyRoute
   '/onboarding': typeof OnboardingRoute
   '/quick-add': typeof QuickAddRoute
@@ -116,6 +124,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/attach': typeof AttachRoute
   '/capture': typeof CaptureRoute
+  '/engine-trace': typeof EngineTraceRoute
   '/journey': typeof JourneyRoute
   '/onboarding': typeof OnboardingRoute
   '/quick-add': typeof QuickAddRoute
@@ -132,6 +141,7 @@ export interface FileRouteTypes {
     | '/'
     | '/attach'
     | '/capture'
+    | '/engine-trace'
     | '/journey'
     | '/onboarding'
     | '/quick-add'
@@ -146,6 +156,7 @@ export interface FileRouteTypes {
     | '/'
     | '/attach'
     | '/capture'
+    | '/engine-trace'
     | '/journey'
     | '/onboarding'
     | '/quick-add'
@@ -160,6 +171,7 @@ export interface FileRouteTypes {
     | '/'
     | '/attach'
     | '/capture'
+    | '/engine-trace'
     | '/journey'
     | '/onboarding'
     | '/quick-add'
@@ -175,6 +187,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AttachRoute: typeof AttachRoute
   CaptureRoute: typeof CaptureRoute
+  EngineTraceRoute: typeof EngineTraceRoute
   JourneyRoute: typeof JourneyRoute
   OnboardingRoute: typeof OnboardingRoute
   QuickAddRoute: typeof QuickAddRoute
@@ -221,6 +234,13 @@ declare module '@tanstack/react-router' {
       path: '/journey'
       fullPath: '/journey'
       preLoaderRoute: typeof JourneyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/engine-trace': {
+      id: '/engine-trace'
+      path: '/engine-trace'
+      fullPath: '/engine-trace'
+      preLoaderRoute: typeof EngineTraceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/capture': {
@@ -279,6 +299,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AttachRoute: AttachRoute,
   CaptureRoute: CaptureRoute,
+  EngineTraceRoute: EngineTraceRoute,
   JourneyRoute: JourneyRoute,
   OnboardingRoute: OnboardingRoute,
   QuickAddRoute: QuickAddRoute,
