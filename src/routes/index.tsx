@@ -51,12 +51,14 @@ function greeting() {
 function TodayPage() {
   const navigate = useNavigate();
 
-  // First run: send new users into their first Teach Session.
+  // First run: send new users into their first Teach Session, then into their
+  // first real observation before the app opens.
   useEffect(() => {
     try {
       const raw = localStorage.getItem(ONBOARDING_KEY);
-      const done = raw ? Boolean(JSON.parse(raw)?.completed) : false;
-      if (!done) navigate({ to: "/onboarding" });
+      const saved = raw ? JSON.parse(raw) : null;
+      if (!saved?.completed) navigate({ to: "/onboarding" });
+      else if (!saved?.firstObservationDone) navigate({ to: "/first-observation" });
     } catch {
       /* storage unavailable */
     }
@@ -71,11 +73,14 @@ function TodayPage() {
   const view = views?.today;
   const headline = view?.headline
     ? splitAccent(view.headline, view.accent)
-    : [{ text: "I don't know you yet.", accent: false }];
-  const standing = view?.standing ?? "I'm still listening.";
+    : [{ text: "I'm just beginning to understand you.", accent: false }];
+  const standing =
+    view?.standing ??
+    "We don't know enough yet, but every observation helps us build a clearer picture.";
   const evidence = view?.evidence ?? [];
   const focus = view?.focus ?? null;
   const depth = view?.depth ?? 0;
+
   // Set by Quick Add so the insight visibly re-forms when the user lands back here.
   const [justTaught, setJustTaught] = useState(false);
 
