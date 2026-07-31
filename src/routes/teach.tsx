@@ -13,6 +13,7 @@ import {
   confidenceLine,
   type TeachSuggestion,
 } from "@/lib/teach-suggestions";
+import { useEngine } from "@/lib/use-engine";
 
 
 export const Route = createFileRoute("/teach")({
@@ -36,12 +37,25 @@ export const Route = createFileRoute("/teach")({
 
 
 
+/** Where a category sits in what the engine most wants to learn. */
+function rank(wanted: string[], category: string) {
+  const at = wanted.indexOf(category);
+  return at < 0 ? wanted.length : at;
+}
+
 function TeachPage() {
   const router = useRouter();
   const { latest } = useCheckIns();
   const { events, addEvent } = useQuickAddEvents();
   const narrative = buildNarrative(latest, events);
-  const suggestions = buildTeachSuggestions(events, narrative.confidence.value);
+  // Teach asks the engine what it's still missing, and uses that to order the
+  // moments it offers. The sheet steps stay local.
+  const { views } = useEngine();
+  const local = buildTeachSuggestions(events, narrative.confidence.value);
+  const wanted = views?.teach.suggestions.map((s) => s.category) ?? [];
+  const suggestions: TeachSuggestion[] = wanted.length
+    ? [...local].sort((a, b) => rank(wanted, a.category) - rank(wanted, b.category))
+    : local;
   const [saved, setSaved] = useState(false);
   /** Quick Add lives inside this screen: a sheet over the current question. */
   const [sheet, setSheet] = useState<{
@@ -85,10 +99,10 @@ function TeachPage() {
   return (
     <div className="flex min-h-full flex-col px-7 pt-10 pb-2">
       <h1 className="font-serif text-[32px] leading-[1.12] tracking-[-0.015em]">
-        What happened today?
+        {views?.teach.prompt ?? "What happened today?"}
       </h1>
       <p className="mt-3 max-w-[19rem] text-[13px] leading-relaxed text-muted-foreground">
-        {confidenceLine()}
+        {views?.teach.invitation ?? confidenceLine()}
       </p>
 
       {/* Deliberate quiet between the invitation and the tools to answer it. */}

@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import type { OrbTone } from "@/components/ciatta/discovery-orb";
 import { useIdentity } from "@/lib/profile-store";
 import { useJourneyStory } from "@/lib/journey-story";
+import { useEngine } from "@/lib/use-engine";
 
 export const Route = createFileRoute("/journey")({
   head: () => ({
@@ -100,6 +101,22 @@ function JourneyPage() {
   const { identity } = useIdentity();
   const firstName = identity.name.split(" ")[0];
 
+  // Journey is the same understanding, told as a story over time.
+  const { views } = useEngine();
+  const journey = views?.journey;
+  const shift = journey?.clearer[0]
+    ? {
+        ...story.shift,
+        statement: journey.clearer[0].now,
+        keyword: story.shift.keyword,
+        before: journey.clearer[0].before,
+        today: journey.clearer[0].now,
+      }
+    : story.shift;
+  const next = journey?.discoveries.length
+    ? journey.discoveries.map((d, i) => ({ id: `eng-${i}`, body: d.body, need: d.title }))
+    : story.next;
+
   useEffect(() => {
     if (hash !== "discovery") return;
     document.getElementById("discovery")?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -119,19 +136,19 @@ function JourneyPage() {
           </span>
         </p>
         <h1 className="mt-10 max-w-[18ch] font-serif text-[40px] leading-[1.08] tracking-[-0.02em]">
-          <Statement text={story.shift.statement} keyword={story.shift.keyword} />
+          <Statement text={shift.statement} keyword={shift.keyword} />
         </h1>
 
         <div className="mt-16 space-y-12">
           <div>
-            <Caps>{story.shift.beforeLabel}</Caps>
+            <Caps>{shift.beforeLabel}</Caps>
             <p className="mt-4 text-[15px] leading-[1.7] text-muted-foreground">
-              {story.shift.before}
+              {shift.before}
             </p>
           </div>
           <div>
-            <Caps tone="clay">{story.shift.todayLabel}</Caps>
-            <p className="mt-4 text-[17px] leading-[1.6]">{story.shift.today}</p>
+            <Caps tone="clay">{shift.todayLabel}</Caps>
+            <p className="mt-4 text-[17px] leading-[1.6]">{shift.today}</p>
           </div>
         </div>
       </section>
@@ -161,9 +178,9 @@ function JourneyPage() {
       {/* Act three — future curiosity. */}
       <section>
         <ActTitle tone="moss">What's becoming clearer next.</ActTitle>
-        {story.next.length ? (
+        {next.length ? (
           <div className="mt-6 space-y-8">
-            {story.next.map((n) => (
+            {next.map((n) => (
               <div key={n.id}>
                 <p className="font-serif text-[20px] leading-[1.3] tracking-[-0.01em]">
                   {n.body}

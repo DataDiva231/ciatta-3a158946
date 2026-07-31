@@ -7,9 +7,9 @@ import { Understanding } from "@/components/ciatta/understanding";
 import { formatLongDate, today } from "@/lib/ciatta-data";
 import { useCheckIns, useQuickAddEvents } from "@/lib/ciatta-store";
 import type { QuickAddEvent } from "@/lib/ciatta-store";
-import { buildNarrative, type NarrativeLine } from "@/lib/narrative";
+import { buildNarrative } from "@/lib/narrative";
 import { ONBOARDING_KEY } from "@/lib/onboarding-store";
-
+import { useEngine } from "@/lib/use-engine";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -26,7 +26,6 @@ export const Route = createFileRoute("/")({
         content:
           "What Ciatta understands about you today, why it thinks so, and what to focus on next.",
       },
-
     ],
   }),
 
@@ -52,6 +51,16 @@ function learnedSentence(event: QuickAddEvent | undefined) {
       return `I learned about your ${event.category.toLowerCase()}.`;
   }
 }
+/** Highlights one phrase inside a sentence the engine wrote. */
+function splitAccent(sentence: string, accent: string) {
+  const at = accent ? sentence.indexOf(accent) : -1;
+  if (at < 0) return [{ text: sentence, accent: false }];
+  return [
+    { text: sentence.slice(0, at), accent: false },
+    { text: accent, accent: true },
+    { text: sentence.slice(at + accent.length), accent: false },
+  ].filter((p) => p.text.length > 0);
+}
 
 /** How clear today feels, in words rather than a score. */
 function understandingLine(value: number, delta: number) {
@@ -66,10 +75,9 @@ function understandingLine(value: number, delta: number) {
   return delta > 0 ? `${state} · a little clearer since you shared` : state;
 }
 
-
 function TodayPage() {
   const navigate = useNavigate();
-  
+
   // First run: send new users into their first Teach Session.
   useEffect(() => {
     try {
@@ -86,6 +94,20 @@ function TodayPage() {
   const narrative = buildNarrative(latest, events);
   const primaryLabels = ["Sleep quality", "Resting heart rate"];
   const primaryLines = narrative.lines.filter((l) => primaryLabels.includes(l.label));
+
+  // Today is one view into the single understanding. Until the engine answers,
+  // the local reading stands in so the screen is never empty.
+  const { views } = useEngine();
+  const view = views?.today;
+  const headline = view ? splitAccent(view.headline, view.accent) : narrative.headline;
+  const standing = view
+    ? view.standing
+    : understandingLine(narrative.confidence.value, narrative.confidence.delta);
+  const evidence = view
+    ? view.evidence
+    : primaryLines.map((l) => ({ label: l.label, text: l.parts.map((p) => p.text).join("") }));
+  const focus = view ? view.focus : narrative.guidance;
+  const depth = view ? view.depth : narrative.confidence.value;
   // Set by Quick Add so the insight visibly re-forms when the user lands back here.
   const [justTaught, setJustTaught] = useState(false);
 
@@ -112,9 +134,7 @@ function TodayPage() {
           <h1 className="font-serif text-[26px] leading-none tracking-[-0.015em]">
             Good morning, Jenny
           </h1>
-          <p className="mt-2 text-[13px] text-muted-foreground">
-            {formatLongDate(today.date)}
-          </p>
+          <p className="mt-2 text-[13px] text-muted-foreground">{formatLongDate(today.date)}</p>
         </div>
         <Link
           to="/profile"
@@ -127,25 +147,17 @@ function TodayPage() {
 
       {/* The Understanding — the visual anchor of the screen. */}
       <div className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden px-7 py-10 [@media(max-height:780px)]:py-6">
-        <Understanding
-          size={268}
-          confidence={narrative.confidence.value}
-          active={justTaught}
-        />
+        <Understanding size={268} confidence={depth} active={justTaught} />
 
         {justTaught && (
-          <div
-            role="status"
-            className="animate-dissolve absolute inset-x-7 bottom-1 text-center"
-          >
+          <div role="status" className="animate-dissolve absolute inset-x-7 bottom-1 text-center">
             <p className="label-caps text-muted-foreground/70">New today</p>
             <p className="mt-2 font-serif text-[17px] leading-[1.35]">
-              {learnedSentence(newest)}
+              {view?.acknowledgment ?? learnedSentence(newest)}
             </p>
             <p className="mt-1 text-[12px] leading-[1.5] text-muted-foreground">
               Today's understanding became a little clearer.
             </p>
-
           </div>
         )}
       </div>
@@ -153,10 +165,10 @@ function TodayPage() {
       <section className="shrink-0 px-7 pb-8">
         {/* The observation — the emotional centrepiece. */}
         <h2
-          key={narrative.headline.map((p) => p.text).join("")}
+          key={headline.map((p) => p.text).join("")}
           className="animate-dissolve font-serif text-[34px] leading-[1.15] tracking-[-0.015em] [@media(max-height:780px)]:text-[29px]"
         >
-          {narrative.headline.map((part, i) => (
+          {headline.map((part, i) => (
             <span key={i} className={part.accent ? "text-accent" : undefined}>
               {part.text}
             </span>
@@ -164,23 +176,23 @@ function TodayPage() {
         </h2>
 
         <p
-          key={`conf-${narrative.confidence.value}`}
+          key={standing}
           className="animate-in fade-in mt-4 text-[11px] leading-none text-muted-foreground/70 duration-500"
         >
-          {understandingLine(narrative.confidence.value, narrative.confidence.delta)}
+          {standing}
         </p>
-
 
         {/* Why Ciatta thinks that. Quiet, non-tappable evidence. */}
         <div className="mt-9 [@media(max-height:780px)]:mt-7">
           <p className="label-caps text-muted-foreground/70">What I'm noticing</p>
           <div className="mt-3 divide-y divide-border/50">
-            {primaryLines.map((line) => (
-              <div key={line.label} className="py-3 first:pt-0 last:pb-0">
-                <NarrativeBlock line={line} />
+            {evidence.map((row) => (
+              <div key={row.label + row.text} className="py-3 first:pt-0 last:pb-0">
+                <p className="label-caps text-muted-foreground/60">{row.label}</p>
+                <p className="mt-1 text-[13px] leading-[1.55] text-foreground/80">{row.text}</p>
               </div>
             ))}
-            {narrative.impact && (
+            {!view && narrative.impact && (
               <p
                 key={narrative.impact.text}
                 className="animate-in fade-in py-3 text-[12px] leading-[1.5] text-muted-foreground duration-700"
@@ -195,28 +207,11 @@ function TodayPage() {
         <div className="mt-10 [@media(max-height:780px)]:mt-8">
           <p className="label-caps text-accent">Today's focus</p>
           <p className="mt-3 font-serif text-[22px] leading-[1.3]">
-            {narrative.guidance.lead} {narrative.guidance.rest}
+            {focus.lead} {focus.rest}
           </p>
-          <p className="mt-2 text-[13px] leading-[1.55] text-muted-foreground">
-            {narrative.guidance.support}
-          </p>
+          <p className="mt-2 text-[13px] leading-[1.55] text-muted-foreground">{focus.support}</p>
         </div>
       </section>
-    </div>
-  );
-}
-
-function NarrativeBlock({ line }: { line: NarrativeLine }) {
-  return (
-    <div>
-      <p className="label-caps text-muted-foreground/60">{line.label}</p>
-      <p className="mt-1 text-[13px] leading-[1.55] text-foreground/80">
-        {line.parts.map((part, i) => (
-          <span key={i} className={part.accent ? "font-medium tabular-nums" : undefined}>
-            {part.text}
-          </span>
-        ))}
-      </p>
     </div>
   );
 }

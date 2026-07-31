@@ -5,6 +5,7 @@ import { usePriorities } from "@/lib/ciatta-store";
 import { signOut } from "@/lib/onboarding-store";
 import { useIdentity } from "@/lib/profile-store";
 import { useProfile, type Area, type SourceRow, type Understanding } from "@/lib/profile-data";
+import { useEngine } from "@/lib/use-engine";
 
 export const Route = createFileRoute("/profile/")({
   head: () => ({
@@ -420,12 +421,16 @@ function ProfilePage() {
   const [openArea, setOpenArea] = useState<string | null>(null);
   const [openMilestone, setOpenMilestone] = useState<string | null>(null);
   const [openSource, setOpenSource] = useState<string | null>(null);
+  const { views: engine } = useEngine();
 
   if (!profile.hydrated) return <ProfileSkeleton />;
 
   const since = profile.snapshot.find((s) => s.id === "learning-since")?.value ?? "Today";
   const focus = profile.snapshot.find((s) => s.id === "next")?.value ?? "Recovery";
-  const portrait = buildPortrait(profile.understandings, profile.areas, focus);
+  // Profile is the relationship summary the engine holds; the local synthesis
+  // stands in until it answers.
+  const portrait =
+    engine?.profile.summary ?? buildPortrait(profile.understandings, profile.areas, focus);
   const refining = profile.areas.filter((a) => a.confidence < 80).slice(0, 4);
   const learningNext = refining.length ? refining : profile.areas.slice(0, 3);
 

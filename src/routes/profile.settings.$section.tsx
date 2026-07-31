@@ -3,6 +3,8 @@ import { Link, createFileRoute, notFound, useNavigate } from "@tanstack/react-ro
 
 import { Card, Chip, Screen, Toggle } from "@/components/ciatta/screen";
 import { deleteAllData, exportAllData } from "@/lib/ciatta-store";
+import { forgetEverything } from "@/lib/engine.functions";
+import { deviceKey } from "@/lib/use-engine";
 import { signOut } from "@/lib/onboarding-store";
 import { CONNECTED_APPS, useSettings } from "@/lib/profile-store";
 import { useAppearance } from "@/lib/use-appearance";
@@ -281,6 +283,8 @@ function Privacy() {
             <button
               type="button"
               onClick={() => {
+                // Forget on the device and in Ciatta's own memory.
+                void forgetEverything({ data: { deviceKey: deviceKey() } }).catch(() => {});
                 deleteAllData();
                 signOut();
                 setConfirmDelete(false);
@@ -379,7 +383,8 @@ function About() {
         asking for. It gets more useful the longer it knows you.
       </p>
       <p className="mt-4 text-[15px] leading-relaxed text-muted-foreground">
-        Ciatta is not a doctor and does not diagnose. If something feels wrong, speak to a clinician.
+        Ciatta is not a doctor and does not diagnose. If something feels wrong, speak to a
+        clinician.
       </p>
       <Card>
         <div className="flex items-center justify-between px-4 py-3.5 text-[15px]">
