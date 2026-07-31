@@ -134,7 +134,10 @@ export function useProfile(): ProfileView {
   const { milestones } = useMilestones();
 
   return useMemo(() => {
-    const discoveries = [journey.todaysDiscovery, ...journey.recentDiscoveries];
+    const discoveries: Discovery[] = [
+      ...(journey.todaysDiscovery ? [journey.todaysDiscovery] : []),
+      ...journey.recentDiscoveries,
+    ];
     const understandings = discoveries.map(toUnderstanding);
 
     // Every timestamp held, used for "learning since" and the timeline.
