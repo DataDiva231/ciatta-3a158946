@@ -13,6 +13,7 @@ import {
   confidenceLine,
   type TeachSuggestion,
 } from "@/lib/teach-suggestions";
+import { useEngine } from "@/lib/use-engine";
 
 
 export const Route = createFileRoute("/teach")({
