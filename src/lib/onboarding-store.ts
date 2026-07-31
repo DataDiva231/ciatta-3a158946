@@ -6,6 +6,9 @@ export type Onboarding = {
   /** Index of the furthest step the user reached, so progress resumes. */
   step: number;
   completed: boolean;
+  /** True once the user has been through their first real observation. */
+  firstObservationDone: boolean;
+
   name: string;
   birthMonth: string;
   birthDay: string;
