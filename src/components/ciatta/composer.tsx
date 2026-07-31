@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { ArrowUp, Camera, Mic, Paperclip } from "lucide-react";
 
+import { CameraCapture } from "@/components/ciatta/camera-capture";
 import { useVoiceMemo } from "@/lib/voice-memo";
 
 /**
@@ -25,11 +26,8 @@ export function Composer({
   const [files, setFiles] = useState<string[]>([]);
   /** True once a transcript lands, so we can invite a quick correction. */
   const [fromVoice, setFromVoice] = useState(false);
-  /** The native-style picker sheet for the Camera action. */
-  const [sheet, setSheet] = useState(false);
-  const cameraInput = useRef<HTMLInputElement>(null);
-  const scanInput = useRef<HTMLInputElement>(null);
-  const libraryInput = useRef<HTMLInputElement>(null);
+  /** The full-screen capture surface, opened straight into Photo mode. */
+  const [camera, setCamera] = useState(false);
   const fileInput = useRef<HTMLInputElement>(null);
   const textarea = useRef<HTMLTextAreaElement>(null);
   const memo = useVoiceMemo((t) => {
@@ -60,13 +58,9 @@ export function Composer({
     onSubmit(parts.join("\n"));
   };
 
-  const pick = (list: FileList | null, mode?: "scan") => {
+  const pick = (list: FileList | null) => {
     if (!list?.length) return;
-    setSheet(false);
-    setFiles((prev) => [
-      ...prev,
-      ...Array.from(list).map((f) => (mode === "scan" ? `Scanned: ${f.name}` : f.name)),
-    ]);
+    setFiles((prev) => [...prev, ...Array.from(list).map((f) => f.name)]);
   };
 
   return (
@@ -130,37 +124,13 @@ export function Composer({
       )}
 
 
-      <input
-        ref={cameraInput}
-        type="file"
-        accept="image/*"
-        capture="environment"
-        hidden
-        onChange={(e) => pick(e.target.files)}
-      />
-      <input
-        ref={scanInput}
-        type="file"
-        accept="image/*"
-        capture="environment"
-        hidden
-        onChange={(e) => pick(e.target.files, "scan")}
-      />
-      <input
-        ref={libraryInput}
-        type="file"
-        accept="image/*"
-        multiple
-        hidden
-        onChange={(e) => pick(e.target.files)}
-      />
       <input ref={fileInput} type="file" multiple hidden onChange={(e) => pick(e.target.files)} />
 
       <div className="mt-2 flex items-center gap-1">
         <button
           type="button"
-          aria-label="Add a photo"
-          onClick={() => setSheet(true)}
+          aria-label="Show Ciatta something"
+          onClick={() => setCamera(true)}
           className="flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground transition-colors active:bg-secondary"
         >
           <Camera size={18} strokeWidth={1.6} />
@@ -211,42 +181,14 @@ export function Composer({
         </p>
       )}
 
-      {sheet && (
-        <div className="fixed inset-0 z-50 flex flex-col justify-end">
-          <button
-            type="button"
-            aria-label="Cancel"
-            onClick={() => setSheet(false)}
-            className="animate-in fade-in absolute inset-0 bg-foreground/25 duration-200"
-          />
-          <div className="animate-in fade-in relative px-3 pb-3 duration-200">
-            <div className="overflow-hidden rounded-[18px] bg-surface">
-              {[
-                { label: "Take Photo", action: () => cameraInput.current?.click() },
-                { label: "Scan Document", action: () => scanInput.current?.click() },
-                { label: "Choose from Library", action: () => libraryInput.current?.click() },
-              ].map((o, i) => (
-                <button
-                  key={o.label}
-                  type="button"
-                  onClick={o.action}
-                  className={`w-full px-5 py-4 text-[16px] text-foreground transition-colors active:bg-secondary ${
-                    i > 0 ? "border-t border-border" : ""
-                  }`}
-                >
-                  {o.label}
-                </button>
-              ))}
-            </div>
-            <button
-              type="button"
-              onClick={() => setSheet(false)}
-              className="mt-2 w-full rounded-[18px] bg-surface px-5 py-4 text-[16px] font-medium text-foreground transition-colors active:bg-secondary"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
+      {camera && (
+        <CameraCapture
+          onClose={() => setCamera(false)}
+          onCapture={({ name }) => {
+            setCamera(false);
+            setFiles((prev) => [...prev, name]);
+          }}
+        />
       )}
     </div>
 
