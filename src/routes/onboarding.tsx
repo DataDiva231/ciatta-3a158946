@@ -370,15 +370,20 @@ function Welcome({ onChoose }: { onChoose: (method: string) => void }) {
   ];
 
   return (
-    <div className="animate-dissolve flex h-[100svh] flex-col">
+    <div className="animate-in fade-in slide-in-from-bottom-1 flex h-[100svh] flex-col duration-[900ms]">
       <div className="flex-1 overflow-y-auto px-8 pt-20">
-        <Wordmark width={104} />
-        <h1 className="animate-in fade-in mt-14 max-w-[17rem] font-serif text-[34px] leading-[1.12] tracking-[-0.02em] duration-700">
+        <img
+          src={mark.url}
+          alt="Ciatta"
+          className="dark:invert"
+          style={{ width: 44, height: 44 }}
+        />
+        <h1 className="animate-in fade-in mt-12 max-w-[17rem] font-serif text-[34px] leading-[1.12] tracking-[-0.02em] duration-700">
           I don&apos;t know you yet.
         </h1>
-        <p className="animate-in fade-in mt-4 max-w-[18rem] text-[14.5px] leading-relaxed text-muted-foreground duration-700">
-          That&apos;s where we start. Everything you share teaches me a little more, and it becomes
-          more personal every day.
+        <p className="animate-in fade-in mt-4 max-w-[19rem] text-[14.5px] leading-relaxed text-muted-foreground duration-700">
+          That&apos;s where we start. Everything you share helps me understand you a little more, and
+          that understanding becomes more personal every day.
         </p>
       </div>
 
@@ -391,14 +396,15 @@ function Welcome({ onChoose }: { onChoose: (method: string) => void }) {
               onClick={() => onChoose(method)}
               className={`w-full rounded-full px-6 py-[15px] text-[15px] transition-all duration-200 active:scale-[0.99] ${
                 i === 0
-                  ? "bg-accent font-medium text-accent-foreground shadow-[0_12px_28px_-20px_color-mix(in_oklab,var(--clay)_70%,transparent)]"
-                  : "bg-surface text-foreground shadow-[0_8px_20px_-18px_rgba(60,45,35,0.5)]"
+                  ? "bg-foreground font-medium text-background"
+                  : "bg-surface text-foreground ring-1 ring-border/60 ring-inset"
               }`}
             >
               {label}
             </button>
           ))}
         </div>
+
         <button
           type="button"
           onClick={() => onChoose("existing")}
