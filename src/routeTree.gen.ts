@@ -14,6 +14,7 @@ import { Route as TalkRouteImport } from './routes/talk'
 import { Route as QuickAddRouteImport } from './routes/quick-add'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as JourneyRouteImport } from './routes/journey'
+import { Route as FirstObservationRouteImport } from './routes/first-observation'
 import { Route as EngineTraceRouteImport } from './routes/engine-trace'
 import { Route as CaptureRouteImport } from './routes/capture'
 import { Route as AttachRouteImport } from './routes/attach'
@@ -46,6 +47,11 @@ const OnboardingRoute = OnboardingRouteImport.update({
 const JourneyRoute = JourneyRouteImport.update({
   id: '/journey',
   path: '/journey',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FirstObservationRoute = FirstObservationRouteImport.update({
+  id: '/first-observation',
+  path: '/first-observation',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EngineTraceRoute = EngineTraceRouteImport.update({
@@ -94,6 +100,7 @@ export interface FileRoutesByFullPath {
   '/attach': typeof AttachRoute
   '/capture': typeof CaptureRoute
   '/engine-trace': typeof EngineTraceRoute
+  '/first-observation': typeof FirstObservationRoute
   '/journey': typeof JourneyRoute
   '/onboarding': typeof OnboardingRoute
   '/quick-add': typeof QuickAddRoute
@@ -109,6 +116,7 @@ export interface FileRoutesByTo {
   '/attach': typeof AttachRoute
   '/capture': typeof CaptureRoute
   '/engine-trace': typeof EngineTraceRoute
+  '/first-observation': typeof FirstObservationRoute
   '/journey': typeof JourneyRoute
   '/onboarding': typeof OnboardingRoute
   '/quick-add': typeof QuickAddRoute
@@ -125,6 +133,7 @@ export interface FileRoutesById {
   '/attach': typeof AttachRoute
   '/capture': typeof CaptureRoute
   '/engine-trace': typeof EngineTraceRoute
+  '/first-observation': typeof FirstObservationRoute
   '/journey': typeof JourneyRoute
   '/onboarding': typeof OnboardingRoute
   '/quick-add': typeof QuickAddRoute
@@ -142,6 +151,7 @@ export interface FileRouteTypes {
     | '/attach'
     | '/capture'
     | '/engine-trace'
+    | '/first-observation'
     | '/journey'
     | '/onboarding'
     | '/quick-add'
@@ -157,6 +167,7 @@ export interface FileRouteTypes {
     | '/attach'
     | '/capture'
     | '/engine-trace'
+    | '/first-observation'
     | '/journey'
     | '/onboarding'
     | '/quick-add'
@@ -172,6 +183,7 @@ export interface FileRouteTypes {
     | '/attach'
     | '/capture'
     | '/engine-trace'
+    | '/first-observation'
     | '/journey'
     | '/onboarding'
     | '/quick-add'
@@ -188,6 +200,7 @@ export interface RootRouteChildren {
   AttachRoute: typeof AttachRoute
   CaptureRoute: typeof CaptureRoute
   EngineTraceRoute: typeof EngineTraceRoute
+  FirstObservationRoute: typeof FirstObservationRoute
   JourneyRoute: typeof JourneyRoute
   OnboardingRoute: typeof OnboardingRoute
   QuickAddRoute: typeof QuickAddRoute
@@ -234,6 +247,13 @@ declare module '@tanstack/react-router' {
       path: '/journey'
       fullPath: '/journey'
       preLoaderRoute: typeof JourneyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/first-observation': {
+      id: '/first-observation'
+      path: '/first-observation'
+      fullPath: '/first-observation'
+      preLoaderRoute: typeof FirstObservationRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/engine-trace': {
@@ -300,6 +320,7 @@ const rootRouteChildren: RootRouteChildren = {
   AttachRoute: AttachRoute,
   CaptureRoute: CaptureRoute,
   EngineTraceRoute: EngineTraceRoute,
+  FirstObservationRoute: FirstObservationRoute,
   JourneyRoute: JourneyRoute,
   OnboardingRoute: OnboardingRoute,
   QuickAddRoute: QuickAddRoute,

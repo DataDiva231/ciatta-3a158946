@@ -159,10 +159,11 @@ function JourneyPage() {
         ) : (
           <>
             <h1 className="mt-10 max-w-[18ch] font-serif text-[40px] leading-[1.08] tracking-[-0.02em]">
-              {journey?.opening ?? "I don't know you yet."}
+              {journey?.opening ?? "I'm just beginning to understand you."}
             </h1>
             <p className="mt-8 max-w-[32ch] text-[15px] leading-[1.7] text-muted-foreground">
-              The first thing you share with me becomes the first line of this page.
+              We don&rsquo;t know enough yet, but every observation helps us build a clearer
+              picture. The first thing you share becomes the first line of this page.
             </p>
             <Link to="/teach" className="mt-6 inline-flex items-center gap-1.5 text-[15px] text-accent">
               Teach me something
@@ -170,6 +171,7 @@ function JourneyPage() {
             </Link>
           </>
         )}
+
       </section>
 
       <span className="my-20 block h-px w-full bg-border" />
@@ -195,9 +197,11 @@ function JourneyPage() {
           </>
         ) : (
           <p className="mt-4 text-[14px] leading-[1.7] text-muted-foreground">
-            Nothing has changed yet, because I haven&rsquo;t learned anything yet.
+            Nothing has shifted yet. Your understanding will grow naturally as we spend more time
+            together.
           </p>
         )}
+
       </section>
 
 
@@ -220,8 +224,10 @@ function JourneyPage() {
           </div>
         ) : (
           <p className="mt-4 text-[14px] leading-[1.7] text-muted-foreground">
-            I'm still listening. What I'm close to understanding appears here first.
+            I&rsquo;m still listening. What I&rsquo;m getting close to understanding will appear
+            here first.
           </p>
+
 
         )}
       </section>

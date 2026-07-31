@@ -78,6 +78,44 @@ export type Guidance = {
   meta: RecommendationMeta | null;
 };
 
+/**
+ * Developer-facing explainability panel — "why I'm saying this".
+ *
+ * Every user-facing line must be traceable back to real observations. This
+ * carries the whole trace in one place so it can be verified.
+ */
+export type ExplainPanel = {
+  observations: {
+    at: string;
+    source: string;
+    category: string;
+    value: string;
+    context: string;
+  }[];
+  context: { label: string; value: string }[];
+  memories: { key: string; kind: string; summary: string }[];
+  beliefs: { key: string; domain: string; status: string; statement: string }[];
+  narrative: {
+    headline: string;
+    accent: string;
+    standing: string;
+    evidence: { label: string; text: string }[];
+    teachPrompt: string;
+    teachInvitation: string;
+  };
+  /** Why this narrative was selected, in order of the deciding factors. */
+  whyNarrative: string[];
+  /** Why a recommendation was — or was not — generated. */
+  whyRecommendation: string[];
+  snapshot: {
+    depth: number;
+    state: string;
+    observationCount: number;
+    daysKnown: number;
+    takenAt: string;
+  };
+};
+
 /** Developer-facing view of the whole chain. */
 export type EngineDebugView = {
   subjectId: string;
@@ -97,4 +135,6 @@ export type EngineDebugView = {
   candidates: EvidenceCandidate[];
   guidance: Guidance;
   chain: ReasoningStep[];
+  explain: ExplainPanel;
 };
+

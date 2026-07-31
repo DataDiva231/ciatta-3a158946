@@ -9,7 +9,8 @@ import type { Belief } from "./beliefs.server";
 import type { Understanding } from "./understanding.server";
 
 export function standingLine(u: Understanding): string {
-  if (u.observationCount === 0) return "I don't know you yet. Tell me anything.";
+  if (u.observationCount === 0)
+    return "We don't know enough yet, but every observation helps us build a clearer picture.";
   if (u.depth < 30) return "I'm just beginning to notice how your days move.";
   if (u.depth < 55) return "I'm starting to see some shape in what you share.";
   if (u.depth < 78) return "I'm beginning to understand how your body tends to move.";
@@ -21,12 +22,13 @@ export function headlineFor(u: Understanding): { headline: string; accent: strin
     u.newest && (u.newest.value === "Heavy" || u.newest.context["Flow"] === "Heavy");
 
   if (u.observationCount === 0)
-    return { headline: "There's nothing I understand about today yet.", accent: "yet" };
+    return { headline: "I'm just beginning to understand you.", accent: "just beginning" };
   if (flowHeavy)
     return {
       headline: "It looks like your flow is heavier than usual today.",
       accent: "heavier than usual",
     };
+
   if (u.state === "recover")
     return {
       headline: "It looks like your body is asking for more recovery today.",
@@ -124,7 +126,7 @@ export function profileSummary(u: Understanding): string {
 }
 
 export function journeyOpening(u: Understanding): string {
-  if (!u.observationCount) return "Our story hasn't started yet.";
+  if (!u.observationCount) return "Our story is only just starting.";
   if (u.daysKnown < 1) return "We met today. This is everything so far.";
   return `We've known each other ${u.daysKnown === 1 ? "a day" : `${u.daysKnown} days`}. Here's what's changed.`;
 }
