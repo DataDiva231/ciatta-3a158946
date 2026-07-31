@@ -79,19 +79,25 @@ export function TabBar() {
           "linear-gradient(to top, var(--color-background) 55%, transparent 100%)",
       }}
     >
-      <ul className="flex items-stretch justify-between rounded-full border border-border bg-surface/90 px-2 py-2 backdrop-blur">
+      <ul className="flex items-stretch justify-between rounded-full border border-border/60 bg-surface/85 px-2 py-2 backdrop-blur">
         {tabs.map(({ to, label, Icon }) => (
           <li key={to} className="flex-1">
             <Link
               to={to}
               activeOptions={{ exact: to === "/" }}
-              className="flex flex-col items-center gap-1 rounded-full py-1 text-[11px] text-muted-foreground transition-colors"
-              activeProps={{ className: "text-accent" }}
+              className="relative flex flex-col items-center gap-1 rounded-full py-1 text-[11px] text-muted-foreground transition-colors duration-300"
+              activeProps={{ className: "text-foreground" }}
             >
               {({ isActive }) => (
                 <>
                   <Icon active={isActive} />
-                  <span className={isActive ? "text-accent" : undefined}>{label}</span>
+                  <span className={isActive ? "text-foreground" : undefined}>{label}</span>
+                  <span
+                    aria-hidden="true"
+                    className={`absolute -bottom-0.5 h-[3px] w-[3px] rounded-full bg-accent transition-opacity duration-300 ${
+                      isActive ? "opacity-100" : "opacity-0"
+                    }`}
+                  />
                 </>
               )}
             </Link>
