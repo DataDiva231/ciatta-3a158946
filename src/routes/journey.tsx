@@ -136,19 +136,19 @@ function JourneyPage() {
           </span>
         </p>
         <h1 className="mt-10 max-w-[18ch] font-serif text-[40px] leading-[1.08] tracking-[-0.02em]">
-          <Statement text={story.shift.statement} keyword={story.shift.keyword} />
+          <Statement text={shift.statement} keyword={shift.keyword} />
         </h1>
 
         <div className="mt-16 space-y-12">
           <div>
-            <Caps>{story.shift.beforeLabel}</Caps>
+            <Caps>{shift.beforeLabel}</Caps>
             <p className="mt-4 text-[15px] leading-[1.7] text-muted-foreground">
-              {story.shift.before}
+              {shift.before}
             </p>
           </div>
           <div>
-            <Caps tone="clay">{story.shift.todayLabel}</Caps>
-            <p className="mt-4 text-[17px] leading-[1.6]">{story.shift.today}</p>
+            <Caps tone="clay">{shift.todayLabel}</Caps>
+            <p className="mt-4 text-[17px] leading-[1.6]">{shift.today}</p>
           </div>
         </div>
       </section>
@@ -178,9 +178,9 @@ function JourneyPage() {
       {/* Act three — future curiosity. */}
       <section>
         <ActTitle tone="moss">What's becoming clearer next.</ActTitle>
-        {story.next.length ? (
+        {next.length ? (
           <div className="mt-6 space-y-8">
-            {story.next.map((n) => (
+            {next.map((n) => (
               <div key={n.id}>
                 <p className="font-serif text-[20px] leading-[1.3] tracking-[-0.01em]">
                   {n.body}
