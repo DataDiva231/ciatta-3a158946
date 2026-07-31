@@ -465,8 +465,9 @@ function QuickAddPage() {
 
 
 
-        {step.layout === "grid" ? (
-          <div className={`grid grid-cols-2 gap-3 ${step.key === "category" ? "mt-3" : "mt-8"}`}>
+        {step.key === "category" ? null : step.layout === "grid" ? (
+          <div className="mt-8 grid grid-cols-2 gap-3">
+
             {options.map((o) => {
               const selected = answers[step.key] === o.label;
               return (
