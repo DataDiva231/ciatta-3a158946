@@ -19,6 +19,7 @@ export const Route = createFileRoute("/quick-add")({
   // Teach can deep-link straight into a category, skipping the first question.
   validateSearch: (search: Record<string, unknown>) => ({
     category: typeof search.category === "string" ? search.category : undefined,
+    reason: typeof search.reason === "string" ? search.reason : undefined,
   }),
   head: () => ({
     meta: [
