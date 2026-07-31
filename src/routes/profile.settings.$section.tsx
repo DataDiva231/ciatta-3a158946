@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Link, createFileRoute, notFound } from "@tanstack/react-router";
+import { Link, createFileRoute, notFound, useNavigate } from "@tanstack/react-router";
 
 import { Card, Chip, Screen, Toggle } from "@/components/ciatta/screen";
 import { deleteAllData, exportAllData } from "@/lib/ciatta-store";
+import { signOut } from "@/lib/onboarding-store";
 import { CONNECTED_APPS, useSettings } from "@/lib/profile-store";
 import { useAppearance } from "@/lib/use-appearance";
 
@@ -180,13 +181,13 @@ function Apps() {
 }
 
 function Privacy() {
+  const navigate = useNavigate();
   const { settings, save } = useSettings();
   const p = settings.privacy;
   const set = (k: keyof typeof p, v: boolean) => save({ privacy: { ...p, [k]: v } });
 
   const [exportState, setExportState] = useState<"idle" | "working" | "done" | "error">("idle");
   const [confirmDelete, setConfirmDelete] = useState(false);
-  const [deleted, setDeleted] = useState(false);
 
   const onExport = () => {
     setExportState("working");
