@@ -8,21 +8,22 @@ import { useJourneyStory } from "@/lib/journey-story";
 export const Route = createFileRoute("/journey")({
   head: () => ({
     meta: [
-      { title: "Journey — Your story is becoming clearer" },
+      { title: "Journey — Look how we've changed together" },
       {
         name: "description",
         content:
-          "An edited narrative of understanding: what became clearer, why it changed, what's becoming clearer next, and how your story has evolved.",
+          "Our shared history: what became clearer, why it changed, what's becoming clearer next, and how your story has grown.",
       },
       { property: "og:title", content: "Journey — Ciatta" },
       {
         property: "og:description",
-        content: "Not a feed. Not a log. An edited narrative of understanding.",
+        content: "A shared history of how our understanding has grown together.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
   }),
+
   component: JourneyPage,
 });
 
@@ -83,6 +84,15 @@ function Caps({ tone, children }: { tone?: OrbTone; children: string }) {
     </p>
   );
 }
+/** How far our understanding has come, in words rather than a score. */
+function understandingPhrase(v: number) {
+  if (v >= 85) return "Clear to me";
+  if (v >= 70) return "Becoming clearer";
+  if (v >= 50) return "Connections forming";
+  if (v >= 25) return "Beginning to notice";
+  return "Still listening";
+}
+
 
 function JourneyPage() {
   const hash = useRouterState({ select: (s) => s.location.hash });
@@ -158,9 +168,8 @@ function JourneyPage() {
                 <p className="font-serif text-[20px] leading-[1.3] tracking-[-0.01em]">
                   {n.body}
                 </p>
-                <p className="mt-3 text-[11.5px] text-muted-foreground">
-                  {n.need} · {n.confidence}% confidence
-                </p>
+                <p className="mt-3 text-[11.5px] text-muted-foreground">{n.need}</p>
+
               </div>
             ))}
           </div>
@@ -200,28 +209,27 @@ function JourneyPage() {
           </div>
         ) : (
           <p className="mt-4 text-[14px] leading-[1.7] text-muted-foreground">
-            Your story begins with your first log.
+            Our story begins the first time you share something with me.
           </p>
+
         )}
       </section>
 
       {/* The quiet understanding line. */}
       <Link
         to="/teach"
-        className="mt-14 flex items-center gap-4 rounded-2xl border border-border bg-card px-5 py-5"
+        className="mt-14 flex items-center gap-4 rounded-2xl border border-border px-5 py-5 bg-card"
       >
-        <span className="text-[13.5px]">Understanding</span>
-        <span
-          className="font-serif text-[22px] leading-none tabular-nums"
-          style={{ color: TONE.clay }}
-        >
-          {story.understanding}%
+        <span className="text-[13.5px]">How well I understand you</span>
+        <span className="font-serif text-[17px] leading-none" style={{ color: TONE.clay }}>
+          {understandingPhrase(story.understanding)}
         </span>
         <span className="ml-auto flex items-center gap-2 text-[12.5px] text-muted-foreground">
           Keep going, {firstName}.
           <span aria-hidden="true">→</span>
         </span>
       </Link>
+
 
       <p className="mt-10 max-w-[30ch] text-[13px] leading-[1.75] text-muted-foreground">
         {story.closing}
