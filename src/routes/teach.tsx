@@ -3,7 +3,7 @@ import { createFileRoute, useRouter } from "@tanstack/react-router";
 
 import { Composer } from "@/components/ciatta/composer";
 import { QuickAddSheet } from "@/components/ciatta/quick-add-sheet";
-import { Understanding } from "@/components/ciatta/understanding";
+
 
 import { useCheckIns, useQuickAddEvents } from "@/lib/ciatta-store";
 import { haptic } from "@/lib/haptics";
