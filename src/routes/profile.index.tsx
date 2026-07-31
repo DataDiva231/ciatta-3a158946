@@ -428,9 +428,6 @@ function ProfilePage() {
   const { identity } = useIdentity();
   const { priorities, reorder } = usePriorities(profile.defaultPriorities);
 
-  const [openUnderstanding, setOpenUnderstanding] = useState<string | null>(
-    profile.understandings[0]?.id ?? null,
-  );
   const [openArea, setOpenArea] = useState<string | null>(null);
   const [openMilestone, setOpenMilestone] = useState<string | null>(null);
   const [openSource, setOpenSource] = useState<string | null>(null);
@@ -439,71 +436,48 @@ function ProfilePage() {
 
   const since = profile.snapshot.find((s) => s.id === "learning-since")?.value ?? "Today";
   const focus = profile.snapshot.find((s) => s.id === "next")?.value ?? "Recovery";
-  const clearest = profile.areas[0];
+  const portrait = buildPortrait(profile.understandings, profile.areas, focus);
+  const refining = profile.areas.filter((a) => a.confidence < 80).slice(0, 4);
+  const learningNext = refining.length ? refining : profile.areas.slice(0, 3);
 
   return (
     <div className="pb-10">
       <ProfileHeader since={since} />
 
-      {/* Our relationship — who Ciatta understands you to be */}
-      <section className="mt-8 px-6">
-        <p className="font-serif text-[25px] leading-[1.25] tracking-[-0.01em]">
-          Here&rsquo;s who I understand you to be so far.
-        </p>
-        <p className="mt-3.5 text-[15px] leading-relaxed text-muted-foreground">
-          {profile.story[0]}
-        </p>
-        <p className="mt-3 text-[15px] leading-relaxed text-muted-foreground">
-          You&rsquo;re {identity.lifeStage.toLowerCase()}, and you came to me wanting to{" "}
-          {identity.goals.length
-            ? identity.goals
-                .map((g) => g.toLowerCase().replace(/\bmy\b/g, "your"))
-                .join(" and ")
-            : "understand your body better"}
-          . {clearest ? `Your ${clearest.name.toLowerCase()} is the clearest part of the picture.` : ""}{" "}
-          I&rsquo;m still discovering your {focus.toLowerCase()}.
-        </p>
-      </section>
-
-      {/* What I've begun to understand */}
-      <section className="mt-10 px-6">
-        <SectionTitle>What I&rsquo;ve begun to understand</SectionTitle>
-
-        {!profile.hasData && (
-          <Invitation
-            line="I don't understand you well enough to say yet."
-            body={`I'd rather wait than guess. ${
-              profile.observationCount === 0
-                ? "Nothing shared yet."
-                : `${profile.observationCount} things shared so far.`
-            } Below is what an understanding will look like once I have one.`}
-            action="Teach me something"
-          />
-        )}
-        <Stack>
-          {profile.understandings.map((u, i) => (
-            <UnderstandingBlock
-              key={u.id}
-              u={u}
-              lead={i === 0}
-              open={openUnderstanding === u.id}
-              onToggle={() => setOpenUnderstanding((cur) => (cur === u.id ? null : u.id))}
+      {/* What I'm beginning to understand — one portrait, not a dashboard */}
+      <section className="mt-9 px-6">
+        <SectionTitle>What I&rsquo;m beginning to understand</SectionTitle>
+        {profile.hasData ? (
+          <p className="mt-4 font-serif text-[22px] leading-[1.45] tracking-[-0.01em]">
+            {portrait}
+          </p>
+        ) : (
+          <>
+            <Invitation
+              line="I don't understand you well enough to say yet."
+              body={`I'd rather wait than guess. ${
+                profile.observationCount === 0
+                  ? "Nothing shared yet."
+                  : `${profile.observationCount} things shared so far.`
+              } Below is what my understanding will sound like once I have one.`}
+              action="Teach me something"
             />
-          ))}
-        </Stack>
-        {!profile.hasData && (
-          <ExampleNote>Examples only. Yours will replace them as I learn you.</ExampleNote>
+            <p className="mt-6 font-serif text-[20px] leading-[1.45] text-muted-foreground">
+              {portrait}
+            </p>
+            <ExampleNote>An example only. Yours will replace it as I learn you.</ExampleNote>
+          </>
         )}
       </section>
 
-      {/* Areas — observations, not metrics */}
-      <section className="mt-10 px-6">
-        <SectionTitle>Where we are</SectionTitle>
+      {/* What I'm learning next — only what's actively being refined */}
+      <section className="mt-11 px-6">
+        <SectionTitle>What I&rsquo;m learning next</SectionTitle>
         <p className="mt-3 text-[15px] leading-relaxed text-muted-foreground">
-          Some parts of you I can read well now. Others I&rsquo;m still listening to.
+          These are the relationships I&rsquo;m actively refining right now.
         </p>
         <Stack>
-          {profile.areas.map((a) => (
+          {learningNext.map((a) => (
             <AreaBlock
               key={a.name}
               a={a}
@@ -513,6 +487,7 @@ function ProfilePage() {
           ))}
         </Stack>
       </section>
+
 
       {/* Our story */}
       <section className="mt-10 px-6">
