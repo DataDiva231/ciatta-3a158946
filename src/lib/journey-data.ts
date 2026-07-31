@@ -206,10 +206,10 @@ function checkInDiscovery(checkIns: CheckIn[]): Discovery | null {
     whyWeNoticed: `Across your last ${plural(recent.length, "check-in")}, sleep and energy moved together on ${aligned} of them.`,
     signals: ["Check-ins", "Sleep", "Energy", "Mood"],
     whyThisMatters: [
-      "How you feel in the morning is one of the strongest signals Ciatta has about recovery.",
+      "How you feel in the morning is one of the clearest signs I have about your recovery.",
       ratio >= 0.6
         ? "Protecting sleep is likely the fastest lever you have on how the day feels."
-        : "Something other than sleep is shaping your energy — Ciatta is looking for it.",
+        : "Something other than sleep is shaping your energy, and I'm still looking for it.",
     ],
     whatToTry: "Keep checking in each morning — the relationship sharpens with every day.",
   };

@@ -15,7 +15,7 @@ export type Discovery = {
 export const todaysDiscovery: Discovery = {
   id: "sleep-consistency",
   title: "Recovery may depend more on sleep consistency than sleep duration.",
-  confidenceLabel: "We're becoming confident.",
+  confidenceLabel: "This is becoming clear.",
   confidence: 82,
   tone: "iris",
   whyWeNoticed:
@@ -32,7 +32,7 @@ export const recentDiscoveries: Discovery[] = [
   {
     id: "earlier-bedtimes",
     title: "Earlier bedtimes improve your morning energy.",
-    confidenceLabel: "We're becoming confident.",
+    confidenceLabel: "This is becoming clear.",
     confidence: 76,
     tone: "clay",
     whyWeNoticed:
@@ -46,7 +46,7 @@ export const recentDiscoveries: Discovery[] = [
   {
     id: "heavy-flow-recovery",
     title: "Heavy flow days appear to reduce recovery.",
-    confidenceLabel: "We're becoming confident.",
+    confidenceLabel: "This is becoming clear.",
     confidence: 68,
     tone: "moss",
     whyWeNoticed: "Recovery scores are lower on the day after heavier flow.",
@@ -57,7 +57,7 @@ export const recentDiscoveries: Discovery[] = [
   {
     id: "hydration-headaches",
     title: "Hydration may reduce afternoon headaches.",
-    confidenceLabel: "We're beginning to see.",
+    confidenceLabel: "I'm beginning to notice this.",
     confidence: 61,
     tone: "stone-blue",
     whyWeNoticed:
@@ -73,8 +73,8 @@ export const recentDiscoveries: Discovery[] = [
 export const emergingInsights = [
   {
     id: "stress-sleep",
-    body: "We're beginning to notice a relationship between stress and sleep quality.",
-    confidenceLabel: "We're beginning to see.",
+    body: "I'm beginning to notice a connection between stress and how you sleep.",
+    confidenceLabel: "I'm beginning to notice this.",
     confidence: 43,
     tone: "wheat" as OrbTone,
   },
