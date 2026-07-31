@@ -21,10 +21,13 @@ export function CameraCapture({
   onCapture,
   onClose,
   initialMode = "photo",
+  count = 0,
 }: {
   onCapture: (result: { name: string; mode: CaptureMode }) => void;
   onClose: () => void;
   initialMode?: CaptureMode;
+  /** How many attachments are already waiting in the composer. */
+  count?: number;
 }) {
   const [mode, setMode] = useState<CaptureMode>(initialMode);
   const [ready, setReady] = useState(false);
@@ -92,7 +95,6 @@ export function CameraCapture({
       if (mode === "scan") cropToDocument(canvas, ctx);
     }
     const stamp = new Date().toISOString().slice(11, 19).replace(/:/g, "");
-    stop();
     onCapture({
       name: mode === "scan" ? `Scanned document ${stamp}` : `Photo ${stamp}`,
       mode,
@@ -151,9 +153,23 @@ export function CameraCapture({
           <X size={20} strokeWidth={1.7} />
         </button>
         <p className="text-[13px] tracking-[0.02em] text-white/80">
-          {mode === "scan" ? "Fit the page in the frame" : "Show me something"}
+          {count > 0
+            ? `${count} added — keep going`
+            : mode === "scan"
+              ? "Fit the page in the frame"
+              : "Show me something"}
         </p>
-        <span className="h-10 w-10" />
+        {count > 0 ? (
+          <button
+            type="button"
+            onClick={close}
+            className="animate-in fade-in h-10 rounded-full bg-white/90 px-4 text-[13px] font-medium text-black backdrop-blur-md transition-opacity duration-300 active:opacity-70"
+          >
+            Done
+          </button>
+        ) : (
+          <span className="h-10 w-10" />
+        )}
       </div>
 
       <span className="flex-1" />
