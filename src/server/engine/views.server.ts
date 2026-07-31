@@ -2,7 +2,9 @@
  * API Layer (server side) — the four views into the one understanding.
  *
  * Today, Teach, Journey and Profile are not features. They are questions asked
- * of the same model, answered in language by the Narrative Engine.
+ * of the same model. Understanding is explained by the Narrative Engine;
+ * anything action-shaped comes from the Guidance Engine, which is the only
+ * layer permitted to recommend.
  */
 import { beliefPhrase, journeyOpening } from "./narrative.server";
 import {
@@ -15,18 +17,22 @@ import {
   teachPrompt,
 } from "./narrative.server";
 import { listRelationshipEvents } from "./memory.server";
-import { followUpFor, focusFor, suggestionsFor } from "./recommendation.server";
+import { followUpFor, suggestionsFor } from "./curiosity.server";
+import { generateGuidance } from "@/server/guidance/guidance.server";
 import { previousSnapshot, type Understanding } from "./understanding.server";
 
+import type { Observation } from "./observations.server";
 import type { EngineViews } from "@/lib/engine-types";
 
 export async function buildViews(
   subjectId: string,
   u: Understanding,
+  observations: Observation[] = [],
 ): Promise<EngineViews> {
   const { headline, accent } = headlineFor(u);
   const previous = await previousSnapshot(subjectId);
   const events = await listRelationshipEvents(subjectId);
+  const { guidance } = generateGuidance(u, observations);
 
   const changes: string[] = [];
   if (previous) {
@@ -45,7 +51,7 @@ export async function buildViews(
       accent,
       standing: standingLine(u),
       evidence: evidenceFor(u),
-      focus: focusFor(u),
+      focus: { lead: guidance.lead, rest: guidance.rest, support: guidance.support },
       acknowledgment: acknowledgment(u),
       depth: u.depth,
     },
