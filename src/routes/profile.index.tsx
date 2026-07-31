@@ -529,10 +529,10 @@ function ProfilePage() {
 
       {/* Health */}
       <section className="mt-9 px-6">
-        <SectionTitle>Health</SectionTitle>
+        <SectionTitle>How my understanding stands</SectionTitle>
 
         <p className="mt-4 mb-0 px-1 text-[13px] text-muted-foreground">
-          Where your understanding stands
+          Where I am with you right now
         </p>
         <Group>
           {profile.snapshot.map((s) => (
