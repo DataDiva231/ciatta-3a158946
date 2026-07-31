@@ -51,8 +51,9 @@ export type Chapter = {
 export type JourneyStory = {
   hydrated: boolean;
   hasData: boolean;
-  shift: Shift;
-  why: WhyItChanged;
+  /** Null until real evidence exists. Nothing stands in for it. */
+  shift: Shift | null;
+  why: WhyItChanged | null;
   next: NextUnderstanding[];
   chapters: Chapter[];
   understanding: number;
