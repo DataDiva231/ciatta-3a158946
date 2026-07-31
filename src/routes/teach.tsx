@@ -9,16 +9,16 @@ import { buildTeachSuggestions, confidenceLine } from "@/lib/teach-suggestions";
 export const Route = createFileRoute("/teach")({
   head: () => ({
     meta: [
-      { title: "Teach Ciatta — Ciatta" },
+      { title: "What happened today? — Ciatta" },
       {
         name: "description",
         content:
-          "Tell Ciatta what changed since it last checked in. Every update makes tomorrow's understanding more personal.",
+          "Share a moment from your day in your own words. Everything you share makes tomorrow's understanding more personal.",
       },
-      { property: "og:title", content: "Teach Ciatta — Ciatta" },
+      { property: "og:title", content: "What happened today? — Ciatta" },
       {
         property: "og:description",
-        content: "Teach Ciatta about your body in your own words.",
+        content: "Share how your day felt, in your own words.",
       },
     ],
   }),
