@@ -20,7 +20,10 @@ export type LoopResult = {
   subjectId: string;
   createdAt: string;
   understanding: Understanding;
+  /** Everything held, newest first. Passed to the Evidence Engine. */
+  observations: Awaited<ReturnType<typeof listObservations>>;
 };
+
 
 /** Runs the loop. With no new observations it simply re-reads understanding. */
 export async function runLearningLoop(
