@@ -9,7 +9,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { engineTrace } from "@/lib/engine.functions";
 import { deviceKey } from "@/lib/use-engine";
 
-export const Route = createFileRoute("/_authenticated/_authenticated/engine-trace")({
+export const Route = createFileRoute("/_authenticated/engine-trace")({
   head: () => ({
     meta: [
       { title: "Engine trace · Ciatta" },

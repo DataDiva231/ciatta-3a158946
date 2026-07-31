@@ -6,7 +6,7 @@ import { useIdentity } from "@/lib/profile-store";
 import { useJourneyStory } from "@/lib/journey-story";
 import { useEngine } from "@/lib/use-engine";
 
-export const Route = createFileRoute("/_authenticated/_authenticated/journey")({
+export const Route = createFileRoute("/_authenticated/journey")({
   head: () => ({
     meta: [
       { title: "Journey — Look how we've changed together" },

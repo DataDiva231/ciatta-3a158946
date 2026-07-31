@@ -39,7 +39,7 @@ import {
 } from "@/lib/onboarding-flow";
 import { useIdentity } from "@/lib/profile-store";
 
-export const Route = createFileRoute("/_authenticated/_authenticated/onboarding")({
+export const Route = createFileRoute("/_authenticated/onboarding")({
   head: () => ({
     meta: [
       { title: "Your first Teach Session — Ciatta" },

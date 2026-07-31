@@ -7,7 +7,7 @@ import { useIdentity } from "@/lib/profile-store";
 import { useProfile, type Area, type SourceRow, type Understanding } from "@/lib/profile-data";
 import { useEngine } from "@/lib/use-engine";
 
-export const Route = createFileRoute("/_authenticated/_authenticated/profile/")({
+export const Route = createFileRoute("/_authenticated/profile/")({
   head: () => ({
     meta: [
       { title: "Profile — Who Ciatta understands you to be" },

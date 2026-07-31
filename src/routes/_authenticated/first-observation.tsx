@@ -19,7 +19,7 @@ import { haptic } from "@/lib/haptics";
 import { useOnboarding } from "@/lib/onboarding-store";
 import { useEngine } from "@/lib/use-engine";
 
-export const Route = createFileRoute("/_authenticated/_authenticated/first-observation")({
+export const Route = createFileRoute("/_authenticated/first-observation")({
   head: () => ({
     meta: [
       { title: "One real thing — Ciatta" },
