@@ -777,7 +777,7 @@ function OnboardingPage() {
     );
 
   return (
-    <div className="min-h-[100svh] bg-background">
+    <div className="animate-in fade-in slide-in-from-bottom-2 min-h-[100svh] bg-background duration-[900ms]">
       {beat ? (
         <Beat line={beat} confidence={confidence} />
       ) : (
