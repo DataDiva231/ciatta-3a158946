@@ -420,6 +420,7 @@ function ProfilePage() {
   const [openArea, setOpenArea] = useState<string | null>(null);
   const [openMilestone, setOpenMilestone] = useState<string | null>(null);
   const [openSource, setOpenSource] = useState<string | null>(null);
+  const { views: engine } = useEngine();
 
   if (!profile.hydrated) return <ProfileSkeleton />;
 
