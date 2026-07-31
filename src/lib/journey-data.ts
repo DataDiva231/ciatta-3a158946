@@ -65,11 +65,12 @@ function toneFor(seed: string) {
 }
 
 function confidenceLabel(v: number) {
-  if (v >= 75) return "We're becoming confident.";
-  if (v >= 55) return "We're seeing this repeat.";
-  if (v >= 35) return "We're beginning to see.";
-  return "We're still watching this.";
+  if (v >= 75) return "This is becoming clear.";
+  if (v >= 55) return "I keep seeing this repeat.";
+  if (v >= 35) return "I'm beginning to notice this.";
+  return "I'm still listening to this.";
 }
+
 
 function dayKey(iso: string) {
   return new Date(iso).toISOString().slice(0, 10);
@@ -243,7 +244,7 @@ function factInsights(facts: LearnedFact[]): EmergingInsight[] {
     .map((f) => ({
       id: `fact-${f.id}`,
       body: f.text,
-      confidenceLabel: "You taught us this.",
+      confidenceLabel: "You taught me this.",
       confidence: 50,
       tone: toneFor(f.id),
     }));

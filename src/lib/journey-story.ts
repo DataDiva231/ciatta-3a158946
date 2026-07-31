@@ -67,8 +67,9 @@ const CHAPTER_NAMES = [
   "First connection",
   "Turning point",
   "New understanding",
-  "Growing confidence",
+  "Growing clearer",
 ];
+
 
 /** The topic a discovery is really about — its strongest contributing signal. */
 function topicOf(signals: string[]) {
