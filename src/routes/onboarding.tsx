@@ -15,8 +15,10 @@ import {
   Wind,
 } from "lucide-react";
 
+import wordmark from "@/assets/ciatta-wordmark.png.asset.json";
 import { Composer } from "@/components/ciatta/composer";
 import { Understanding } from "@/components/ciatta/understanding";
+
 import {
   MONTHS,
   useOnboarding,
