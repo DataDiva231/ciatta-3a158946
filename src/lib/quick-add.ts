@@ -203,30 +203,30 @@ export function findOption(step: QuickAddStep, label: string) {
 }
 
 export const LOGGED_LABEL: Record<string, string> = {
-  category: "Category logged",
-  product: "Product logged",
-  absorbency: "Absorbency logged",
-  intensity: "Flow intensity logged",
-  timing: "Timeline updated",
-  symptom: "Symptom logged",
-  sleep: "Sleep logged",
-  medication: "Medication logged",
-  nutrition: "Nutrition logged",
-  activity: "Activity logged",
-  other: "Context logged",
+  category: "Noted",
+  product: "Noted",
+  absorbency: "Noted",
+  intensity: "Flow",
+  timing: "When",
+  symptom: "Noted",
+  sleep: "Sleep",
+  medication: "Noted",
+  nutrition: "Noted",
+  activity: "Noted",
+  other: "Noted",
 };
 /** Short past-tense lines shown on the "Understanding updated" moment. */
 export const CONFIRM_LABEL: Record<string, string> = {
-  product: "Product logged",
-  absorbency: "Absorbency logged",
-  intensity: "Flow updated",
-  timing: "Timeline updated",
-  symptom: "Symptom logged",
-  sleep: "Sleep updated",
-  medication: "Medication logged",
-  nutrition: "Nutrition logged",
-  activity: "Activity logged",
-  other: "Context logged",
+  product: "I'll remember this",
+  absorbency: "I'll remember this",
+  intensity: "Flow noted",
+  timing: "I remember this now",
+  symptom: "Noted",
+  sleep: "Sleep noted",
+  medication: "Noted",
+  nutrition: "Noted",
+  activity: "Noted",
+  other: "Noted",
 };
 
 

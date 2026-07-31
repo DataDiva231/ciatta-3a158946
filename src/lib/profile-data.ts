@@ -121,7 +121,7 @@ function toUnderstanding(d: Discovery): Understanding {
     signals: d.signals,
     stillLearning:
       d.whyThisMatters[1] ??
-      `We're continuing to understand what else shapes this relationship. ${d.whatToTry}`,
+      `I'm still learning what else shapes this connection. ${d.whatToTry}`,
   };
 }
 
@@ -337,7 +337,7 @@ export function useProfile(): ProfileView {
             confirmed
               ? `${confirmed} thing${confirmed === 1 ? " is" : "s are"} now understood well enough to act on`
               : "Nothing is settled yet"
-          }, ${forming ? `${forming} more ${forming === 1 ? "is" : "are"} still taking shape` : "and the rest is still open"}. Right now it's paying closest attention to ${focus.toLowerCase()}.`
+          }, ${forming ? `${forming} more ${forming === 1 ? "is" : "are"} still taking shape` : "and the rest is still open"}. Right now I'm paying closest attention to ${focus.toLowerCase()}.`
         : "I don't know you yet. The first thing you share is where our understanding starts.",
       "Every moment you share leaves me less to guess at.",
     ];

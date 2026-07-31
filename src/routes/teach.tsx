@@ -73,9 +73,9 @@ function TeachPage() {
   if (saved) {
     return (
       <div className="animate-dissolve flex min-h-[70vh] flex-col items-center justify-center px-8 text-center">
-        <h1 className="font-serif text-[28px] leading-tight">Got it.</h1>
+        <h1 className="font-serif text-[28px] leading-tight">Thank you.</h1>
         <p className="mt-3 text-[15px] leading-relaxed text-muted-foreground">
-          Tomorrow's understanding just became a little clearer.
+          I understand a little more now.
         </p>
       </div>
     );
