@@ -6,8 +6,8 @@
  * confident it currently is — so the ask shrinks as understanding grows.
  */
 
-import { phaseForDay, today } from "./ciatta-data";
 import type { QuickAddEvent } from "./ciatta-store";
+
 
 export type TeachSuggestion = {
   /** Quick Add category this jumps straight into. */
