@@ -1033,16 +1033,19 @@ function SummaryScreen({ data, onFinish }: { data: Onboarding; onFinish: () => v
 
 function Building({ onDone, data }: { onDone: () => void; data: Onboarding }) {
   const lines = useMemo(() => {
-    const out = ["Listening to what you told me"];
-    if (data.lifeStage) out.push(`Framing everything around ${data.lifeStage.toLowerCase()}`);
+    const out = ["Holding on to what you told me"];
+    if (data.lifeStage) out.push(`Listening through ${data.lifeStage.toLowerCase()}`);
     if (a(data, "conditions").length || a(data, "meds").length)
-      out.push("Adjusting for your health context");
+      out.push("Making room for your health context");
     out.push(
-      data.appleHealthConnected ? "Reading your Apple Health signals" : "Setting a starting baseline",
+      data.appleHealthConnected
+        ? "Noticing your sleep and movement"
+        : "Finding where your normal sits",
     );
-    out.push("Your understanding is ready");
+    out.push("I have somewhere to begin");
     return out;
   }, [data]);
+
 
   const [done, setDone] = useState(0);
 
