@@ -193,6 +193,17 @@ function QuickAddPage() {
     setIndex(index + 1);
   };
 
+  /** Chips confirm visually for ~180ms, then hand straight off to the flow. */
+  const chooseChip = (option: QuickAddOption) => {
+    if (pending) return;
+    setPending(option.label);
+    setTimeout(() => {
+      setPending(null);
+      choose(option);
+    }, 180);
+  };
+
+
   /** One tap re-logs the last product, absorbency and flow, timestamped now. */
   const repeatLast = () => {
     if (!lastProduct) return;
