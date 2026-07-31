@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ImageIcon, Link2, Mic, Paperclip, Plus } from "lucide-react";
+import { ImageIcon, Mic, Paperclip } from "lucide-react";
 
 import { useVoiceMemo } from "@/lib/voice-memo";
 
@@ -13,8 +13,8 @@ import { useVoiceMemo } from "@/lib/voice-memo";
  */
 export function Composer({
   onSubmit,
-  placeholder = "Describe it in your own words…",
-  label = "Something else?",
+  placeholder = "Tell me anything that might help explain today…",
+  label = "Share anything else",
 }: {
   onSubmit: (text: string) => void;
   placeholder?: string;
@@ -73,21 +73,14 @@ export function Composer({
 
 
       <div className="mt-2 flex items-center gap-1">
-        {[
-          { icon: Plus, label: "Add" },
-          { icon: Link2, label: "Add a link" },
-          { icon: ImageIcon, label: "Add a photo" },
-        ].map(({ icon: Icon, label: l }) => (
-          <button
-            key={l}
-            type="button"
-            aria-label={l}
-            onClick={send}
-            className="flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground transition-colors active:bg-secondary"
-          >
-            <Icon size={18} strokeWidth={1.6} />
-          </button>
-        ))}
+        <button
+          type="button"
+          aria-label="Add a photo"
+          onClick={send}
+          className="flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground transition-colors active:bg-secondary"
+        >
+          <ImageIcon size={18} strokeWidth={1.6} />
+        </button>
 
         <span className="flex-1" />
 

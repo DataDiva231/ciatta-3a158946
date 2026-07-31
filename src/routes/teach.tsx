@@ -111,8 +111,8 @@ function TeachPage() {
 
       <div className="mt-7">
         <Composer
-          label="Anything else?"
-          placeholder="Describe what happened in your own words..."
+          label="Share anything else"
+          placeholder="Tell me anything that might help explain today..."
           onSubmit={share}
         />
       </div>
