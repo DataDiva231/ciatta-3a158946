@@ -2,7 +2,9 @@ import { useState } from "react";
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 
 import { Composer } from "@/components/ciatta/composer";
+import { QuickAddSheet } from "@/components/ciatta/quick-add-sheet";
 import { Understanding } from "@/components/ciatta/understanding";
+
 import { useCheckIns, useQuickAddEvents } from "@/lib/ciatta-store";
 import { buildNarrative } from "@/lib/narrative";
 import { buildTeachSuggestions, confidenceLine } from "@/lib/teach-suggestions";
