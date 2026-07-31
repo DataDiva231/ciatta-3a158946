@@ -156,67 +156,43 @@ function Tags({ items }: { items: string[] }) {
   );
 }
 
-/* ------------------------------------------------------------ understanding */
+/* ------------------------------------------------------------ the portrait */
 
-function UnderstandingBlock({
-  u,
-  open,
-  onToggle,
-  lead,
-}: {
-  u: Understanding;
-  open: boolean;
-  onToggle: () => void;
-  lead: boolean;
-}) {
-  return (
-    <div className="py-4">
-      <button
-        type="button"
-        onClick={onToggle}
-        aria-expanded={open}
-        className={`flex w-full items-start justify-between gap-4 text-left ${pressable}`}
-      >
-        <span className="min-w-0">
-          <span
-            className={`block font-serif leading-[1.25] tracking-[-0.01em] ${
-              lead ? "text-[22px]" : "text-[19px]"
-            }`}
-          >
-            {u.title}
-          </span>
-          <span className="mt-2 block text-[13px] text-accent">
-            {learningState(u.confidence)}
-          </span>
-        </span>
-        <Chevron open={open} />
-      </button>
-
-      <Reveal open={open}>
-        <div className="pt-3 pb-2">
-          <p className="text-[15px] leading-relaxed">{u.summary}</p>
-
-          <MicroLabel>Why I think this</MicroLabel>
-          <Note>{u.whyThisMatters}</Note>
-
-          <MicroLabel>What I&rsquo;m going on</MicroLabel>
-          <Tags items={u.signals} />
-
-          <MicroLabel>What I&rsquo;m still learning</MicroLabel>
-          <Note>{u.stillLearning}</Note>
-
-          <Link
-            to="/teach"
-            className="mt-5 inline-flex items-center gap-1.5 text-[15px] text-accent"
-          >
-            Teach me more
-            <span aria-hidden="true">{"\u203A"}</span>
-          </Link>
-        </div>
-      </Reveal>
-    </div>
-  );
+function lowerFirst(s: string) {
+  return s.charAt(0).toLowerCase() + s.slice(1);
 }
+
+/**
+ * One coherent portrait, synthesised from the understanding model already in
+ * place — no new inference, no percentages surfaced.
+ */
+function buildPortrait(
+  understandings: Understanding[],
+  areas: Area[],
+  focus: string,
+): string {
+  const [lead, second] = understandings;
+  const refining = areas
+    .filter((a) => a.confidence < 80)
+    .slice(0, 2)
+    .map((a) => a.name.toLowerCase());
+
+  const parts: string[] = [];
+
+  if (lead) parts.push(lead.summary);
+  if (second)
+    parts.push(
+      `I'm also seeing that ${lowerFirst(second.title.replace(/\.$/, ""))}, though I'm still learning how those changes connect.`,
+    );
+
+  const watching = refining.length ? refining.join(" and ") : focus.toLowerCase();
+  parts.push(
+    `Right now I'm paying closest attention to your ${watching}, because those relationships may explain more of your health over time.`,
+  );
+
+  return parts.join(" ");
+}
+
 
 /* ------------------------------------------------------------------- areas */
 
