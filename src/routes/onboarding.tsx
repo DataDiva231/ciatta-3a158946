@@ -661,14 +661,12 @@ function QuestionScreen({
   node,
   data,
   bar,
-  confidence,
   onAnswer,
   onNext,
 }: {
   node: FlowNode;
   data: Onboarding;
   bar: React.ReactNode;
-  confidence: number;
   onAnswer: (key: string, values: string[]) => Onboarding;
   onNext: (from?: Onboarding) => void;
 }) {
@@ -694,9 +692,9 @@ function QuestionScreen({
   return (
     <>
       {bar}
-      <div className="flex-1 overflow-y-auto px-8 pt-2 pb-4">
-        <Orb size={124} confidence={confidence} />
-        <div className="mt-6">
+      <div className="flex-1 overflow-y-auto px-8 pt-6 pb-4">
+        <div>
+
           <Question>{node.ask?.(data)}</Question>
           {(node.lead?.(data) || node.why?.(data)) && (
             <Support>{node.lead?.(data) ?? node.why?.(data)}</Support>
