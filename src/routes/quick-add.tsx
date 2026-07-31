@@ -123,7 +123,7 @@ function continuationFor(steps: { key: string }[], answers: Answers, index: numb
 
 function QuickAddPage() {
   const navigate = useNavigate();
-  const { category: presetCategory } = Route.useSearch();
+  const { category: presetCategory, reason } = Route.useSearch();
   const { addEvent, events } = useQuickAddEvents();
   const [index, setIndex] = useState(presetCategory ? 1 : 0);
   const [direction, setDirection] = useState<"forward" | "back">("forward");
