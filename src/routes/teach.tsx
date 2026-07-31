@@ -95,70 +95,71 @@ function TeachPage() {
       <div aria-hidden="true" className="min-h-[18vh] flex-1" />
 
 
-      {confirmed && (
-        <p className="animate-dissolve mt-3 flex items-center gap-2 text-[13px] leading-none text-accent">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path
-              d="m5 12.5 4.5 4.5L19 7"
-              stroke="currentColor"
-              strokeWidth="2.2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-          {confirmed}
-        </p>
-      )}
+      {/* Everything below is a way to answer: chips, Quick Add, composer. */}
+      <section className="pb-1">
+        {confirmed && (
+          <p className="animate-dissolve mb-4 flex items-center gap-2 text-[13px] leading-none text-accent">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="m5 12.5 4.5 4.5L19 7"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            {confirmed}
+          </p>
+        )}
 
-      {suggestions.length > 0 && (
-        <div className="mt-7">
-          <p className="label-caps">Start with one of these</p>
-          <div className="mt-3 flex flex-wrap gap-2">
-            {suggestions.map((s) => (
-              <button
-                key={s.category}
-                type="button"
-                onClick={() => {
-                  haptic("tap");
-                  setSheet({ category: s.category, reason: s.reason, step: s.step });
-                }}
-                className="animate-in fade-in inline-flex h-[38px] items-center rounded-full bg-background px-4 text-[14px] leading-none text-foreground shadow-soft ring-1 ring-border/70 transition-all duration-200 active:scale-[0.97] active:bg-secondary"
-              >
-                {s.label}
-              </button>
-            ))}
+        {suggestions.length > 0 && (
+          <div>
+            <p className="label-caps">Start with one of these</p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {suggestions.map((s) => (
+                <button
+                  key={s.category}
+                  type="button"
+                  onClick={() => {
+                    haptic("tap");
+                    setSheet({ category: s.category, reason: s.reason, step: s.step });
+                  }}
+                  className="animate-in fade-in inline-flex h-[38px] items-center rounded-full bg-background px-4 text-[14px] leading-none text-foreground shadow-soft ring-1 ring-border/70 transition-all duration-200 active:scale-[0.97] active:bg-secondary"
+                >
+                  {s.label}
+                </button>
+              ))}
+            </div>
           </div>
+        )}
+
+        <button
+          type="button"
+          onClick={() => setSheet({})}
+          className="mt-6 flex w-full items-center justify-between gap-4 rounded-full bg-foreground px-6 py-4 text-left transition-opacity hover:opacity-90 active:opacity-80"
+        >
+          <span className="min-w-0">
+            <span className="block text-[15px] leading-none font-medium text-background">
+              Quick Add
+            </span>
+            <span className="mt-1.5 block text-[12px] leading-snug text-background/70">
+              The fastest way to share a moment.
+            </span>
+          </span>
+          <span aria-hidden="true" className="text-[16px] text-background/70">
+            ↑
+          </span>
+        </button>
+
+        <div className="mt-4">
+          <Composer
+            label="Share anything else"
+            placeholder="Tell me anything that might help explain today..."
+            onSubmit={share}
+          />
         </div>
-      )}
+      </section>
 
-
-
-      <button
-        type="button"
-        onClick={() => setSheet({})}
-        className="mt-8 flex items-center justify-between gap-4 rounded-full bg-foreground px-6 py-4 text-left transition-opacity hover:opacity-90 active:opacity-80"
-      >
-        <span className="min-w-0">
-          <span className="block text-[15px] leading-none font-medium text-background">
-            Quick Add
-          </span>
-          <span className="mt-1.5 block text-[12px] leading-snug text-background/70">
-            The fastest way to share a moment.
-          </span>
-        </span>
-        <span aria-hidden="true" className="text-[16px] text-background/70">
-          ↑
-        </span>
-      </button>
-
-
-      <div className="mt-7">
-        <Composer
-          label="Share anything else"
-          placeholder="Tell me anything that might help explain today..."
-          onSubmit={share}
-        />
-      </div>
 
       <QuickAddSheet
         open={sheet !== null}
