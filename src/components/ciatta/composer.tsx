@@ -39,8 +39,20 @@ export function Composer({
   };
 
   return (
-    <div className="rounded-[24px] bg-surface px-4 pt-3.5 pb-3 shadow-[0_10px_30px_-24px_rgba(60,45,35,0.5)]">
-      <p className="text-[14px] text-foreground">{label}</p>
+    <div
+      className={`rounded-[22px] bg-surface px-4 pt-3 pb-2.5 transition-all duration-300 ${
+        expanded
+          ? "shadow-[0_10px_30px_-24px_rgba(60,45,35,0.5)]"
+          : "shadow-[0_8px_24px_-26px_rgba(60,45,35,0.4)]"
+      }`}
+    >
+      <p
+        className={`text-[13px] transition-colors duration-300 ${
+          expanded ? "text-foreground" : "text-muted-foreground"
+        }`}
+      >
+        {label}
+      </p>
 
       <textarea
         value={text}
@@ -56,8 +68,9 @@ export function Composer({
         }}
         placeholder={placeholder}
         aria-label={label}
-        className="mt-2 w-full resize-none bg-transparent text-[15px] leading-relaxed outline-none transition-all duration-300 placeholder:text-fog"
+        className="mt-1.5 w-full resize-none bg-transparent text-[14.5px] leading-relaxed outline-none transition-all duration-300 placeholder:text-fog"
       />
+
 
       <div className="mt-3 flex items-center gap-1">
         {[
