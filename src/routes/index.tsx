@@ -91,18 +91,16 @@ function TodayPage() {
   // Today is one view into the single understanding. Until the engine answers,
   // the local reading stands in so the screen is never empty.
   const { views } = useEngine();
-  const today = views?.today;
-  const headline = today
-    ? splitAccent(today.headline, today.accent)
-    : narrative.headline;
-  const standing = today
-    ? today.standing
+  const view = views?.today;
+  const headline = view ? splitAccent(view.headline, view.accent) : narrative.headline;
+  const standing = view
+    ? view.standing
     : understandingLine(narrative.confidence.value, narrative.confidence.delta);
-  const evidence = today
-    ? today.evidence
+  const evidence = view
+    ? view.evidence
     : primaryLines.map((l) => ({ label: l.label, text: l.parts.map((p) => p.text).join("") }));
-  const focus = today ? today.focus : narrative.guidance;
-  const depth = today ? today.depth : narrative.confidence.value;
+  const focus = view ? view.focus : narrative.guidance;
+  const depth = view ? view.depth : narrative.confidence.value;
   // Set by Quick Add so the insight visibly re-forms when the user lands back here.
   const [justTaught, setJustTaught] = useState(false);
 
