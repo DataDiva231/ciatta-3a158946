@@ -172,12 +172,23 @@ export function QuickAddSheet({
   const choose = (option: QuickAddOption) => {
     if (pending) return;
     haptic("tap");
+    setPending(option.label);
+
+    // A tailored follow-up answers the moment in one step.
+    if (usePreset) {
+      const category = presetCategory ?? "Something Else";
+      window.setTimeout(() => {
+        setPending(null);
+        commit({ category, [valueKeyFor(category)]: option.label });
+      }, 180);
+      return;
+    }
+
     const keep = steps.slice(0, index).map((s) => s.key);
     const next: Answers = {};
     for (const k of keep) if (answers[k] !== undefined) next[k] = answers[k];
     next[step.key] = option.label;
 
-    setPending(option.label);
     // A short beat so the selection registers before the sheet transforms.
     window.setTimeout(() => {
       setPending(null);
@@ -189,6 +200,7 @@ export function QuickAddSheet({
       setIndex(index + 1);
     }, 180);
   };
+
 
   const back = () => {
     haptic("tap");
