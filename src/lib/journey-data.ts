@@ -8,14 +8,20 @@ import {
   useQuickAddEvents,
 } from "./ciatta-store";
 import type { CheckIn, LearnedFact, Milestone, QuickAddEvent } from "./ciatta-store";
-import {
-  emergingInsights as demoEmerging,
-  journeyTimeline as demoTimeline,
-  recentDiscoveries as demoRecent,
-  todaysDiscovery as demoToday,
-  understandingMilestone as demoMilestone,
-  type Discovery,
-} from "./journey-content";
+
+/** A pattern Ciatta has derived from what the user actually shared. */
+export type Discovery = {
+  id: string;
+  title: string;
+  confidenceLabel: string;
+  confidence: number;
+  tone: OrbTone;
+  whyWeNoticed: string;
+  signals: string[];
+  whyThisMatters: string[];
+  whatToTry: string;
+};
+
 
 export type EmergingInsight = {
   id: string;
