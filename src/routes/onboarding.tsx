@@ -582,12 +582,12 @@ function OnboardingPage() {
           <>
             {bar}
             <Body center>
-              <Orb size={150} confidence={confidence} />
-              <div className="mt-8">
+              <div>
                 <Question>Should I tell you when something changes?</Question>
                 <Support>
-                  One quiet note a day, only when something meaningful shifts.
+                  One quiet note a day, and only when something has really shifted.
                 </Support>
+
               </div>
               <div className="mx-auto mt-7 w-full max-w-[19rem] space-y-2.5">
                 {(
