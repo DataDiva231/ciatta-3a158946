@@ -127,7 +127,23 @@ export function Composer({
 
 
       <input
-        ref={imageInput}
+        ref={cameraInput}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        hidden
+        onChange={(e) => pick(e.target.files)}
+      />
+      <input
+        ref={scanInput}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        hidden
+        onChange={(e) => pick(e.target.files, "scan")}
+      />
+      <input
+        ref={libraryInput}
         type="file"
         accept="image/*"
         multiple
@@ -140,11 +156,12 @@ export function Composer({
         <button
           type="button"
           aria-label="Add a photo"
-          onClick={() => imageInput.current?.click()}
+          onClick={() => setSheet(true)}
           className="flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground transition-colors active:bg-secondary"
         >
-          <ImageIcon size={18} strokeWidth={1.6} />
+          <Camera size={18} strokeWidth={1.6} />
         </button>
+
 
         <button
           type="button"
