@@ -99,10 +99,10 @@ function TeachPage() {
   return (
     <div className="flex min-h-full flex-col px-7 pt-10 pb-2">
       <h1 className="font-serif text-[32px] leading-[1.12] tracking-[-0.015em]">
-        What happened today?
+        {views?.teach.prompt ?? "What happened today?"}
       </h1>
       <p className="mt-3 max-w-[19rem] text-[13px] leading-relaxed text-muted-foreground">
-        {confidenceLine()}
+        {views?.teach.invitation ?? confidenceLine()}
       </p>
 
       {/* Deliberate quiet between the invitation and the tools to answer it. */}
