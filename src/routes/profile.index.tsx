@@ -72,7 +72,7 @@ function SkeletonRows({ rows = 4 }: { rows?: number }) {
 function Invitation({
   line,
   body,
-  action = "Teach Ciatta",
+  action = "Teach me",
 }: {
   line: string;
   body: string;
@@ -195,12 +195,12 @@ function UnderstandingBlock({
         <div className="px-4 pb-5">
           <p className="text-[15px] leading-relaxed">{u.summary}</p>
 
-          <p className="mt-5 text-[13px] font-medium tracking-wide uppercase">Why Ciatta believes this</p>
+          <p className="mt-5 text-[13px] font-medium tracking-wide uppercase">Why I think this</p>
           <p className="mt-1.5 text-[15px] leading-relaxed text-muted-foreground">
             {u.whyThisMatters}
           </p>
 
-          <p className="mt-5 text-[13px] font-medium tracking-wide uppercase">Evidence</p>
+          <p className="mt-5 text-[13px] font-medium tracking-wide uppercase">What I'm going on</p>
           <div className="mt-2 flex flex-wrap gap-2">
             {u.signals.map((s) => (
               <span
@@ -212,7 +212,9 @@ function UnderstandingBlock({
             ))}
           </div>
 
-          <p className="mt-5 text-[13px] font-medium tracking-wide uppercase">Still learning</p>
+          <p className="mt-5 text-[13px] font-medium tracking-wide uppercase">
+            What I'm still learning
+          </p>
           <p className="mt-1.5 text-[15px] leading-relaxed text-muted-foreground">
             {u.stillLearning}
           </p>
@@ -221,7 +223,8 @@ function UnderstandingBlock({
             to="/teach"
             className="mt-5 flex items-center justify-between border-t border-border pt-4 text-[15px] text-accent"
           >
-            Teach Ciatta more
+            Teach me more
+
             <span aria-hidden="true">{"\u203A"}</span>
           </Link>
         </div>
@@ -250,11 +253,12 @@ function AreaBlock({ a, open, onToggle }: { a: Area; open: boolean; onToggle: ()
       <Reveal open={open}>
         <div className="px-4 pb-5">
           <div className="flex items-center gap-2 text-[13px]">
-            <span className="text-accent">{a.confidence}% confident</span>
+            <span className="text-accent">{a.confidence}% sure so far</span>
           </div>
           <ConfidenceBar value={a.confidence} />
           <p className="mt-3 text-[15px] leading-relaxed">{a.detail}</p>
-          <p className="mt-4 text-[13px] font-medium tracking-wide uppercase">Recently</p>
+          <p className="mt-4 text-[13px] font-medium tracking-wide uppercase">What's moved lately</p>
+
           <p className="mt-1.5 text-[15px] leading-relaxed text-muted-foreground">
             {a.recentChange}
           </p>
@@ -418,7 +422,7 @@ function ProfileHeader({ since }: { since: string }) {
           {identity.name}
         </h1>
         <p className="mt-1 truncate text-[13px] text-muted-foreground">
-          {since === "Today" ? "Ciatta started learning you today" : `Learning you since ${since}`}
+          {since === "Today" ? "I started learning you today" : `Learning you since ${since}`}
         </p>
       </div>
       <Link
@@ -453,16 +457,27 @@ function ProfilePage() {
     <div className="pb-8">
       <ProfileHeader since={since} />
 
-      {/* About me */}
+      {/* The framing: this page is the understanding, not a record */}
+      <section className="mt-7 px-6">
+        <p className="font-serif text-[24px] leading-[1.25] tracking-[-0.01em]">
+          Here&rsquo;s what I&rsquo;m beginning to understand about you.
+        </p>
+        <p className="mt-2.5 text-[14px] leading-relaxed text-muted-foreground">
+          This isn&rsquo;t a record of what you&rsquo;ve told me &mdash; it&rsquo;s what I&rsquo;ve
+          made of it so far. It changes as I learn.
+        </p>
+      </section>
+
+      {/* What you've told me */}
       <section className="mt-8 px-6">
-        <SectionTitle>About me</SectionTitle>
+        <SectionTitle note="You told me this">What I&rsquo;m working from</SectionTitle>
         <Group>
           <Row label="Life stage" value={identity.lifeStage} />
           <Row
             label="Goals"
             value={identity.goals.length ? identity.goals.join(", ") : "Not set"}
           />
-          <Row label="Paying attention to" value={focus} />
+          <Row label="Paying closest attention to" value={focus} />
           <Row label="Where we are" value={profile.observationSummary} />
         </Group>
         <p className="mt-3 px-1 text-[14px] leading-relaxed text-muted-foreground">
@@ -475,22 +490,22 @@ function ProfilePage() {
         <SectionTitle
           note={
             profile.understandings.length === 1
-              ? "1 in progress"
-              : `${profile.understandings.length} in progress`
+              ? "1 still forming"
+              : `${profile.understandings.length} still forming`
           }
         >
-          Your understanding
+          What I&rsquo;m beginning to understand
         </SectionTitle>
 
         {!profile.hasData && (
           <Invitation
-            line="Your portrait is still being drawn."
-            body={`Ciatta needs a few more moments with you before it can say anything true. ${
+            line="I don't understand you well enough to say yet."
+            body={`I'd rather wait than guess. ${
               profile.observationCount === 0
                 ? "Nothing logged yet."
                 : `${profile.observationCount} logged so far.`
-            } Below is what an understanding will look like.`}
-            action="Teach Ciatta something"
+            } Below is what an understanding will look like once I have one.`}
+            action="Teach me something"
           />
         )}
         <Group>
@@ -506,17 +521,18 @@ function ProfilePage() {
         </Group>
         {!profile.hasData && (
           <ExampleNote>
-            Example understandings. They'll be replaced by your own as you teach Ciatta.
+            Examples only. Yours will replace them as I learn you.
           </ExampleNote>
         )}
       </section>
 
+
       {/* Health */}
       <section className="mt-9 px-6">
-        <SectionTitle>Health</SectionTitle>
+        <SectionTitle>How my understanding stands</SectionTitle>
 
         <p className="mt-4 mb-0 px-1 text-[13px] text-muted-foreground">
-          Where your understanding stands
+          Where I am with you right now
         </p>
         <Group>
           {profile.snapshot.map((s) => (
@@ -535,11 +551,11 @@ function ProfilePage() {
           ))}
         </Group>
         {!profile.hasData && (
-          <ExampleNote>Each line fills in from what you log. Nothing here is estimated.</ExampleNote>
+          <ExampleNote>Each line fills in from what you log. I don&rsquo;t estimate any of it.</ExampleNote>
         )}
 
         <p className="mt-6 px-1 text-[13px] text-muted-foreground">
-          What Ciatta is learning, area by area
+          What I&rsquo;m still learning, area by area
         </p>
         <Group>
           {profile.areas.map((a) => (
@@ -553,8 +569,9 @@ function ProfilePage() {
         </Group>
 
         <p className="mt-6 px-1 text-[13px] text-muted-foreground">
-          Where the understanding comes from
+          What I&rsquo;m learning from
         </p>
+
 
         <Group>
           {profile.sources.map((s) =>
@@ -585,13 +602,16 @@ function ProfilePage() {
           )}
         </Group>
 
-        <p className="mt-6 px-1 text-[13px] text-muted-foreground">How the understanding grew</p>
+        <p className="mt-6 px-1 text-[13px] text-muted-foreground">
+          How my understanding changed
+        </p>
         {profile.timeline.length <= 1 ? (
           <Invitation
             line="Nothing to look back on yet."
-            body="Each time Ciatta becomes more certain about something, that moment is recorded here."
-            action="Teach Ciatta something"
+            body="Each time I become more certain about something, I'll note the moment here."
+            action="Teach me something"
           />
+
         ) : (
           <div className="mt-3 rounded-2xl bg-surface px-5 py-5">
             <ol className="space-y-1 border-l border-border pl-5">
@@ -625,8 +645,8 @@ function ProfilePage() {
                     <Reveal open={open}>
                       <p className="pb-3 text-[14px] leading-relaxed text-muted-foreground">
                         {t.current
-                          ? `This is where Ciatta is right now. It's watching ${focus.toLowerCase()} most closely, and the next few logs will move this line.`
-                          : `At this point Ciatta had enough repeated evidence to change how it reads your days. Everything after ${t.when} was interpreted with this in mind.`}
+                          ? `This is where I am right now. I'm paying closest attention to ${focus.toLowerCase()}, and the next few logs will move this line.`
+                          : `By this point I had seen the same thing enough times to change how I read your days. Everything after ${t.when} I interpreted with this in mind.`}
                       </p>
                     </Reveal>
                   </li>
@@ -641,9 +661,10 @@ function ProfilePage() {
       <section className="mt-9 px-6">
         <SectionTitle note="Drag to reorder">Preferences</SectionTitle>
         <p className="mt-3 px-1 text-[14px] leading-relaxed text-muted-foreground">
-          Ciatta looks everywhere, but it looks hardest at what's near the top. Move a topic up and
-          future insights will lean toward it.
+          I look everywhere, but I look hardest at what&rsquo;s near the top. Move a topic up and
+          I&rsquo;ll lean toward it.
         </p>
+
 
         <PriorityList priorities={priorities} reorder={reorder} />
 
@@ -701,12 +722,12 @@ function ProfileSkeleton() {
       </header>
 
       <section className="mt-8 px-6">
-        <SectionTitle>About me</SectionTitle>
+        <SectionTitle>What I&rsquo;m working from</SectionTitle>
         <SkeletonRows rows={3} />
       </section>
 
       <section className="mt-9 px-6">
-        <SectionTitle>Your understanding</SectionTitle>
+        <SectionTitle>What I&rsquo;m beginning to understand</SectionTitle>
         <div className="mt-3 space-y-6 rounded-2xl bg-surface px-4 py-5">
           {[0, 1, 2].map((i) => (
             <div key={i} className="space-y-3">
@@ -719,7 +740,7 @@ function ProfileSkeleton() {
       </section>
 
       <section className="mt-9 px-6">
-        <SectionTitle>Health</SectionTitle>
+        <SectionTitle>How my understanding stands</SectionTitle>
         <SkeletonRows rows={6} />
         <SkeletonRows rows={4} />
       </section>
