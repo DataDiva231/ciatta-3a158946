@@ -130,9 +130,7 @@ function Stack({ children }: { children: React.ReactNode }) {
 }
 
 function Note({ children }: { children: string }) {
-  return (
-    <p className="mt-1.5 text-[15px] leading-relaxed text-muted-foreground">{children}</p>
-  );
+  return <p className="mt-1.5 text-[15px] leading-relaxed text-muted-foreground">{children}</p>;
 }
 
 function MicroLabel({ children }: { children: string }) {
@@ -166,11 +164,7 @@ function lowerFirst(s: string) {
  * One coherent portrait, synthesised from the understanding model already in
  * place — no new inference, no percentages surfaced.
  */
-function buildPortrait(
-  understandings: Understanding[],
-  areas: Area[],
-  focus: string,
-): string {
+function buildPortrait(understandings: Understanding[], areas: Area[], focus: string): string {
   const [lead, second] = understandings;
   const refining = areas
     .filter((a) => a.confidence < 80)
@@ -193,7 +187,6 @@ function buildPortrait(
   return parts.join(" ");
 }
 
-
 /* ------------------------------------------------------------------- areas */
 
 function AreaBlock({ a, open, onToggle }: { a: Area; open: boolean; onToggle: () => void }) {
@@ -207,9 +200,7 @@ function AreaBlock({ a, open, onToggle }: { a: Area; open: boolean; onToggle: ()
       >
         <span className="text-[16px]">{a.name}</span>
         <span className="flex shrink-0 items-center gap-2">
-          <span className="text-[13px] text-muted-foreground">
-            {learningState(a.confidence)}
-          </span>
+          <span className="text-[13px] text-muted-foreground">{learningState(a.confidence)}</span>
           <Chevron open={open} />
         </span>
       </button>
@@ -243,15 +234,7 @@ function AreaBlock({ a, open, onToggle }: { a: Area; open: boolean; onToggle: ()
 
 /* ----------------------------------------------------------- learning from */
 
-function SourceBlock({
-  s,
-  open,
-  onToggle,
-}: {
-  s: SourceRow;
-  open: boolean;
-  onToggle: () => void;
-}) {
+function SourceBlock({ s, open, onToggle }: { s: SourceRow; open: boolean; onToggle: () => void }) {
   if (!s.active) {
     return (
       <div className="flex items-center justify-between gap-4 py-3.5">
@@ -486,7 +469,6 @@ function ProfilePage() {
           ))}
         </Stack>
       </section>
-
 
       {/* Our story */}
       <section className="mt-10 px-6">
