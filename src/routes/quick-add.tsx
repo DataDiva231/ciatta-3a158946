@@ -281,10 +281,10 @@ function QuickAddPage() {
         </div>
 
         <h1 className="animate-in fade-in mt-8 text-center font-serif text-[30px] leading-[1.12] tracking-[-0.015em] duration-300">
-          Understanding updated
+          Got it.
         </h1>
         <p className="animate-in fade-in mt-3 text-center text-[13px] leading-relaxed text-muted-foreground duration-500">
-          Thank you — every update makes Ciatta more yours.
+          Tomorrow's understanding just became a little clearer.
         </p>
 
         <ul className="mt-9">
