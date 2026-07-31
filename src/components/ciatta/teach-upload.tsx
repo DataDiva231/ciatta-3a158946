@@ -92,9 +92,9 @@ export function TeachUpload({
     return (
       <div className="flex min-h-[70vh] flex-col items-center justify-center px-8 text-center">
         <span className="animate-breathe h-20 w-20 rounded-full bg-[radial-gradient(circle_at_30%_30%,var(--color-accent),transparent_70%)]" />
-        <h1 className="mt-8 font-serif text-[28px] leading-tight">Understanding updated</h1>
+        <h1 className="mt-8 font-serif text-[28px] leading-tight">Got it.</h1>
         <p className="mt-3 text-[15px] leading-relaxed text-muted-foreground">
-          Ciatta has folded this into how it reads you.
+          Tomorrow's understanding just became a little clearer.
         </p>
       </div>
     );
