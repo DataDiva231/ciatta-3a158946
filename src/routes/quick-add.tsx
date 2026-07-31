@@ -197,12 +197,15 @@ function QuickAddPage() {
   /** Chips confirm visually for ~180ms, then hand straight off to the flow. */
   const chooseChip = (option: QuickAddOption) => {
     if (pending) return;
+    haptic("tap");
     setPending(option.label);
     setTimeout(() => {
       setPending(null);
+      haptic("confirm");
       choose(option);
     }, 180);
   };
+
 
 
   /** One tap re-logs the last product, absorbency and flow, timestamped now. */
