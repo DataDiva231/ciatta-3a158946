@@ -2,7 +2,7 @@ import { useMemo } from "react";
 
 import { useCheckIns, useLearnedFacts, useMilestones, useQuickAddEvents } from "./ciatta-store";
 import { useJourney } from "./journey-data";
-import type { Discovery } from "./journey-content";
+import type { Discovery } from "./journey-data";
 
 export type Understanding = {
   id: string;
