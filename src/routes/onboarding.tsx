@@ -517,8 +517,10 @@ function OnboardingPage() {
     if (data.name.trim()) saveIdentity({ name: data.name.trim() });
     if (data.lifeStage && data.lifeStage !== "I'm not sure")
       saveIdentity({ lifeStage: data.lifeStage });
-    navigate({ to: "/" });
+    // Before the app opens, we learn one real thing together.
+    navigate({ to: data.firstObservationDone ? "/" : "/first-observation" });
   };
+
 
   const ratio = total ? (index + 1) / total : 0;
   const bar = <TopBar onBack={history.length > 1 ? back : undefined} ratio={ratio} />;
