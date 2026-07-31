@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { ArrowUp, ImageIcon, Mic, Paperclip } from "lucide-react";
+import { ArrowUp, Camera, Mic, Paperclip } from "lucide-react";
 
 import { useVoiceMemo } from "@/lib/voice-memo";
 
@@ -25,7 +25,11 @@ export function Composer({
   const [files, setFiles] = useState<string[]>([]);
   /** True once a transcript lands, so we can invite a quick correction. */
   const [fromVoice, setFromVoice] = useState(false);
-  const imageInput = useRef<HTMLInputElement>(null);
+  /** The native-style picker sheet for the Camera action. */
+  const [sheet, setSheet] = useState(false);
+  const cameraInput = useRef<HTMLInputElement>(null);
+  const scanInput = useRef<HTMLInputElement>(null);
+  const libraryInput = useRef<HTMLInputElement>(null);
   const fileInput = useRef<HTMLInputElement>(null);
   const textarea = useRef<HTMLTextAreaElement>(null);
   const memo = useVoiceMemo((t) => {
