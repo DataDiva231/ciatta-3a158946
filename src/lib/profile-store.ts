@@ -86,7 +86,7 @@ export const DEFAULT_SETTINGS: Settings = {
     quietHours: true,
   },
   appearance: "light",
-  apps: ["apple-health", "calendar"],
+  apps: [],
   privacy: { onDeviceOnly: true, improveCiatta: false, research: false },
 };
 
