@@ -113,24 +113,29 @@ export function useJourneyStory(): JourneyStory {
 
   return useMemo(() => {
     const lead = journey.todaysDiscovery;
-    const topic = topicOf(lead.signals);
+    const topic = lead ? topicOf(lead.signals) : "";
 
-    const statement = `Your ${topic} is becoming easier to understand.`;
+    const statement = lead ? `Your ${topic} is becoming easier to understand.` : "";
 
-    const shift: Shift = {
-      statement,
-      keyword: keywordOf(statement),
-      beforeLabel: "Before",
-      before: `${topic.charAt(0).toUpperCase()}${topic.slice(1)} felt unpredictable — it was hard to tell what made a difference.`,
-      todayLabel: "Today",
-      today: `You can begin to recognise what your ${topic} responds to.`,
-    };
+    const shift: Shift | null = lead
+      ? {
+          statement,
+          keyword: keywordOf(statement),
+          beforeLabel: "Before",
+          before: `${topic.charAt(0).toUpperCase()}${topic.slice(1)} felt unpredictable — it was hard to tell what made a difference.`,
+          todayLabel: "Today",
+          today: `You can begin to recognise what your ${topic} responds to.`,
+        }
+      : null;
 
-    const why: WhyItChanged = {
-      what: lead.title,
-      why: lead.whyWeNoticed,
-      matters: `Future ${topic} guidance will now become more personal.`,
-    };
+    const why: WhyItChanged | null = lead
+      ? {
+          what: lead.title,
+          why: lead.whyWeNoticed,
+          matters: `Future ${topic} guidance will now become more personal.`,
+        }
+      : null;
+
 
     const next: NextUnderstanding[] = (
       journey.emergingInsights.length
