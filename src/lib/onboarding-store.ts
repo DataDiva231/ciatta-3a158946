@@ -26,7 +26,10 @@ export type Onboarding = {
   answers: Record<string, string[]>;
   /** Ordered ids of the questions Ciatta actually asked this user. */
   path: string[];
+  /** How the relationship was started: apple | google | email | existing. */
+  authMethod: string;
 };
+
 
 export const ONBOARDING_KEY = "ciatta.onboarding.v1";
 
