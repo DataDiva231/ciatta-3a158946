@@ -23,11 +23,23 @@ export function Composer({
   const [text, setText] = useState("");
   const [expanded, setExpanded] = useState(false);
   const [files, setFiles] = useState<string[]>([]);
+  /** True once a transcript lands, so we can invite a quick correction. */
+  const [fromVoice, setFromVoice] = useState(false);
   const imageInput = useRef<HTMLInputElement>(null);
   const fileInput = useRef<HTMLInputElement>(null);
+  const textarea = useRef<HTMLTextAreaElement>(null);
   const memo = useVoiceMemo((t) => {
     const clean = t.trim();
-    if (clean) setText((prev) => (prev ? `${prev} ${clean}` : clean));
+    if (!clean) return;
+    setText((prev) => (prev ? `${prev} ${clean}` : clean));
+    setFromVoice(true);
+    setExpanded(true);
+    window.setTimeout(() => {
+      const el = textarea.current;
+      if (!el) return;
+      el.focus();
+      el.setSelectionRange(el.value.length, el.value.length);
+    }, 60);
   });
 
   const recording = memo.state === "recording";
@@ -40,6 +52,7 @@ export function Composer({
     setText("");
     setFiles([]);
     setExpanded(false);
+    setFromVoice(false);
     onSubmit(parts.join("\n"));
   };
 
@@ -61,10 +74,11 @@ export function Composer({
           expanded ? "text-foreground" : "text-muted-foreground"
         }`}
       >
-        {label}
+        {fromVoice ? "What Ciatta heard" : label}
       </p>
 
       <textarea
+        ref={textarea}
         value={text}
         rows={expanded ? 4 : 1}
         onFocus={() => setExpanded(true)}
@@ -77,16 +91,36 @@ export function Composer({
           }
         }}
         placeholder={placeholder}
-        aria-label={label}
+        aria-label={fromVoice ? "Voice transcript — edit before sharing" : label}
         className="mt-1.5 w-full resize-none bg-transparent text-[14.5px] leading-relaxed outline-none transition-all duration-300 placeholder:text-fog"
       />
 
+      {fromVoice && (
+        <div className="animate-in fade-in flex items-center gap-3 duration-300">
+          <p className="text-[12.5px] leading-snug text-muted-foreground">
+            Edit anything that isn't quite right, then share.
+          </p>
+          <span className="flex-1" />
+          <button
+            type="button"
+            onClick={() => {
+              setText("");
+              setFromVoice(false);
+              void memo.start();
+            }}
+            className="text-[12.5px] whitespace-nowrap text-muted-foreground underline underline-offset-4 transition-opacity active:opacity-60"
+          >
+            Re-record
+          </button>
+        </div>
+      )}
 
       {files.length > 0 && (
         <p className="animate-in fade-in mt-2 text-[12.5px] text-muted-foreground duration-300">
           {files.join(", ")}
         </p>
       )}
+
 
       <input
         ref={imageInput}
