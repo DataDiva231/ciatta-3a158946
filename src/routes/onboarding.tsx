@@ -301,6 +301,7 @@ function OnboardingPage() {
   const [history, setHistory] = useState<string[]>(["welcome"]);
   const [dir, setDir] = useState<1 | -1>(1);
   const [beat, setBeat] = useState<string | null>(null);
+  const [phase, setPhase] = useState<"splash" | "auth" | "flow">("splash");
   const usedAcks = useRef<string[]>([]);
   const resumed = useRef(false);
 
@@ -309,6 +310,17 @@ function OnboardingPage() {
     resumed.current = true;
     if (data.path?.length && !data.completed) setHistory(data.path);
   }, [hydrated, data.path, data.completed]);
+
+  // The splash exists only to establish identity; it never blocks anyone.
+  useEffect(() => {
+    if (!hydrated || phase !== "splash") return;
+    const t = window.setTimeout(
+      () => setPhase(data.authMethod ? "flow" : "auth"),
+      2600,
+    );
+    return () => window.clearTimeout(t);
+  }, [hydrated, phase, data.authMethod]);
+
 
   const id = history[history.length - 1];
   const node = nodeById(id) ?? FLOW[0];
