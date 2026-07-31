@@ -62,7 +62,7 @@ export function evidenceFor(u: Understanding) {
     evidence.push({ label: "Something recurring", text: pattern.summary });
   }
   if (u.strongest) {
-    evidence.push({ label: "What I'm noticing", text: u.strongest.statement });
+    evidence.push({ label: "Connection", text: u.strongest.statement });
   }
   if (!evidence.length) {
     evidence.push({
