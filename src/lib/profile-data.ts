@@ -67,30 +67,31 @@ export type ProfileView = {
 };
 
 
-/** Ciatta's confidence vocabulary — one tier label per confidence band. */
+/** Ciatta's learning vocabulary — one plain-language state per band. */
 export function tierFor(v: number) {
-  if (v >= 90) return "Very High Confidence";
-  if (v >= 80) return "High Confidence";
-  if (v >= 65) return "Growing Confidence";
-  if (v >= 45) return "Learning";
-  if (v >= 25) return "Early Understanding";
-  return "Just Beginning";
+  if (v >= 90) return "Clear to me";
+  if (v >= 80) return "Well understood";
+  if (v >= 65) return "Becoming clearer";
+  if (v >= 45) return "Still learning";
+  if (v >= 25) return "Beginning to notice";
+  return "Just listening";
 }
 
 /**
- * Descriptive, non-repeating status for an area of understanding.
+ * Descriptive, non-repeating state for an area of understanding.
  * Rank varies the wording so several quiet areas never read identically.
  */
 export function areaStatus(v: number, rank: number) {
   if (v >= 85)
-    return ["Well understood", "Reliably predictable", "Confirmed over time"][rank % 3];
+    return ["Well understood", "Clear to me", "Confirmed over time"][rank % 3];
   if (v >= 65)
     return ["Pattern holding", "Repeating consistently", "Taking clear shape"][rank % 3];
   if (v >= 45) return ["Connections forming", "Starting to line up", "A shape is emerging"][rank % 3];
   if (v >= 25)
-    return ["First signals in", "Watching for repeats", "Early threads only"][rank % 3];
-  return ["Listening, nothing yet", "Awaiting your first logs", "Not enough to say"][rank % 3];
+    return ["Beginning to notice", "Watching for repeats", "Early threads only"][rank % 3];
+  return ["Listening, nothing yet", "Waiting on your first stories", "I don't know enough yet"][rank % 3];
 }
+
 
 const AREAS = ["Recovery", "Sleep", "Cycle", "Stress", "Nutrition", "Mood"];
 
@@ -204,22 +205,19 @@ export function useProfile(): ProfileView {
         label: "Patterns held",
         value: confirmed ? `${confirmed} understood well` : "None settled yet",
         detail: confirmed
-          ? `${confirmed} pattern${confirmed === 1 ? " has" : "s have"} repeated often enough that Ciatta will now act on ${confirmed === 1 ? "it" : "them"} without waiting for more evidence.`
-          : "Nothing has repeated often enough to be treated as settled. Ciatta would rather say nothing than guess.",
-        notes: understandings
-          .filter((u) => u.confidence >= 70)
-          .map((u) => `${u.title} \u2014 ${u.confidence}%`),
+          ? `${confirmed} pattern${confirmed === 1 ? " has" : "s have"} repeated often enough that I'll act on ${confirmed === 1 ? "it" : "them"} without waiting to see more.`
+          : "Nothing has repeated often enough for me to treat it as settled. I'd rather say nothing than guess.",
+        notes: understandings.filter((u) => u.confidence >= 70).map((u) => u.title),
       },
       {
         id: "patterns-forming",
         label: "Patterns forming",
         value: forming ? `${forming} taking shape` : "Nothing forming yet",
         detail: forming
-          ? "These have appeared more than once but not yet enough times to be relied on. Ciatta is watching for the next repeat."
-          : "Nothing is forming yet. Two logs of the same kind is usually where a shape begins.",
-        notes: understandings
-          .filter((u) => u.confidence < 70)
-          .map((u) => `${u.title} \u2014 ${u.confidence}%`),
+          ? "These have appeared more than once, but not often enough for me to lean on them yet. I'm listening for the next repeat."
+          : "Nothing is forming yet. Two moments of the same kind is usually where a shape begins.",
+        notes: understandings.filter((u) => u.confidence < 70).map((u) => u.title),
+
       },
       {
         id: "watching",
@@ -302,15 +300,16 @@ export function useProfile(): ProfileView {
       timeline.push({
         label:
           m.to >= 90
-            ? `Ciatta can now anticipate this — ${m.to}% sure`
+            ? "This became clear enough for me to expect it"
             : m.to >= 75
-              ? `Pattern confirmed across enough days — ${m.to}%`
+              ? "The same pattern held across enough days"
               : m.to >= 60
-                ? `The same relationship kept repeating — ${m.to}%`
-                : `First real pattern took shape — ${m.to}%`,
+                ? "The same connection kept repeating"
+                : "The first real pattern took shape",
         when: monthYear(m.reachedAt),
       });
     }
+
     timeline.push({
       label: understandings.length
         ? `Currently learning how ${focus.toLowerCase()} moves with your cycle`
