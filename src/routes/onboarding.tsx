@@ -985,13 +985,14 @@ function SummaryScreen({ data, onFinish }: { data: Onboarding; onFinish: () => v
       <TopBar />
       <div className="flex-1 overflow-y-auto px-8 pt-2 pb-4">
         <h1 className="animate-in fade-in text-center font-serif text-[30px] leading-[1.16] tracking-[-0.015em] duration-700">
-          Here&apos;s what I&apos;ve
+          Here&apos;s what I&apos;m
           <br />
-          learned so far
+          beginning to understand
         </h1>
         <div className="mt-7">
           <Orb size={104} confidence={92} active />
         </div>
+
 
 
         <div className="mx-auto mt-7 max-w-[21rem] rounded-[26px] bg-surface px-5 py-5 shadow-[0_18px_44px_-32px_rgba(60,45,35,0.55)]">
