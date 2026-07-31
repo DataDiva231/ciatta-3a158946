@@ -42,13 +42,14 @@ function TeachPage() {
   const { latest } = useCheckIns();
   const { events, addEvent } = useQuickAddEvents();
   const narrative = buildNarrative(latest, events);
-  // Teach asks the engine what it's still missing; local suggestions stand in
-  // until it answers.
+  // Teach asks the engine what it's still missing, and uses that to order the
+  // moments it offers. The sheet steps stay local.
   const { views } = useEngine();
-  const teach = views?.teach;
-  const suggestions: TeachSuggestion[] = teach
-    ? teach.suggestions.map((s) => ({ category: s.category, label: s.label, reason: s.reason }))
-    : buildTeachSuggestions(events, narrative.confidence.value);
+  const local = buildTeachSuggestions(events, narrative.confidence.value);
+  const wanted = views?.teach.suggestions.map((s) => s.category) ?? [];
+  const suggestions: TeachSuggestion[] = wanted.length
+    ? [...local].sort((a, b) => rank(wanted, a.category) - rank(wanted, b.category))
+    : local;
   const [saved, setSaved] = useState(false);
   /** Quick Add lives inside this screen: a sheet over the current question. */
   const [sheet, setSheet] = useState<{
