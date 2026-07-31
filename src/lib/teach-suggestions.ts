@@ -52,7 +52,7 @@ export function buildTeachSuggestions(
     out.push({
       category: "Period Product",
       label: "My flow changed",
-      reason: "so your days ahead are easier to plan",
+      reason: "Sharing this will help make your days ahead easier to plan.",
     });
   }
 
@@ -60,7 +60,7 @@ export function buildTeachSuggestions(
     out.push({
       category: "Symptoms",
       label: "I have a headache",
-      reason: "so patterns like this stop surprising you",
+      reason: "Sharing this will help patterns like this stop surprising you.",
     });
   }
 
@@ -68,7 +68,7 @@ export function buildTeachSuggestions(
     out.push({
       category: "Sleep",
       label: "I slept poorly",
-      reason: "so tomorrow's rest advice fits you",
+      reason: "Sharing this will help make tomorrow's recovery guidance more personal.",
     });
   }
 
@@ -77,8 +77,8 @@ export function buildTeachSuggestions(
       category: "Activity",
       label: evening ? "My energy feels low" : "I'm feeling stressed",
       reason: evening
-        ? "so effort is read against your recovery"
-        : "so you know when to push and when to ease",
+        ? "Sharing this will help effort be read against your recovery."
+        : "Sharing this will help you know when to push and when to ease.",
     });
   }
 
