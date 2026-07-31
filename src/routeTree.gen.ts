@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as ApiTranscribeRouteImport } from './routes/api/transcribe'
 import { Route as AuthenticatedTeachRouteImport } from './routes/_authenticated/teach'
@@ -24,10 +25,14 @@ import { Route as AuthenticatedProfileIndexRouteImport } from './routes/_authent
 import { Route as AuthenticatedProfileEditRouteImport } from './routes/_authenticated/profile.edit'
 import { Route as AuthenticatedProfileSettingsSectionRouteImport } from './routes/_authenticated/profile.settings.$section'
 
-const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
-  id: '/_authenticated/',
-  path: '/',
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const ApiTranscribeRoute = ApiTranscribeRouteImport.update({
   id: '/api/transcribe',
@@ -35,72 +40,73 @@ const ApiTranscribeRoute = ApiTranscribeRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedTeachRoute = AuthenticatedTeachRouteImport.update({
-  id: '/_authenticated/teach',
+  id: '/teach',
   path: '/teach',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedTalkRoute = AuthenticatedTalkRouteImport.update({
-  id: '/_authenticated/talk',
+  id: '/talk',
   path: '/talk',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedQuickAddRoute = AuthenticatedQuickAddRouteImport.update({
-  id: '/_authenticated/quick-add',
+  id: '/quick-add',
   path: '/quick-add',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
-  id: '/_authenticated/onboarding',
+  id: '/onboarding',
   path: '/onboarding',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedJourneyRoute = AuthenticatedJourneyRouteImport.update({
-  id: '/_authenticated/journey',
+  id: '/journey',
   path: '/journey',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedFirstObservationRoute =
   AuthenticatedFirstObservationRouteImport.update({
-    id: '/_authenticated/first-observation',
+    id: '/first-observation',
     path: '/first-observation',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedEngineTraceRoute =
   AuthenticatedEngineTraceRouteImport.update({
-    id: '/_authenticated/engine-trace',
+    id: '/engine-trace',
     path: '/engine-trace',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedCaptureRoute = AuthenticatedCaptureRouteImport.update({
-  id: '/_authenticated/capture',
+  id: '/capture',
   path: '/capture',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedAttachRoute = AuthenticatedAttachRouteImport.update({
-  id: '/_authenticated/attach',
+  id: '/attach',
   path: '/attach',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedProfileIndexRoute =
   AuthenticatedProfileIndexRouteImport.update({
-    id: '/_authenticated/profile/',
+    id: '/profile/',
     path: '/profile/',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedProfileEditRoute =
   AuthenticatedProfileEditRouteImport.update({
-    id: '/_authenticated/profile/edit',
+    id: '/profile/edit',
     path: '/profile/edit',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedProfileSettingsSectionRoute =
   AuthenticatedProfileSettingsSectionRouteImport.update({
-    id: '/_authenticated/profile/settings/$section',
+    id: '/profile/settings/$section',
     path: '/profile/settings/$section',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
+  '/': typeof AuthenticatedIndexRoute
   '/attach': typeof AuthenticatedAttachRoute
   '/capture': typeof AuthenticatedCaptureRoute
   '/engine-trace': typeof AuthenticatedEngineTraceRoute
@@ -111,7 +117,6 @@ export interface FileRoutesByFullPath {
   '/talk': typeof AuthenticatedTalkRoute
   '/teach': typeof AuthenticatedTeachRoute
   '/api/transcribe': typeof ApiTranscribeRoute
-  '/': typeof AuthenticatedIndexRoute
   '/profile/edit': typeof AuthenticatedProfileEditRoute
   '/profile/': typeof AuthenticatedProfileIndexRoute
   '/profile/settings/$section': typeof AuthenticatedProfileSettingsSectionRoute
@@ -134,6 +139,7 @@ export interface FileRoutesByTo {
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/_authenticated/attach': typeof AuthenticatedAttachRoute
   '/_authenticated/capture': typeof AuthenticatedCaptureRoute
   '/_authenticated/engine-trace': typeof AuthenticatedEngineTraceRoute
@@ -152,6 +158,7 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/'
     | '/attach'
     | '/capture'
     | '/engine-trace'
@@ -162,7 +169,6 @@ export interface FileRouteTypes {
     | '/talk'
     | '/teach'
     | '/api/transcribe'
-    | '/'
     | '/profile/edit'
     | '/profile/'
     | '/profile/settings/$section'
@@ -184,6 +190,7 @@ export interface FileRouteTypes {
     | '/profile/settings/$section'
   id:
     | '__root__'
+    | '/_authenticated'
     | '/_authenticated/attach'
     | '/_authenticated/capture'
     | '/_authenticated/engine-trace'
@@ -201,30 +208,25 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  AuthenticatedAttachRoute: typeof AuthenticatedAttachRoute
-  AuthenticatedCaptureRoute: typeof AuthenticatedCaptureRoute
-  AuthenticatedEngineTraceRoute: typeof AuthenticatedEngineTraceRoute
-  AuthenticatedFirstObservationRoute: typeof AuthenticatedFirstObservationRoute
-  AuthenticatedJourneyRoute: typeof AuthenticatedJourneyRoute
-  AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
-  AuthenticatedQuickAddRoute: typeof AuthenticatedQuickAddRoute
-  AuthenticatedTalkRoute: typeof AuthenticatedTalkRoute
-  AuthenticatedTeachRoute: typeof AuthenticatedTeachRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   ApiTranscribeRoute: typeof ApiTranscribeRoute
-  AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
-  AuthenticatedProfileEditRoute: typeof AuthenticatedProfileEditRoute
-  AuthenticatedProfileIndexRoute: typeof AuthenticatedProfileIndexRoute
-  AuthenticatedProfileSettingsSectionRoute: typeof AuthenticatedProfileSettingsSectionRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/': {
       id: '/_authenticated/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/api/transcribe': {
       id: '/api/transcribe'
@@ -238,89 +240,105 @@ declare module '@tanstack/react-router' {
       path: '/teach'
       fullPath: '/teach'
       preLoaderRoute: typeof AuthenticatedTeachRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/talk': {
       id: '/_authenticated/talk'
       path: '/talk'
       fullPath: '/talk'
       preLoaderRoute: typeof AuthenticatedTalkRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/quick-add': {
       id: '/_authenticated/quick-add'
       path: '/quick-add'
       fullPath: '/quick-add'
       preLoaderRoute: typeof AuthenticatedQuickAddRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/onboarding': {
       id: '/_authenticated/onboarding'
       path: '/onboarding'
       fullPath: '/onboarding'
       preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/journey': {
       id: '/_authenticated/journey'
       path: '/journey'
       fullPath: '/journey'
       preLoaderRoute: typeof AuthenticatedJourneyRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/first-observation': {
       id: '/_authenticated/first-observation'
       path: '/first-observation'
       fullPath: '/first-observation'
       preLoaderRoute: typeof AuthenticatedFirstObservationRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/engine-trace': {
       id: '/_authenticated/engine-trace'
       path: '/engine-trace'
       fullPath: '/engine-trace'
       preLoaderRoute: typeof AuthenticatedEngineTraceRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/capture': {
       id: '/_authenticated/capture'
       path: '/capture'
       fullPath: '/capture'
       preLoaderRoute: typeof AuthenticatedCaptureRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/attach': {
       id: '/_authenticated/attach'
       path: '/attach'
       fullPath: '/attach'
       preLoaderRoute: typeof AuthenticatedAttachRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/profile/': {
       id: '/_authenticated/profile/'
       path: '/profile'
       fullPath: '/profile/'
       preLoaderRoute: typeof AuthenticatedProfileIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/profile/edit': {
       id: '/_authenticated/profile/edit'
       path: '/profile/edit'
       fullPath: '/profile/edit'
       preLoaderRoute: typeof AuthenticatedProfileEditRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/profile/settings/$section': {
       id: '/_authenticated/profile/settings/$section'
       path: '/profile/settings/$section'
       fullPath: '/profile/settings/$section'
       preLoaderRoute: typeof AuthenticatedProfileSettingsSectionRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
   }
 }
 
-const rootRouteChildren: RootRouteChildren = {
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAttachRoute: typeof AuthenticatedAttachRoute
+  AuthenticatedCaptureRoute: typeof AuthenticatedCaptureRoute
+  AuthenticatedEngineTraceRoute: typeof AuthenticatedEngineTraceRoute
+  AuthenticatedFirstObservationRoute: typeof AuthenticatedFirstObservationRoute
+  AuthenticatedJourneyRoute: typeof AuthenticatedJourneyRoute
+  AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
+  AuthenticatedQuickAddRoute: typeof AuthenticatedQuickAddRoute
+  AuthenticatedTalkRoute: typeof AuthenticatedTalkRoute
+  AuthenticatedTeachRoute: typeof AuthenticatedTeachRoute
+  AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+  AuthenticatedProfileEditRoute: typeof AuthenticatedProfileEditRoute
+  AuthenticatedProfileIndexRoute: typeof AuthenticatedProfileIndexRoute
+  AuthenticatedProfileSettingsSectionRoute: typeof AuthenticatedProfileSettingsSectionRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAttachRoute: AuthenticatedAttachRoute,
   AuthenticatedCaptureRoute: AuthenticatedCaptureRoute,
   AuthenticatedEngineTraceRoute: AuthenticatedEngineTraceRoute,
@@ -330,12 +348,19 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedQuickAddRoute: AuthenticatedQuickAddRoute,
   AuthenticatedTalkRoute: AuthenticatedTalkRoute,
   AuthenticatedTeachRoute: AuthenticatedTeachRoute,
-  ApiTranscribeRoute: ApiTranscribeRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedProfileEditRoute: AuthenticatedProfileEditRoute,
   AuthenticatedProfileIndexRoute: AuthenticatedProfileIndexRoute,
   AuthenticatedProfileSettingsSectionRoute:
     AuthenticatedProfileSettingsSectionRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
+const rootRouteChildren: RootRouteChildren = {
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  ApiTranscribeRoute: ApiTranscribeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
