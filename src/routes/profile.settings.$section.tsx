@@ -3,6 +3,8 @@ import { Link, createFileRoute, notFound, useNavigate } from "@tanstack/react-ro
 
 import { Card, Chip, Screen, Toggle } from "@/components/ciatta/screen";
 import { deleteAllData, exportAllData } from "@/lib/ciatta-store";
+import { forgetEverything } from "@/lib/engine.functions";
+import { deviceKey } from "@/lib/use-engine";
 import { signOut } from "@/lib/onboarding-store";
 import { CONNECTED_APPS, useSettings } from "@/lib/profile-store";
 import { useAppearance } from "@/lib/use-appearance";
