@@ -253,11 +253,12 @@ function AreaBlock({ a, open, onToggle }: { a: Area; open: boolean; onToggle: ()
       <Reveal open={open}>
         <div className="px-4 pb-5">
           <div className="flex items-center gap-2 text-[13px]">
-            <span className="text-accent">{a.confidence}% confident</span>
+            <span className="text-accent">{a.confidence}% sure so far</span>
           </div>
           <ConfidenceBar value={a.confidence} />
           <p className="mt-3 text-[15px] leading-relaxed">{a.detail}</p>
-          <p className="mt-4 text-[13px] font-medium tracking-wide uppercase">Recently</p>
+          <p className="mt-4 text-[13px] font-medium tracking-wide uppercase">What's moved lately</p>
+
           <p className="mt-1.5 text-[15px] leading-relaxed text-muted-foreground">
             {a.recentChange}
           </p>
