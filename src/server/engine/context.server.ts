@@ -77,6 +77,8 @@ export function buildContext(
         : []),
       ...(Array.isArray(identity["priorities"]) ? (identity["priorities"] as string[]) : []),
     ],
+    recentSleep: latestValue(observations, "Sleep"),
+    recentActivity: latestValue(observations, "Activity"),
   };
 }
 
