@@ -1,4 +1,5 @@
 import { useCallback, useRef, useState } from "react";
+import { accessToken } from "./session";
 
 /**
  * Voice memo capture for Teach.
@@ -141,7 +142,12 @@ export function useVoiceMemo(onTranscript: (text: string) => void) {
     try {
       const body = new FormData();
       body.append("audio", blob, "memo.wav");
-      const res = await fetch("/api/transcribe", { method: "POST", body });
+      const token = await accessToken();
+      const res = await fetch("/api/transcribe", {
+        method: "POST",
+        body,
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      });
       if (!res.ok) throw new Error(await res.text());
 
       // Stream the transcript in as it is recognised.
