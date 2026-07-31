@@ -48,14 +48,22 @@ function whyNarrative(u: Understanding): string[] {
       `Newest observation (${u.newest?.category}: ${u.newest?.value}) reads as heavy flow, which outranks every other signal today.`,
     );
   else if (u.state === "recover")
-    why.push("Understanding state resolved to 'recover' from a recent observation, so the headline speaks to recovery.");
+    why.push(
+      "Understanding state resolved to 'recover' from a recent observation, so the headline speaks to recovery.",
+    );
   else if (u.state === "strong")
     why.push("Understanding state resolved to 'strong', so the headline offers room to push.");
   else why.push("No observation in the last day moved the state, so the headline holds steady.");
 
   why.push(
     `Standing line chosen from depth ${u.depth} (${
-      u.depth < 30 ? "beginning" : u.depth < 55 ? "shape appearing" : u.depth < 78 ? "rhythm forming" : "rhythm known"
+      u.depth < 30
+        ? "beginning"
+        : u.depth < 55
+          ? "shape appearing"
+          : u.depth < 78
+            ? "rhythm forming"
+            : "rhythm known"
     }).`,
   );
   why.push(

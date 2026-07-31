@@ -32,7 +32,6 @@ export type Onboarding = {
   /** How the relationship was started: apple | google | email | existing. */
 };
 
-
 export const ONBOARDING_KEY = "ciatta.onboarding.v1";
 
 export const DEFAULT_ONBOARDING: Onboarding = {
@@ -59,8 +58,6 @@ export const DEFAULT_ONBOARDING: Onboarding = {
   answers: {},
   path: [],
 };
-
-
 
 export function useOnboarding() {
   const { value, updateWith, hydrated } = usePersistentState<Onboarding>(
@@ -159,4 +156,3 @@ export const MONTHS = [
   "November",
   "December",
 ];
-

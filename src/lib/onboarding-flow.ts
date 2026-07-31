@@ -54,8 +54,7 @@ const stage = (d: Onboarding) => d.lifeStage;
 const isCycling = (d: Onboarding) => stage(d) === "Cycling";
 const isTTC = (d: Onboarding) => stage(d) === "Trying to conceive";
 const isPregnant = (d: Onboarding) => stage(d) === "Pregnant or postpartum";
-const isMeno = (d: Onboarding) =>
-  stage(d) === "Perimenopause" || stage(d) === "Menopause";
+const isMeno = (d: Onboarding) => stage(d) === "Perimenopause" || stage(d) === "Menopause";
 
 const takesMeds = (d: Onboarding) => one(d, "meds_gate") === "Yes, a few";
 const onGLP1 = (d: Onboarding) => has(d, "meds", "GLP-1");
@@ -238,11 +237,7 @@ export const FLOW: FlowNode[] = [
     key: "meno_hrt",
     when: isMeno,
     ask: () => "Are you using hormone therapy?",
-    options: () => [
-      { value: "Yes, currently" },
-      { value: "Considering it" },
-      { value: "No" },
-    ],
+    options: () => [{ value: "Yes, currently" }, { value: "Considering it" }, { value: "No" }],
   },
 
   /* --- conditions ------------------------------------------------------- */
@@ -277,7 +272,12 @@ export const FLOW: FlowNode[] = [
         { value: "Type 2 diabetes" },
       ];
       if (isCycling(d) || isTTC(d))
-        return [{ value: "PCOS" }, { value: "Endometriosis" }, ...shared, { value: "Something else" }];
+        return [
+          { value: "PCOS" },
+          { value: "Endometriosis" },
+          ...shared,
+          { value: "Something else" },
+        ];
       if (isMeno(d))
         return [
           { value: "High blood pressure" },
@@ -301,10 +301,7 @@ export const FLOW: FlowNode[] = [
     kind: "single",
     key: "meds_gate",
     ask: () => "Are you taking anything regularly?",
-    options: () => [
-      { value: "Nothing right now" },
-      { value: "Yes, a few" },
-    ],
+    options: () => [{ value: "Nothing right now" }, { value: "Yes, a few" }],
     reflect: (d) =>
       one(d, "meds_gate") === "Nothing right now" ? "Then I'll leave that alone." : undefined,
   },
@@ -317,7 +314,8 @@ export const FLOW: FlowNode[] = [
     lead: () => "Just the category — I'll narrow it from there.",
     options: (d) => {
       const out: Choice[] = [];
-      if (isCycling(d) || isTTC(d)) out.push({ value: "Hormonal", hint: "Birth control and similar" });
+      if (isCycling(d) || isTTC(d))
+        out.push({ value: "Hormonal", hint: "Birth control and similar" });
       if (isMeno(d)) out.push({ value: "Hormonal", hint: "Hormone therapy and similar" });
       out.push(
         { value: "Metabolic or weight" },
@@ -339,14 +337,19 @@ export const FLOW: FlowNode[] = [
     kind: "multi",
     key: "meds",
     max: 2,
-    when: (d) => takesMeds(d) && one(d, "med_category") !== "" && one(d, "med_category") !== "Something else",
+    when: (d) =>
+      takesMeds(d) && one(d, "med_category") !== "" && one(d, "med_category") !== "Something else",
     ask: () => "Which one is closest?",
     optional: true,
     options: (d) => {
       const cat = one(d, "med_category");
       if (cat === "Hormonal")
         return isMeno(d)
-          ? [{ value: "Hormone therapy" }, { value: "Vaginal estrogen" }, { value: "Something else" }]
+          ? [
+              { value: "Hormone therapy" },
+              { value: "Vaginal estrogen" },
+              { value: "Something else" },
+            ]
           : [{ value: "Birth control" }, { value: "Progesterone" }, { value: "Something else" }];
       if (cat === "Metabolic or weight")
         return [{ value: "GLP-1" }, { value: "Metformin" }, { value: "Something else" }];
@@ -428,27 +431,49 @@ export const FLOW: FlowNode[] = [
     options: (d) => {
       const f = one(d, "focus");
       const map: Record<string, Choice[]> = {
-        Fertility: [{ value: "Conceive" }, { value: "Know when I ovulate" }, { value: "Steadier cycles" }],
-        "My cycle": [{ value: "Easier periods" }, { value: "Predictable cycles" }, { value: "Fewer symptom days" }],
+        Fertility: [
+          { value: "Conceive" },
+          { value: "Know when I ovulate" },
+          { value: "Steadier cycles" },
+        ],
+        "My cycle": [
+          { value: "Easier periods" },
+          { value: "Predictable cycles" },
+          { value: "Fewer symptom days" },
+        ],
         "Menopause symptoms": [
           { value: "Fewer symptoms" },
           { value: "Sleep through the night" },
           { value: "Steadier mood" },
         ],
-        Recovery: [{ value: "Recover faster" }, { value: "More energy" }, { value: "Sleep better" }],
+        Recovery: [
+          { value: "Recover faster" },
+          { value: "More energy" },
+          { value: "Sleep better" },
+        ],
         "Metabolic health": [
           { value: "Lose weight" },
           { value: "Steadier energy" },
           { value: "Better blood sugar" },
         ],
-        Sleep: [{ value: "Sleep better" }, { value: "Wake up rested" }, { value: "Fall asleep faster" }],
+        Sleep: [
+          { value: "Sleep better" },
+          { value: "Wake up rested" },
+          { value: "Fall asleep faster" },
+        ],
         "Energy and mood": [
           { value: "Steadier energy" },
           { value: "Steadier mood" },
           { value: "Feel understood" },
         ],
       };
-      return map[f] ?? [{ value: "Sleep better" }, { value: "Steadier energy" }, { value: "Feel understood" }];
+      return (
+        map[f] ?? [
+          { value: "Sleep better" },
+          { value: "Steadier energy" },
+          { value: "Feel understood" },
+        ]
+      );
     },
   },
   {
@@ -521,7 +546,6 @@ export function ackFor(used: string[]): string {
   const pool = left.length ? left : ACKS;
   return pool[Math.floor(Math.random() * pool.length)];
 }
-
 
 export function first(d: Onboarding) {
   return d.name.trim().split(" ")[0] || "there";

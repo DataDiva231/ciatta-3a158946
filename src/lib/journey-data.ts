@@ -1,12 +1,7 @@
 import { useEffect, useMemo } from "react";
 
 import type { OrbTone } from "@/components/ciatta/discovery-orb";
-import {
-  useCheckIns,
-  useLearnedFacts,
-  useMilestones,
-  useQuickAddEvents,
-} from "./ciatta-store";
+import { useCheckIns, useLearnedFacts, useMilestones, useQuickAddEvents } from "./ciatta-store";
 import type { CheckIn, LearnedFact, Milestone, QuickAddEvent } from "./ciatta-store";
 
 /** A pattern Ciatta has derived from what the user actually shared. */
@@ -21,7 +16,6 @@ export type Discovery = {
   whyThisMatters: string[];
   whatToTry: string;
 };
-
 
 export type EmergingInsight = {
   id: string;
@@ -77,7 +71,6 @@ function confidenceLabel(v: number) {
   if (v >= 35) return "I'm beginning to notice this.";
   return "I'm still listening to this.";
 }
-
 
 function dayKey(iso: string) {
   return new Date(iso).toISOString().slice(0, 10);
@@ -383,7 +376,6 @@ export function useJourney(): JourneyView {
         observationCount,
       };
     }
-
 
     const confident = discoveries.filter((d) => d.confidence >= DISCOVERY_THRESHOLD);
     const early = discoveries.filter((d) => d.confidence < DISCOVERY_THRESHOLD);

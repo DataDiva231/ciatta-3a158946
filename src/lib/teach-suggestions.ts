@@ -8,7 +8,6 @@
 
 import type { QuickAddEvent } from "./ciatta-store";
 
-
 export type TeachSuggestion = {
   /** Quick Add category this jumps straight into. */
   category: string;
@@ -26,7 +25,6 @@ export type TeachSuggestion = {
     options: { label: string; note?: string }[];
   };
 };
-
 
 const HOUR = 60 * 60 * 1000;
 
@@ -152,7 +150,6 @@ export function buildTeachSuggestions(
           },
     });
   }
-
 
   // The clearer things already are, the fewer moments to offer.
   const room = confidence >= 90 ? 1 : confidence >= 78 ? 2 : 3;

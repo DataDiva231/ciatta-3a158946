@@ -163,11 +163,7 @@ function FirstObservationPage() {
           />
         </div>
 
-        <QuickAddSheet
-          open={sheet}
-          onClose={() => setSheet(false)}
-          onLogged={() => shared()}
-        />
+        <QuickAddSheet open={sheet} onClose={() => setSheet(false)} onLogged={() => shared()} />
       </div>
     );
   }

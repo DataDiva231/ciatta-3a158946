@@ -492,7 +492,6 @@ function ProfilePage() {
             body="Your understanding will grow naturally as we spend more time together. Each time my understanding of you shifts, I'll remember the moment here."
             action="Teach me something"
           />
-
         ) : (
           <ol className="mt-4 space-y-1 border-l border-border pl-5">
             {profile.timeline.map((t) => {

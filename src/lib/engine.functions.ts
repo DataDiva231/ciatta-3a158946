@@ -18,10 +18,7 @@ import type { EngineDebugView } from "./evidence-types";
 export const syncEngine = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator(
-    (input: {
-      observations?: ObservationInput[];
-      identity?: Record<string, unknown>;
-    }) => input,
+    (input: { observations?: ObservationInput[]; identity?: Record<string, unknown> }) => input,
   )
   .handler(async ({ data, context }): Promise<EngineViews> => {
     const { runLearningLoop } = await import("@/server/engine/pipeline.server");

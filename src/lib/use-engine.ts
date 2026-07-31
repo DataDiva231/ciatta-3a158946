@@ -14,7 +14,6 @@ import { syncEngine } from "./engine.functions";
 import { useOnboarding, type Onboarding } from "./onboarding-store";
 import { useSession } from "./session";
 
-
 function fromQuickAdd(events: QuickAddEvent[]): ObservationInput[] {
   return events.map((e) => ({
     externalId: e.id,

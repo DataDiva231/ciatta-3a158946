@@ -113,13 +113,18 @@ function AuthPage() {
   return (
     <div className="animate-in fade-in slide-in-from-bottom-1 flex h-[100svh] flex-col bg-background duration-[900ms]">
       <div className="flex-1 overflow-y-auto px-8 pt-20">
-        <img src={mark.url} alt="Ciatta" className="dark:invert" style={{ width: 44, height: 44 }} />
+        <img
+          src={mark.url}
+          alt="Ciatta"
+          className="dark:invert"
+          style={{ width: 44, height: 44 }}
+        />
         <h1 className="mt-12 max-w-[17rem] font-serif text-[34px] leading-[1.12] tracking-[-0.02em]">
           I don&apos;t know you yet.
         </h1>
         <p className="mt-4 max-w-[19rem] text-[14.5px] leading-relaxed text-muted-foreground">
-          That&apos;s where we start. Everything you share helps me understand you a little more, and
-          it stays inside your account, only ever yours.
+          That&apos;s where we start. Everything you share helps me understand you a little more,
+          and it stays inside your account, only ever yours.
         </p>
       </div>
 

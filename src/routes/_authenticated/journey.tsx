@@ -70,9 +70,7 @@ function Statement({ text, keyword }: { text: string; keyword: string }) {
 }
 
 function Card({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="mt-5 rounded-2xl border border-border bg-card p-5">{children}</div>
-  );
+  return <div className="mt-5 rounded-2xl border border-border bg-card p-5">{children}</div>;
 }
 
 function Caps({ tone, children }: { tone?: OrbTone; children: string }) {
@@ -93,7 +91,6 @@ function understandingPhrase(v: number) {
   if (v >= 25) return "Beginning to notice";
   return "Still listening";
 }
-
 
 function JourneyPage() {
   const hash = useRouterState({ select: (s) => s.location.hash });
@@ -165,17 +162,18 @@ function JourneyPage() {
               We don&rsquo;t know enough yet, but every observation helps us build a clearer
               picture. The first thing you share becomes the first line of this page.
             </p>
-            <Link to="/teach" className="mt-6 inline-flex items-center gap-1.5 text-[15px] text-accent">
+            <Link
+              to="/teach"
+              className="mt-6 inline-flex items-center gap-1.5 text-[15px] text-accent"
+            >
               Teach me something
               <span aria-hidden="true">{"\u203A"}</span>
             </Link>
           </>
         )}
-
       </section>
 
       <span className="my-20 block h-px w-full bg-border" />
-
 
       {/* Act two — the quiet explanation. */}
       <section>
@@ -201,9 +199,7 @@ function JourneyPage() {
             together.
           </p>
         )}
-
       </section>
-
 
       <span className="my-14 block h-px w-full bg-border" />
 
@@ -214,11 +210,8 @@ function JourneyPage() {
           <div className="mt-6 space-y-8">
             {next.map((n) => (
               <div key={n.id}>
-                <p className="font-serif text-[20px] leading-[1.3] tracking-[-0.01em]">
-                  {n.body}
-                </p>
+                <p className="font-serif text-[20px] leading-[1.3] tracking-[-0.01em]">{n.body}</p>
                 <p className="mt-3 text-[11.5px] text-muted-foreground">{n.need}</p>
-
               </div>
             ))}
           </div>
@@ -227,8 +220,6 @@ function JourneyPage() {
             I&rsquo;m still listening. What I&rsquo;m getting close to understanding will appear
             here first.
           </p>
-
-
         )}
       </section>
 
@@ -253,9 +244,7 @@ function JourneyPage() {
                     {c.chapter}
                   </span>
                 </p>
-                <p className="mt-3.5 text-[13.5px] leading-[1.6] text-muted-foreground">
-                  {c.note}
-                </p>
+                <p className="mt-3.5 text-[13.5px] leading-[1.6] text-muted-foreground">{c.note}</p>
               </article>
             ))}
           </div>
@@ -263,7 +252,6 @@ function JourneyPage() {
           <p className="mt-4 text-[14px] leading-[1.7] text-muted-foreground">
             Our story begins the first time you share something with me.
           </p>
-
         )}
       </section>
 
@@ -277,11 +265,9 @@ function JourneyPage() {
           {understandingPhrase(story.understanding)}
         </span>
         <span className="ml-auto flex items-center gap-2 text-[12.5px] text-muted-foreground">
-          Keep going, {firstName}.
-          <span aria-hidden="true">→</span>
+          Keep going, {firstName}.<span aria-hidden="true">→</span>
         </span>
       </Link>
-
 
       <p className="mt-10 max-w-[30ch] text-[13px] leading-[1.75] text-muted-foreground">
         {story.closing}
@@ -289,4 +275,3 @@ function JourneyPage() {
     </div>
   );
 }
-

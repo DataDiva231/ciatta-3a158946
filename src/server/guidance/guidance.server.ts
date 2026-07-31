@@ -45,10 +45,7 @@ function hedge(support: string, understanding: number): string {
   return support;
 }
 
-export function generateGuidance(
-  u: Understanding,
-  observations: Observation[],
-): GuidanceResult {
+export function generateGuidance(u: Understanding, observations: Observation[]): GuidanceResult {
   const chain: ReasoningStep[] = [
     {
       layer: "observation",

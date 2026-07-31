@@ -107,10 +107,7 @@ export function synthesise(input: {
 }
 
 /** Records the understanding so Journey can speak about what changed. */
-export async function saveSnapshot(
-  subjectId: string,
-  understanding: Understanding,
-): Promise<void> {
+export async function saveSnapshot(subjectId: string, understanding: Understanding): Promise<void> {
   await supabaseAdmin.from("understanding_snapshots").insert({
     subject_id: subjectId,
     depth: understanding.depth,

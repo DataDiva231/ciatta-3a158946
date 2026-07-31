@@ -71,7 +71,6 @@ const CHAPTER_NAMES = [
   "Growing clearer",
 ];
 
-
 /** The topic a discovery is really about — its strongest contributing signal. */
 function topicOf(signals: string[]) {
   return (signals[0] ?? "your body").replace(/-/g, " ").toLowerCase();
@@ -137,7 +136,6 @@ export function useJourneyStory(): JourneyStory {
         }
       : null;
 
-
     const next: NextUnderstanding[] = (
       journey.emergingInsights.length
         ? journey.emergingInsights
@@ -186,4 +184,3 @@ export function useJourneyStory(): JourneyStory {
     };
   }, [journey]);
 }
-

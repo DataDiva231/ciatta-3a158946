@@ -4,7 +4,6 @@ import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { Composer } from "@/components/ciatta/composer";
 import { QuickAddSheet } from "@/components/ciatta/quick-add-sheet";
 
-
 import { useQuickAddEvents } from "@/lib/ciatta-store";
 import { haptic } from "@/lib/haptics";
 import {
@@ -13,8 +12,6 @@ import {
   type TeachSuggestion,
 } from "@/lib/teach-suggestions";
 import { useEngine } from "@/lib/use-engine";
-
-
 
 export const Route = createFileRoute("/_authenticated/teach")({
   head: () => ({
@@ -34,8 +31,6 @@ export const Route = createFileRoute("/_authenticated/teach")({
   }),
   component: TeachPage,
 });
-
-
 
 /** Where a category sits in what the engine most wants to learn. */
 function rank(wanted: string[], category: string) {
@@ -94,7 +89,6 @@ function TeachPage() {
     );
   }
 
-
   return (
     <div className="flex min-h-full flex-col px-7 pt-10 pb-2">
       <h1 className="font-serif text-[32px] leading-[1.12] tracking-[-0.015em]">
@@ -106,7 +100,6 @@ function TeachPage() {
 
       {/* Deliberate quiet between the invitation and the tools to answer it. */}
       <div aria-hidden="true" className="min-h-[18vh] flex-1" />
-
 
       {/* Everything below is a way to answer: chips, Quick Add, composer. */}
       <section className="pb-1">
@@ -173,7 +166,6 @@ function TeachPage() {
         </div>
       </section>
 
-
       <QuickAddSheet
         open={sheet !== null}
         presetCategory={sheet?.category}
@@ -185,5 +177,3 @@ function TeachPage() {
     </div>
   );
 }
-
-

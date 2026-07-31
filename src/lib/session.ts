@@ -25,7 +25,9 @@ export function useSession(): Session {
   });
 
   useEffect(() => {
-    const read = (user: { id: string; email?: string | null; user_metadata?: Record<string, unknown> } | null) =>
+    const read = (
+      user: { id: string; email?: string | null; user_metadata?: Record<string, unknown> } | null,
+    ) =>
       setSession({
         userId: user?.id ?? null,
         email: user?.email ?? null,

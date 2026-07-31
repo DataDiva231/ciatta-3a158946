@@ -24,7 +24,6 @@ export type LoopResult = {
   observations: Awaited<ReturnType<typeof listObservations>>;
 };
 
-
 /** Runs the loop. With no new observations it simply re-reads understanding. */
 export async function runLearningLoop(
   userId: string,
@@ -68,21 +67,42 @@ export async function runLearningLoop(
     await recordMilestones(subject.id, understanding);
   }
 
-  return { subjectId: subject.id, createdAt: subject.createdAt, understanding, observations: history };
+  return {
+    subjectId: subject.id,
+    createdAt: subject.createdAt,
+    understanding,
+    observations: history,
+  };
 }
 
 /** Relationship milestones, recorded the moment they happen. */
 async function recordMilestones(subjectId: string, u: Understanding): Promise<void> {
   if (u.observationCount >= 1)
-    await rememberMilestone(subjectId, "first-thing-shared", "You told me something for the first time.");
+    await rememberMilestone(
+      subjectId,
+      "first-thing-shared",
+      "You told me something for the first time.",
+    );
   if (u.observationCount >= 10)
-    await rememberMilestone(subjectId, "ten-things-shared", "Ten things shared. Patterns started to appear.");
+    await rememberMilestone(
+      subjectId,
+      "ten-things-shared",
+      "Ten things shared. Patterns started to appear.",
+    );
   if (u.patterns.length >= 1)
     await rememberMilestone(subjectId, "first-pattern", "I noticed something repeating.");
   if (u.clearer.length >= 1)
-    await rememberMilestone(subjectId, "first-belief-held", "Something I suspected started holding up.");
+    await rememberMilestone(
+      subjectId,
+      "first-belief-held",
+      "Something I suspected started holding up.",
+    );
   if (u.depth >= 50)
-    await rememberMilestone(subjectId, "halfway", "I began to understand how your body tends to move.");
+    await rememberMilestone(
+      subjectId,
+      "halfway",
+      "I began to understand how your body tends to move.",
+    );
   if (u.depth >= 80)
     await rememberMilestone(subjectId, "deep", "I know your rhythm well enough to notice changes.");
 }
