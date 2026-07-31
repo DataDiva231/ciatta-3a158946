@@ -155,3 +155,13 @@ export const MONTHS = [
   "November",
   "December",
 ];
+
+/**
+ * Ends the current session on this device and returns Ciatta to the
+ * authentication flow. Nothing Ciatta has learned is deleted.
+ */
+export function signOut() {
+  if (typeof window === "undefined") return;
+  window.localStorage.removeItem(ONBOARDING_KEY);
+  window.dispatchEvent(new CustomEvent(SYNC_EVENT, { detail: ONBOARDING_KEY }));
+}
