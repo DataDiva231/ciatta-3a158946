@@ -242,7 +242,7 @@ export function buildNarrative(
 
   if (checkIn?.symptoms.length) {
     lines.push({
-      label: "What you told Ciatta",
+      label: "What you told me",
       parts: [
         { text: "You logged " },
         { text: checkIn.symptoms.join(", ").toLowerCase(), accent: true },
