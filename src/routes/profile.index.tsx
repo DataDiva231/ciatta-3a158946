@@ -253,6 +253,7 @@ function AreaBlock({ a, open, onToggle }: { a: Area; open: boolean; onToggle: ()
 
           <Link
             to="/quick-add"
+            search={{ category: undefined, reason: undefined }}
             className="mt-5 inline-flex items-center gap-1.5 text-[15px] text-accent"
           >
             Tell me about your {a.name.toLowerCase()}
