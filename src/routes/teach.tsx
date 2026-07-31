@@ -1,5 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
+import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 
+import { Composer } from "@/components/ciatta/composer";
 import { Understanding } from "@/components/ciatta/understanding";
 import { useCheckIns, useQuickAddEvents } from "@/lib/ciatta-store";
 import { buildNarrative } from "@/lib/narrative";
@@ -25,11 +27,6 @@ export const Route = createFileRoute("/teach")({
   component: TeachPage,
 });
 
-const OTHER_WAYS = [
-  { to: "/talk", label: "Talk" },
-  { to: "/capture", label: "Capture" },
-  { to: "/attach", label: "Attach" },
-] as const;
 
 
 function TeachPage() {
