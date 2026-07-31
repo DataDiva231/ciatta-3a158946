@@ -6,8 +6,13 @@ import { QuickAddSheet } from "@/components/ciatta/quick-add-sheet";
 import { Understanding } from "@/components/ciatta/understanding";
 
 import { useCheckIns, useQuickAddEvents } from "@/lib/ciatta-store";
+import { haptic } from "@/lib/haptics";
 import { buildNarrative } from "@/lib/narrative";
-import { buildTeachSuggestions, confidenceLine } from "@/lib/teach-suggestions";
+import {
+  buildTeachSuggestions,
+  confidenceLine,
+  type TeachSuggestion,
+} from "@/lib/teach-suggestions";
 
 
 export const Route = createFileRoute("/teach")({
