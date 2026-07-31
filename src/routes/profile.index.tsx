@@ -569,8 +569,9 @@ function ProfilePage() {
         </Group>
 
         <p className="mt-6 px-1 text-[13px] text-muted-foreground">
-          Where the understanding comes from
+          What I&rsquo;m learning from
         </p>
+
 
         <Group>
           {profile.sources.map((s) =>
