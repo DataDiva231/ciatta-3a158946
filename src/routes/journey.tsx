@@ -104,13 +104,15 @@ function JourneyPage() {
   // Journey is the same understanding, told as a story over time.
   const { views } = useEngine();
   const journey = views?.journey;
-  const shift = journey?.clearer[0]
+  const engineShift = journey?.clearer[0];
+  const shift = engineShift
     ? {
-        ...story.shift,
-        statement: journey.clearer[0].now,
-        keyword: story.shift.keyword,
-        before: journey.clearer[0].before,
-        today: journey.clearer[0].now,
+        statement: engineShift.now,
+        keyword: story.shift?.keyword ?? "",
+        beforeLabel: "Before",
+        before: engineShift.before,
+        todayLabel: "Today",
+        today: engineShift.now,
       }
     : story.shift;
   const next = journey?.discoveries.length
@@ -124,7 +126,7 @@ function JourneyPage() {
 
   return (
     <div className="px-6 pt-14 pb-16">
-      {/* Act one — the emotional centerpiece. */}
+      {/* Act one — the emotional centerpiece. Empty until something is real. */}
       <section id="discovery" className="animate-dissolve scroll-mt-6">
         <p className="flex items-center gap-2.5">
           <Dot tone="clay" size={8} />
@@ -132,25 +134,42 @@ function JourneyPage() {
             className="text-[10px] font-medium uppercase tracking-[0.16em]"
             style={{ color: TONE.clay }}
           >
-            Something became clearer
+            {shift ? "Something became clearer" : "Nothing has become clearer yet"}
           </span>
         </p>
-        <h1 className="mt-10 max-w-[18ch] font-serif text-[40px] leading-[1.08] tracking-[-0.02em]">
-          <Statement text={shift.statement} keyword={shift.keyword} />
-        </h1>
+        {shift ? (
+          <>
+            <h1 className="mt-10 max-w-[18ch] font-serif text-[40px] leading-[1.08] tracking-[-0.02em]">
+              <Statement text={shift.statement} keyword={shift.keyword} />
+            </h1>
 
-        <div className="mt-16 space-y-12">
-          <div>
-            <Caps>{shift.beforeLabel}</Caps>
-            <p className="mt-4 text-[15px] leading-[1.7] text-muted-foreground">
-              {shift.before}
+            <div className="mt-16 space-y-12">
+              <div>
+                <Caps>{shift.beforeLabel}</Caps>
+                <p className="mt-4 text-[15px] leading-[1.7] text-muted-foreground">
+                  {shift.before}
+                </p>
+              </div>
+              <div>
+                <Caps tone="clay">{shift.todayLabel}</Caps>
+                <p className="mt-4 text-[17px] leading-[1.6]">{shift.today}</p>
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
+            <h1 className="mt-10 max-w-[18ch] font-serif text-[40px] leading-[1.08] tracking-[-0.02em]">
+              {journey?.opening ?? "I don't know you yet."}
+            </h1>
+            <p className="mt-8 max-w-[32ch] text-[15px] leading-[1.7] text-muted-foreground">
+              The first thing you share with me becomes the first line of this page.
             </p>
-          </div>
-          <div>
-            <Caps tone="clay">{shift.todayLabel}</Caps>
-            <p className="mt-4 text-[17px] leading-[1.6]">{shift.today}</p>
-          </div>
-        </div>
+            <Link to="/teach" className="mt-6 inline-flex items-center gap-1.5 text-[15px] text-accent">
+              Teach me something
+              <span aria-hidden="true">{"\u203A"}</span>
+            </Link>
+          </>
+        )}
       </section>
 
       <span className="my-20 block h-px w-full bg-border" />
@@ -159,19 +178,28 @@ function JourneyPage() {
       {/* Act two — the quiet explanation. */}
       <section>
         <ActTitle tone="clay">Why it changed.</ActTitle>
-        <div className="mt-5 space-y-4 text-[14px] leading-[1.65] text-muted-foreground">
-          <p>{story.why.what}</p>
-          <p>{story.why.why}</p>
-        </div>
-        <Card>
-          <div className="flex items-start gap-3">
-            <span className="pt-1.5">
-              <Dot tone="clay" size={7} />
-            </span>
-            <p className="text-[13.5px] leading-[1.6]">{story.why.matters}</p>
-          </div>
-        </Card>
+        {story.why ? (
+          <>
+            <div className="mt-5 space-y-4 text-[14px] leading-[1.65] text-muted-foreground">
+              <p>{story.why.what}</p>
+              <p>{story.why.why}</p>
+            </div>
+            <Card>
+              <div className="flex items-start gap-3">
+                <span className="pt-1.5">
+                  <Dot tone="clay" size={7} />
+                </span>
+                <p className="text-[13.5px] leading-[1.6]">{story.why.matters}</p>
+              </div>
+            </Card>
+          </>
+        ) : (
+          <p className="mt-4 text-[14px] leading-[1.7] text-muted-foreground">
+            Nothing has changed yet, because I haven&rsquo;t learned anything yet.
+          </p>
+        )}
       </section>
+
 
       <span className="my-14 block h-px w-full bg-border" />
 
