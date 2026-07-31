@@ -74,7 +74,7 @@ function TeachPage() {
 
       {suggestions.length > 0 && (
         <div className="mt-7">
-          <p className="label-caps">Suggested moments</p>
+          <p className="label-caps">Start with one of these</p>
           <div className="mt-3 flex flex-wrap gap-2">
             {suggestions.map((s) => (
               <Link
