@@ -400,6 +400,12 @@ function ProfileHeader({ since }: { since: string }) {
           {since === "Today" ? "I started learning you today" : `Learning you since ${since}`}
         </p>
       </div>
+      <Link
+        to="/profile/edit"
+        className={`shrink-0 self-start text-[14px] text-accent ${pressable}`}
+      >
+        Edit
+      </Link>
     </header>
   );
 }
@@ -550,13 +556,6 @@ function ProfilePage() {
       {/* Supporting */}
       <section className="mt-10 px-6">
         <div className="divide-y divide-border/70">
-          <Link
-            to="/profile/edit"
-            className={`flex w-full items-center justify-between gap-4 py-3.5 text-[16px] ${pressable}`}
-          >
-            Edit profile
-            <Chevron />
-          </Link>
           <SettingsLink section="notifications" label="Notifications" />
           <SettingsLink section="appearance" label="Appearance" />
           <SettingsLink section="apps" label="Connected apps" />
