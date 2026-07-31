@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { TeachUpload } from "@/components/ciatta/teach-upload";
 
-export const Route = createFileRoute("/attach")({
+export const Route = createFileRoute("/_authenticated/_authenticated/attach")({
   head: () => ({
     meta: [
       { title: "Attach — Ciatta" },

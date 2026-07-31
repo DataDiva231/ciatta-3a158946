@@ -31,7 +31,7 @@ const TITLES: Record<string, { title: string; subtitle: string }> = {
   legal: { title: "Legal", subtitle: "Terms, privacy policy and licences." },
 };
 
-export const Route = createFileRoute("/profile/settings/$section")({
+export const Route = createFileRoute("/_authenticated/_authenticated/profile/settings/$section")({
   beforeLoad: ({ params }) => {
     if (!TITLES[params.section]) throw notFound();
   },

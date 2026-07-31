@@ -24,7 +24,7 @@ import { Shimmer } from "@/components/ai-elements/shimmer";
 import { useLearnedFacts } from "@/lib/ciatta-store";
 import { useVoiceMemo } from "@/lib/voice-memo";
 
-export const Route = createFileRoute("/talk")({
+export const Route = createFileRoute("/_authenticated/_authenticated/talk")({
   head: () => ({
     meta: [
       { title: "Talk to Ciatta — Ciatta" },

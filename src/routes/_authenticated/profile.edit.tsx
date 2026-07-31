@@ -4,7 +4,7 @@ import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { Card, Chip, Screen } from "@/components/ciatta/screen";
 import { GOALS, INTERESTS, LIFE_STAGES, useIdentity } from "@/lib/profile-store";
 
-export const Route = createFileRoute("/profile/edit")({
+export const Route = createFileRoute("/_authenticated/_authenticated/profile/edit")({
   head: () => ({
     meta: [
       { title: "Edit profile — Ciatta" },

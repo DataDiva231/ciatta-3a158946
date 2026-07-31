@@ -16,7 +16,7 @@ import { useEngine } from "@/lib/use-engine";
 
 
 
-export const Route = createFileRoute("/teach")({
+export const Route = createFileRoute("/_authenticated/_authenticated/teach")({
   head: () => ({
     meta: [
       { title: "What happened today? — Ciatta" },

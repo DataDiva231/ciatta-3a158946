@@ -16,7 +16,7 @@ import {
   type QuickAddOption,
 } from "@/lib/quick-add";
 
-export const Route = createFileRoute("/quick-add")({
+export const Route = createFileRoute("/_authenticated/_authenticated/quick-add")({
   // Teach can deep-link straight into a category, skipping the first question.
   validateSearch: (search: Record<string, unknown>) => ({
     category: typeof search.category === "string" ? search.category : undefined,
