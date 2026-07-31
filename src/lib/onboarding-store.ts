@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 
-import { usePersistentState } from "./ciatta-store";
+import { SYNC_EVENT, usePersistentState } from "./ciatta-store";
 
 export type Onboarding = {
   /** Index of the furthest step the user reached, so progress resumes. */
