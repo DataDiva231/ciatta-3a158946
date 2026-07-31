@@ -12,8 +12,9 @@ import type { QuickAddEvent } from "./ciatta-store";
 export type TeachSuggestion = {
   /** Quick Add category this jumps straight into. */
   category: string;
+  /** A moment in the user's own words, not a menu label. */
   label: string;
-  /** Why Ciatta is asking, in its own voice. */
+  /** What sharing it gives back to her. */
   reason: string;
 };
 
