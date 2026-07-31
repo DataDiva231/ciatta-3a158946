@@ -195,12 +195,12 @@ function UnderstandingBlock({
         <div className="px-4 pb-5">
           <p className="text-[15px] leading-relaxed">{u.summary}</p>
 
-          <p className="mt-5 text-[13px] font-medium tracking-wide uppercase">Why Ciatta believes this</p>
+          <p className="mt-5 text-[13px] font-medium tracking-wide uppercase">Why I think this</p>
           <p className="mt-1.5 text-[15px] leading-relaxed text-muted-foreground">
             {u.whyThisMatters}
           </p>
 
-          <p className="mt-5 text-[13px] font-medium tracking-wide uppercase">Evidence</p>
+          <p className="mt-5 text-[13px] font-medium tracking-wide uppercase">What I'm going on</p>
           <div className="mt-2 flex flex-wrap gap-2">
             {u.signals.map((s) => (
               <span
@@ -212,7 +212,9 @@ function UnderstandingBlock({
             ))}
           </div>
 
-          <p className="mt-5 text-[13px] font-medium tracking-wide uppercase">Still learning</p>
+          <p className="mt-5 text-[13px] font-medium tracking-wide uppercase">
+            What I'm still learning
+          </p>
           <p className="mt-1.5 text-[15px] leading-relaxed text-muted-foreground">
             {u.stillLearning}
           </p>
@@ -221,7 +223,8 @@ function UnderstandingBlock({
             to="/teach"
             className="mt-5 flex items-center justify-between border-t border-border pt-4 text-[15px] text-accent"
           >
-            Teach Ciatta more
+            Teach me more
+
             <span aria-hidden="true">{"\u203A"}</span>
           </Link>
         </div>
