@@ -41,7 +41,13 @@ function TeachPage() {
   const { latest } = useCheckIns();
   const { events, addEvent } = useQuickAddEvents();
   const narrative = buildNarrative(latest, events);
-  const suggestions = buildTeachSuggestions(events, narrative.confidence.value);
+  // Teach asks the engine what it's still missing; local suggestions stand in
+  // until it answers.
+  const { views } = useEngine();
+  const teach = views?.teach;
+  const suggestions: TeachSuggestion[] = teach
+    ? teach.suggestions.map((s) => ({ category: s.category, label: s.label, reason: s.reason }))
+    : buildTeachSuggestions(events, narrative.confidence.value);
   const [saved, setSaved] = useState(false);
   /** Quick Add lives inside this screen: a sheet over the current question. */
   const [sheet, setSheet] = useState<{
