@@ -67,6 +67,6 @@ export async function mergeIdentity(
     .eq("id", subjectId);
 }
 
-export async function forgetSubject(deviceKey: string): Promise<void> {
+export async function forgetSubject(userId: string): Promise<void> {
   await supabaseAdmin.from("subjects").delete().eq("user_id", userId);
 }
