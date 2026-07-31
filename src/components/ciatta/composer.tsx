@@ -183,9 +183,12 @@ export function Composer({
 
       {camera && (
         <CameraCapture
+          count={files.length}
           onClose={() => setCamera(false)}
-          onCapture={({ name }) => {
-            setCamera(false);
+          onCapture={({ name, mode }) => {
+            // Photo and Scan stay open so several can be added in a row;
+            // the system picker has already closed itself.
+            if (mode === "library") setCamera(false);
             setFiles((prev) => [...prev, name]);
           }}
         />
