@@ -602,13 +602,16 @@ function ProfilePage() {
           )}
         </Group>
 
-        <p className="mt-6 px-1 text-[13px] text-muted-foreground">How the understanding grew</p>
+        <p className="mt-6 px-1 text-[13px] text-muted-foreground">
+          How my understanding changed
+        </p>
         {profile.timeline.length <= 1 ? (
           <Invitation
             line="Nothing to look back on yet."
-            body="Each time Ciatta becomes more certain about something, that moment is recorded here."
-            action="Teach Ciatta something"
+            body="Each time I become more certain about something, I'll note the moment here."
+            action="Teach me something"
           />
+
         ) : (
           <div className="mt-3 rounded-2xl bg-surface px-5 py-5">
             <ol className="space-y-1 border-l border-border pl-5">
