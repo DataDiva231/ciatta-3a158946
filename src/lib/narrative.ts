@@ -123,16 +123,16 @@ function buildImpact(events: QuickAddEvent[]): NarrativeImpact | null {
   }
 
   if (last.category === "Sleep")
-    return { text: "Ciatta re-read tonight's recovery against how you slept.", source };
+    return { text: "I've read tonight's rest against how you slept.", source };
   if (last.category === "Symptoms")
-    return { text: "Ciatta is weighing this symptom against your cycle phase.", source };
+    return { text: "I'm holding this next to where you are in your cycle.", source };
   if (last.category === "Activity")
-    return { text: "Ciatta adjusted today's load expectation for this session.", source };
+    return { text: "I've made room for this session in what I expect today.", source };
 
-  return { text: "Today's understanding confidence increased.", source };
+  return { text: "Today's understanding became a little clearer.", source };
 }
 
-/** Confidence grows with how much Ciatta has been taught, most heavily by today's logs. */
+/** How clearly today reads, growing with what you've shared — today's moments most of all. */
 function buildConfidence(checkIn: CheckIn | null, events: QuickAddEvent[]) {
   const week = eventsSince(events, 7).length;
   const todayCount = recentEvents(events).length;
@@ -242,11 +242,11 @@ export function buildNarrative(
 
   if (checkIn?.symptoms.length) {
     lines.push({
-      label: "What you told Ciatta",
+      label: "What you told me",
       parts: [
         { text: "You logged " },
         { text: checkIn.symptoms.join(", ").toLowerCase(), accent: true },
-        { text: " this morning. Ciatta is watching how it moves with your cycle." },
+        { text: " this morning. I'm watching how it moves with your cycle." },
       ],
     });
   }
@@ -262,7 +262,7 @@ export function buildNarrative(
       parts: [
         { text: `You logged ${lastEvent.category.toLowerCase()} — ` },
         { text: [lastEvent.value, detail].filter(Boolean).join(", ").toLowerCase(), accent: true },
-        { text: ". Ciatta folded it into today's read." },
+        { text: ". I've folded it into how I read today." },
       ],
     });
   }
@@ -273,7 +273,7 @@ export function buildNarrative(
     ? {
         lead: "Stay ahead of it.",
         rest: "Change sooner than usual today.",
-        support: "Ciatta raised your leak risk for the next few hours.",
+        support: "I'd stay ahead of it for the next few hours.",
       }
     : state === "recover"
       ? {
@@ -290,7 +290,7 @@ export function buildNarrative(
         : {
             lead: "Keep it simple.",
             rest: "Hold your usual rhythm and eat earlier tonight.",
-            support: "Nothing needs changing. Ciatta will tell you when it does.",
+            support: "Nothing needs changing. I'll tell you when it does.",
           };
 
   return { headline, lines, guidance, impact, confidence };

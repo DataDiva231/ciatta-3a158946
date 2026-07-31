@@ -67,30 +67,31 @@ export type ProfileView = {
 };
 
 
-/** Ciatta's confidence vocabulary — one tier label per confidence band. */
+/** Ciatta's learning vocabulary — one plain-language state per band. */
 export function tierFor(v: number) {
-  if (v >= 90) return "Very High Confidence";
-  if (v >= 80) return "High Confidence";
-  if (v >= 65) return "Growing Confidence";
-  if (v >= 45) return "Learning";
-  if (v >= 25) return "Early Understanding";
-  return "Just Beginning";
+  if (v >= 90) return "Clear to me";
+  if (v >= 80) return "Well understood";
+  if (v >= 65) return "Becoming clearer";
+  if (v >= 45) return "Still learning";
+  if (v >= 25) return "Beginning to notice";
+  return "Just listening";
 }
 
 /**
- * Descriptive, non-repeating status for an area of understanding.
+ * Descriptive, non-repeating state for an area of understanding.
  * Rank varies the wording so several quiet areas never read identically.
  */
 export function areaStatus(v: number, rank: number) {
   if (v >= 85)
-    return ["Well understood", "Reliably predictable", "Confirmed over time"][rank % 3];
+    return ["Well understood", "Clear to me", "Confirmed over time"][rank % 3];
   if (v >= 65)
     return ["Pattern holding", "Repeating consistently", "Taking clear shape"][rank % 3];
   if (v >= 45) return ["Connections forming", "Starting to line up", "A shape is emerging"][rank % 3];
   if (v >= 25)
-    return ["First signals in", "Watching for repeats", "Early threads only"][rank % 3];
-  return ["Listening, nothing yet", "Awaiting your first logs", "Not enough to say"][rank % 3];
+    return ["Beginning to notice", "Watching for repeats", "Early threads only"][rank % 3];
+  return ["Listening, nothing yet", "Waiting on your first stories", "I don't know enough yet"][rank % 3];
 }
+
 
 const AREAS = ["Recovery", "Sleep", "Cycle", "Stress", "Nutrition", "Mood"];
 
@@ -120,7 +121,7 @@ function toUnderstanding(d: Discovery): Understanding {
     signals: d.signals,
     stillLearning:
       d.whyThisMatters[1] ??
-      `We're continuing to understand what else shapes this relationship. ${d.whatToTry}`,
+      `I'm still learning what else shapes this connection. ${d.whatToTry}`,
   };
 }
 
@@ -136,7 +137,7 @@ export function useProfile(): ProfileView {
     const discoveries = [journey.todaysDiscovery, ...journey.recentDiscoveries];
     const understandings = discoveries.map(toUnderstanding);
 
-    // Every timestamp Ciatta holds, used for "tracking since" and the timeline.
+    // Every timestamp held, used for "learning since" and the timeline.
     const times = [
       ...events.map((e) => e.timestamp),
       ...checkIns.map((c) => c.savedAt || `${c.day}T09:00:00.000Z`),
@@ -161,7 +162,7 @@ export function useProfile(): ProfileView {
       const evidence = [...new Set(matches.flatMap((d) => d.signals))].slice(0, 5);
       const detail = strongest
         ? strongest.whyWeNoticed
-        : `Ciatta hasn't seen enough of your ${name.toLowerCase()} yet to say anything honest about it. A few logs is usually all it takes.`;
+        : `I haven't seen enough of your ${name.toLowerCase()} yet to say anything honest about it. A few moments shared is usually all it takes.`;
       const recentChange = strongest
         ? strongest.whatToTry
         : `Nothing has moved here yet. The first ${name.toLowerCase()} log starts the picture.`;
@@ -181,8 +182,8 @@ export function useProfile(): ProfileView {
         label: "Learning since",
         value: first ? monthYear(first) : "Today",
         detail: first
-          ? `Ciatta has been building this understanding since ${monthYear(first)}. Everything on this page is drawn from what you've logged since then \u2014 nothing is assumed.`
-          : "Ciatta started today. The first thing you log becomes the first line of your portrait.",
+          ? `I've been building my understanding of you since ${monthYear(first)}. Everything here comes from what you've shared since then \u2014 nothing is assumed.`
+          : "We started today. The first thing you share becomes the first line of your story.",
         notes: [
           `${journey.observationCount} observation${journey.observationCount === 1 ? "" : "s"} held so far.`,
           "Older logs still count. Recent ones simply count for more.",
@@ -193,10 +194,10 @@ export function useProfile(): ProfileView {
         label: "Life stage",
         value: "Cycling",
         detail:
-          "Your life stage tells Ciatta which rhythms to expect. Cycling means it reads your days against a roughly monthly hormonal arc rather than a flat baseline.",
+          "Your life stage tells me which rhythms to expect. Cycling means I read your days against a roughly monthly rhythm rather than a flat one.",
         notes: [
           "Change this any time from Edit profile.",
-          "A wrong life stage is the fastest way to get wrong insights.",
+          "If this is wrong, everything I understand will be a little off.",
         ],
       },
       {
@@ -204,22 +205,19 @@ export function useProfile(): ProfileView {
         label: "Patterns held",
         value: confirmed ? `${confirmed} understood well` : "None settled yet",
         detail: confirmed
-          ? `${confirmed} pattern${confirmed === 1 ? " has" : "s have"} repeated often enough that Ciatta will now act on ${confirmed === 1 ? "it" : "them"} without waiting for more evidence.`
-          : "Nothing has repeated often enough to be treated as settled. Ciatta would rather say nothing than guess.",
-        notes: understandings
-          .filter((u) => u.confidence >= 70)
-          .map((u) => `${u.title} \u2014 ${u.confidence}%`),
+          ? `${confirmed} pattern${confirmed === 1 ? " has" : "s have"} repeated often enough that I'll act on ${confirmed === 1 ? "it" : "them"} without waiting to see more.`
+          : "Nothing has repeated often enough for me to treat it as settled. I'd rather say nothing than guess.",
+        notes: understandings.filter((u) => u.confidence >= 70).map((u) => u.title),
       },
       {
         id: "patterns-forming",
         label: "Patterns forming",
         value: forming ? `${forming} taking shape` : "Nothing forming yet",
         detail: forming
-          ? "These have appeared more than once but not yet enough times to be relied on. Ciatta is watching for the next repeat."
-          : "Nothing is forming yet. Two logs of the same kind is usually where a shape begins.",
-        notes: understandings
-          .filter((u) => u.confidence < 70)
-          .map((u) => `${u.title} \u2014 ${u.confidence}%`),
+          ? "These have appeared more than once, but not often enough for me to lean on them yet. I'm listening for the next repeat."
+          : "Nothing is forming yet. Two moments of the same kind is usually where a shape begins.",
+        notes: understandings.filter((u) => u.confidence < 70).map((u) => u.title),
+
       },
       {
         id: "watching",
@@ -228,7 +226,7 @@ export function useProfile(): ProfileView {
           ? `${journey.emergingInsights.length} early threads`
           : "Listening",
         detail:
-          "Early threads are things Ciatta has noticed once and is holding onto in case they repeat. They aren't shown as insights until they do.",
+          "Early threads are things I've noticed once and am holding onto in case they repeat. I won't say more until they do.",
         notes: journey.emergingInsights.map((e) => e.body),
       },
       {
@@ -236,7 +234,7 @@ export function useProfile(): ProfileView {
         label: "Clearest area",
         value: strongest ? `${strongest.name} \u2014 ${strongest.tier.toLowerCase()}` : "Still forming",
         detail: strongest
-          ? `${strongest.name} is where Ciatta's picture of you is sharpest right now. ${strongest.detail}`
+          ? `${strongest.name} is where my understanding of you is clearest right now. ${strongest.detail}`
           : "No single area is clearer than the others yet.",
         notes: strongest ? strongest.evidence : [],
       },
@@ -245,51 +243,51 @@ export function useProfile(): ProfileView {
         label: "Looking at next",
         value: focus,
         detail: `${focus} is the thinnest part of the portrait, so it's where the next few logs will make the biggest difference.`,
-        notes: ["You can change what Ciatta leans toward under Preferences."],
+        notes: ["You can change what I lean toward under what matters most."],
       },
     ];
 
     const sources: SourceRow[] = [
       {
         id: "teach",
-        name: "Teach Ciatta",
+        name: "Teach me",
         status: events.length || facts.some((f) => f.savedAt) ? "Learning from it" : "Ready",
         active: true,
-        body: "Anything you tell Ciatta directly — a quick log, a voice note, a fact about your body — becomes context it reasons with the same day.",
+        body: "Anything you tell me directly — a moment, a voice note, something about your body — becomes part of how I understand the same day.",
       },
       {
         id: "apple",
         name: "Apple Health",
         status: "Learning from it",
         active: true,
-        body: "Sleep timing, heart rate and movement give Ciatta the steady background rhythm it compares each new day against.",
+        body: "Sleep timing, heart rate and movement give me the steady background rhythm I compare each new day against.",
       },
       {
         id: "checkins",
         name: "Daily Check-ins",
         status: checkIns.length ? "Learning from it" : "Not started",
         active: true,
-        body: "How you felt is the one thing sensors can't measure. Check-ins let Ciatta connect what your body did with how the day actually landed.",
+        body: "How you felt is the one thing sensors can't measure. Check-ins let me connect what your body did with how the day actually landed.",
       },
       {
         id: "arc",
         name: "Ciatta Arc\u2122",
         status: "Coming soon",
         active: false,
-        body: "Continuous wearable sensing. It will fill in the hours between logs, so Ciatta stops having to infer them.",
+        body: "Continuous wearable sensing. It will fill in the hours in between, so I have less to guess at.",
       },
       {
         id: "webbee",
         name: "Webbee\u2122",
         status: "Coming soon",
         active: false,
-        body: "Menstrual sensing. It will let Ciatta read your cycle from your body directly, instead of from what you report.",
+        body: "Menstrual sensing. It will let me follow your cycle from your body directly, instead of from what you tell me.",
       },
     ];
 
     const timeline: TimelineStep[] = [];
     if (first)
-      timeline.push({ label: "Ciatta started listening", when: monthYear(first) });
+      timeline.push({ label: "I started listening", when: monthYear(first) });
     if (journey.observationCount >= 3 && times[2])
       timeline.push({
         label: "First sense of your normal",
@@ -302,19 +300,20 @@ export function useProfile(): ProfileView {
       timeline.push({
         label:
           m.to >= 90
-            ? `Ciatta can now anticipate this — ${m.to}% sure`
+            ? "This became clear enough for me to expect it"
             : m.to >= 75
-              ? `Pattern confirmed across enough days — ${m.to}%`
+              ? "The same pattern held across enough days"
               : m.to >= 60
-                ? `The same relationship kept repeating — ${m.to}%`
-                : `First real pattern took shape — ${m.to}%`,
+                ? "The same connection kept repeating"
+                : "The first real pattern took shape",
         when: monthYear(m.reachedAt),
       });
     }
+
     timeline.push({
       label: understandings.length
         ? `Currently learning how ${focus.toLowerCase()} moves with your cycle`
-        : "Waiting on your first observation",
+        : "Waiting on the first thing you share",
       when: "Today",
       current: true,
     });
@@ -334,13 +333,13 @@ export function useProfile(): ProfileView {
 
     const story = [
       first
-        ? `Ciatta has been learning you for ${months} ${months === 1 ? "month" : "months"}. ${
+        ? `I've been learning you for ${months} ${months === 1 ? "month" : "months"}. ${
             confirmed
               ? `${confirmed} thing${confirmed === 1 ? " is" : "s are"} now understood well enough to act on`
               : "Nothing is settled yet"
-          }, ${forming ? `${forming} more ${forming === 1 ? "is" : "are"} still taking shape` : "and the rest is still open"}. Right now it's paying closest attention to ${focus.toLowerCase()}.`
+          }, ${forming ? `${forming} more ${forming === 1 ? "is" : "are"} still taking shape` : "and the rest is still open"}. Right now I'm paying closest attention to ${focus.toLowerCase()}.`
         : "I don't know you yet. The first thing you share is where our understanding starts.",
-      "Every log narrows what Ciatta has to guess.",
+      "Every moment you share leaves me less to guess at.",
     ];
 
 

@@ -18,13 +18,15 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Ciatta reads your sleep, recovery and cycle signals and tells you what your body is asking for today.",
+          "Ciatta listens to your sleep, rhythm and cycle, and shares what it's beginning to understand about your body today.",
       },
       { property: "og:title", content: "Today — Ciatta" },
       {
         property: "og:description",
-        content: "Ciatta reads your sleep, recovery and cycle signals and tells you what your body is asking for today.",
+        content:
+          "What Ciatta understands about you today, why it thinks so, and what to focus on next.",
       },
+
     ],
   }),
 
@@ -50,6 +52,20 @@ function learnedSentence(event: QuickAddEvent | undefined) {
       return `I learned about your ${event.category.toLowerCase()}.`;
   }
 }
+
+/** How clear today feels, in words rather than a score. */
+function understandingLine(value: number, delta: number) {
+  const state =
+    value >= 85
+      ? "Today feels clear to me"
+      : value >= 70
+        ? "Today is becoming clearer"
+        : value >= 50
+          ? "I'm beginning to understand today"
+          : "I'm still listening to today";
+  return delta > 0 ? `${state} · a little clearer since you shared` : state;
+}
+
 
 function TodayPage() {
   const navigate = useNavigate();
@@ -127,8 +143,9 @@ function TodayPage() {
               {learnedSentence(newest)}
             </p>
             <p className="mt-1 text-[12px] leading-[1.5] text-muted-foreground">
-              Today's understanding has become more confident.
+              Today's understanding became a little clearer.
             </p>
+
           </div>
         )}
       </div>
@@ -150,9 +167,9 @@ function TodayPage() {
           key={`conf-${narrative.confidence.value}`}
           className="animate-in fade-in mt-4 text-[11px] leading-none text-muted-foreground/70 duration-500"
         >
-          {narrative.confidence.value}% understood
-          {narrative.confidence.delta > 0 && <> · +{narrative.confidence.delta} today</>}
+          {understandingLine(narrative.confidence.value, narrative.confidence.delta)}
         </p>
+
 
         {/* Why Ciatta thinks that. Quiet, non-tappable evidence. */}
         <div className="mt-9 [@media(max-height:780px)]:mt-7">

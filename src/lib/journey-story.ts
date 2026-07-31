@@ -67,8 +67,9 @@ const CHAPTER_NAMES = [
   "First connection",
   "Turning point",
   "New understanding",
-  "Growing confidence",
+  "Growing clearer",
 ];
+
 
 /** The topic a discovery is really about — its strongest contributing signal. */
 function topicOf(signals: string[]) {
@@ -83,8 +84,8 @@ function keywordOf(statement: string) {
 
 function needFor(confidence: number) {
   if (confidence >= 70) return "A few more weeks and this will settle";
-  if (confidence >= 50) return "A handful more days will tell us more";
-  return "Still early — we're watching";
+  if (confidence >= 50) return "A handful more days will tell me more";
+  return "Still early — I'm listening";
 }
 
 /** Curiosity, not a task — one short sentence about the relationship itself. */
@@ -94,17 +95,17 @@ function curiosityOf(body: string) {
   const pair = clean.match(/between\s+(.+?)\s+and\s+(.+)$/i);
   if (pair) {
     const [, a, b] = pair;
-    return `We're beginning to see how ${a.toLowerCase()} influences your ${b
+    return `I'm beginning to see how ${a.toLowerCase()} shapes ${b
       .toLowerCase()
-      .replace(/^(your|the)\s+/, "")}.`;
+      .replace(/^(your|the|how you|how your)\s+/, "your ")}.`;
   }
 
   const stripped = clean.replace(
-    /^(we(?:'re| are)\s+(?:beginning to\s+)?(?:notice|noticing|see|seeing|understand|understanding)\s+)/i,
+    /^((?:we|i)(?:'re|'m| am| are)\s+(?:beginning to\s+)?(?:notice|noticing|see|seeing|understand|understanding)\s+)/i,
     "",
   );
   const lowered = stripped.charAt(0).toLowerCase() + stripped.slice(1);
-  return `We're beginning to see ${lowered}.`;
+  return `I'm beginning to see ${lowered}.`;
 }
 
 export function useJourneyStory(): JourneyStory {
@@ -174,7 +175,7 @@ export function useJourneyStory(): JourneyStory {
       chapters,
       understanding: journey.milestone.to,
       closing: journey.hasData
-        ? "Your story is still unfolding. We'll let you know when something becomes clearer."
+        ? "Your story is still unfolding. I'll tell you when something becomes clearer."
         : "Every new understanding makes your body a little easier to recognise.",
     };
   }, [journey]);

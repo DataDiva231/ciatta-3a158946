@@ -65,11 +65,12 @@ function toneFor(seed: string) {
 }
 
 function confidenceLabel(v: number) {
-  if (v >= 75) return "We're becoming confident.";
-  if (v >= 55) return "We're seeing this repeat.";
-  if (v >= 35) return "We're beginning to see.";
-  return "We're still watching this.";
+  if (v >= 75) return "This is becoming clear.";
+  if (v >= 55) return "I keep seeing this repeat.";
+  if (v >= 35) return "I'm beginning to notice this.";
+  return "I'm still listening to this.";
 }
+
 
 function dayKey(iso: string) {
   return new Date(iso).toISOString().slice(0, 10);
@@ -205,10 +206,10 @@ function checkInDiscovery(checkIns: CheckIn[]): Discovery | null {
     whyWeNoticed: `Across your last ${plural(recent.length, "check-in")}, sleep and energy moved together on ${aligned} of them.`,
     signals: ["Check-ins", "Sleep", "Energy", "Mood"],
     whyThisMatters: [
-      "How you feel in the morning is one of the strongest signals Ciatta has about recovery.",
+      "How you feel in the morning is one of the clearest signs I have about your recovery.",
       ratio >= 0.6
         ? "Protecting sleep is likely the fastest lever you have on how the day feels."
-        : "Something other than sleep is shaping your energy — Ciatta is looking for it.",
+        : "Something other than sleep is shaping your energy, and I'm still looking for it.",
     ],
     whatToTry: "Keep checking in each morning — the relationship sharpens with every day.",
   };
@@ -243,7 +244,7 @@ function factInsights(facts: LearnedFact[]): EmergingInsight[] {
     .map((f) => ({
       id: `fact-${f.id}`,
       body: f.text,
-      confidenceLabel: "You taught us this.",
+      confidenceLabel: "You taught me this.",
       confidence: 50,
       tone: toneFor(f.id),
     }));
