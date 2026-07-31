@@ -24,8 +24,12 @@ export type Shift = {
 };
 
 export type WhyItChanged = {
-  body: string;
-  unlock: string;
+  /** What changed. */
+  what: string;
+  /** Why it happened — in plain, human language. */
+  why: string;
+  /** Why it matters for what comes next. */
+  matters: string;
 };
 
 export type NextUnderstanding = {
@@ -38,7 +42,8 @@ export type NextUnderstanding = {
 
 export type Chapter = {
   id: string;
-  month: string;
+  /** A narrative chapter name, not a calendar month. */
+  chapter: string;
   note: string;
   tone: OrbTone;
 };
@@ -51,25 +56,42 @@ export type JourneyStory = {
   next: NextUnderstanding[];
   chapters: Chapter[];
   understanding: number;
+  closing: string;
 };
 
-const CHAPTER_TONES: OrbTone[] = ["stone-blue", "clay", "moss"];
+const CHAPTER_TONES: OrbTone[] = ["stone-blue", "clay", "moss", "wheat"];
+
+/** Chapters of understanding, oldest first. */
+const CHAPTER_NAMES = [
+  "First clue",
+  "First connection",
+  "Turning point",
+  "New understanding",
+  "Growing confidence",
+];
 
 /** The topic a discovery is really about — its strongest contributing signal. */
 function topicOf(signals: string[]) {
-  return (signals[0] ?? "Your body").replace(/-/g, " ");
+  return (signals[0] ?? "your body").replace(/-/g, " ").toLowerCase();
 }
 
 /** The accented tail of the statement: the last few words carry the emphasis. */
 function keywordOf(statement: string) {
   const words = statement.replace(/\.$/, "").split(" ");
-  return words.slice(-2).join(" ");
+  return words.slice(-3).join(" ");
 }
 
 function needFor(confidence: number) {
-  if (confidence >= 70) return "3 more weeks of data would help";
-  if (confidence >= 50) return "5 more observations would help";
-  return "A few more logs would help";
+  if (confidence >= 70) return "A few more weeks and this will settle";
+  if (confidence >= 50) return "A handful more days will tell us more";
+  return "Still early — we're watching";
+}
+
+/** Curiosity, not a task. */
+function curiosityOf(body: string) {
+  const clean = body.replace(/\.$/, "");
+  const lowered = clean.charAt(0).toLowerCase() + clean.slice(1);
+  return `We're beginning to understand ${lowered}.`;
 }
 
 export function useJourneyStory(): JourneyStory {
@@ -79,18 +101,21 @@ export function useJourneyStory(): JourneyStory {
     const lead = journey.todaysDiscovery;
     const topic = topicOf(lead.signals);
 
+    const statement = `Your ${topic} is becoming easier to understand.`;
+
     const shift: Shift = {
-      statement: lead.title,
-      keyword: keywordOf(lead.title),
-      beforeLabel: "Three weeks ago",
-      before: `${topic} was mostly unknown.`,
+      statement,
+      keyword: keywordOf(statement),
+      beforeLabel: "Before",
+      before: `${topic.charAt(0).toUpperCase()}${topic.slice(1)} felt unpredictable — it was hard to tell what made a difference.`,
       todayLabel: "Today",
-      today: `${topic} explains much more of your recovery.`,
+      today: `You can begin to recognise what your ${topic} responds to.`,
     };
 
     const why: WhyItChanged = {
-      body: lead.whyWeNoticed,
-      unlock: lead.whatToTry,
+      what: lead.title,
+      why: lead.whyWeNoticed,
+      matters: lead.whatToTry,
     };
 
     const next: NextUnderstanding[] = (
@@ -107,21 +132,25 @@ export function useJourneyStory(): JourneyStory {
       .slice(0, 2)
       .map((i) => ({
         id: i.id,
-        body: i.body,
+        body: curiosityOf(i.body),
         confidence: i.confidence,
         tone: i.tone,
         need: needFor(i.confidence),
       }));
 
-    const chapters: Chapter[] = journey.timeline
-      .slice(0, 3)
-      .reverse()
-      .map((t, index) => ({
-        id: `${t.month}-${index}`,
-        month: t.month,
-        note: t.note,
-        tone: CHAPTER_TONES[index % CHAPTER_TONES.length],
-      }));
+    const entries = journey.timeline.slice(0, 4).reverse();
+    const chapters: Chapter[] = entries.map((t, index) => ({
+      id: `${t.month}-${index}`,
+      chapter:
+        CHAPTER_NAMES[
+          Math.min(
+            CHAPTER_NAMES.length - 1,
+            index + Math.max(0, CHAPTER_NAMES.length - entries.length - 1),
+          )
+        ],
+      note: t.note,
+      tone: CHAPTER_TONES[index % CHAPTER_TONES.length],
+    }));
 
     return {
       hydrated: journey.hydrated,
@@ -131,6 +160,10 @@ export function useJourneyStory(): JourneyStory {
       next,
       chapters,
       understanding: journey.milestone.to,
+      closing: journey.hasData
+        ? "Your story is still unfolding. We'll let you know when something becomes clearer."
+        : "Every new understanding makes your body a little easier to recognise.",
     };
   }, [journey]);
 }
+
