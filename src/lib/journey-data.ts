@@ -365,17 +365,24 @@ export function useJourney(): JourneyView {
     const hasData = observationCount >= MIN_OBSERVATIONS && discoveries.length > 0;
 
     if (!hasData) {
+      // Nothing is invented. Until there is real evidence, Journey is empty.
       return {
         hydrated,
         hasData: false,
-        todaysDiscovery: demoToday,
-        recentDiscoveries: demoRecent,
-        emergingInsights: demoEmerging as EmergingInsight[],
-        milestone: demoMilestone,
-        timeline: demoTimeline,
+        todaysDiscovery: null,
+        recentDiscoveries: [],
+        emergingInsights: factInsights(facts),
+        milestone: {
+          label: UNDERSTANDING_LABEL,
+          from: 0,
+          to: overall,
+          note: "",
+        },
+        timeline: buildTimeline(events, checkIns, facts, milestones),
         observationCount,
       };
     }
+
 
     const confident = discoveries.filter((d) => d.confidence >= DISCOVERY_THRESHOLD);
     const early = discoveries.filter((d) => d.confidence < DISCOVERY_THRESHOLD);
