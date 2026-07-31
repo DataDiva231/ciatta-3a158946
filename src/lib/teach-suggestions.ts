@@ -35,8 +35,8 @@ function loggedToday(events: QuickAddEvent[], category: string) {
 }
 
 /**
- * Returns the two or three things Ciatta still needs, most useful first.
- * High confidence deliberately returns fewer asks.
+ * Returns the two or three moments most worth sharing right now, phrased the
+ * way a woman would say them out loud.
  */
 export function buildTeachSuggestions(
   events: QuickAddEvent[],
@@ -44,57 +44,50 @@ export function buildTeachSuggestions(
 ): TeachSuggestion[] {
   const phase = phaseForDay(today.cycleDay);
   const menstrual = phase === "Menstrual";
+  const evening = new Date().getHours() >= 17;
   const out: TeachSuggestion[] = [];
 
   const sinceProduct = hoursSince(events, "Period Product");
-  if (menstrual) {
-    if (sinceProduct === null) {
-      out.push({
-        category: "Period Product",
-        label: "Period product",
-        reason: "Ciatta hasn't seen a change today",
-      });
-    } else if (sinceProduct >= 3) {
-      out.push({
-        category: "Period Product",
-        label: "Period product",
-        reason: `${Math.floor(sinceProduct)} hrs since your last change`,
-      });
-    }
-  }
-
-  if (!loggedToday(events, "Sleep")) {
+  if (menstrual && (sinceProduct === null || sinceProduct >= 3)) {
     out.push({
-      category: "Sleep",
-      label: "Sleep",
-      reason: "Your own read sharpens tonight's recovery",
+      category: "Period Product",
+      label: "My flow changed",
+      reason: "so your days ahead are easier to plan",
     });
   }
 
   if (menstrual && !loggedToday(events, "Symptoms")) {
     out.push({
       category: "Symptoms",
-      label: "Symptoms",
-      reason: "Cramps and mood shift with this phase",
+      label: "I have a headache",
+      reason: "so patterns like this stop surprising you",
+    });
+  }
+
+  if (!loggedToday(events, "Sleep")) {
+    out.push({
+      category: "Sleep",
+      label: "I slept poorly",
+      reason: "so tomorrow's rest advice fits you",
     });
   }
 
   if (!loggedToday(events, "Activity")) {
     out.push({
       category: "Activity",
-      label: "Activity",
-      reason: "Effort is read against recovery, not the calendar",
+      label: evening ? "My energy feels low" : "I'm feeling stressed",
+      reason: evening
+        ? "so effort is read against your recovery"
+        : "so you know when to push and when to ease",
     });
   }
 
-  // The more Ciatta already understands, the less it asks for.
+  // The clearer things already are, the fewer moments to offer.
   const room = confidence >= 90 ? 1 : confidence >= 78 ? 2 : 3;
   return out.slice(0, room);
 }
 
-/** One line describing how much Ciatta currently understands. */
-export function confidenceLine(confidence: number, asks: number) {
-  if (asks === 0) return "Ciatta has everything it needs today.";
-  if (confidence >= 90) return `${confidence}% understanding — only one thing left to learn.`;
-  return `${confidence}% understanding of today. ${asks} things would sharpen it.`;
+/** One warm line about what sharing gives back. */
+export function confidenceLine() {
+  return "Everything you share makes tomorrow's understanding more personal.";
 }
