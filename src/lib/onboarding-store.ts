@@ -26,7 +26,10 @@ export type Onboarding = {
   answers: Record<string, string[]>;
   /** Ordered ids of the questions Ciatta actually asked this user. */
   path: string[];
+  /** How the relationship was started: apple | google | email | existing. */
+  authMethod: string;
 };
+
 
 export const ONBOARDING_KEY = "ciatta.onboarding.v1";
 
@@ -51,7 +54,9 @@ export const DEFAULT_ONBOARDING: Onboarding = {
   notifications: "",
   answers: {},
   path: [],
+  authMethod: "",
 };
+
 
 export function useOnboarding() {
   const { value, updateWith, hydrated } = usePersistentState<Onboarding>(
