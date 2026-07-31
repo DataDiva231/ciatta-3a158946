@@ -339,7 +339,7 @@ export function useProfile(): ProfileView {
               ? `${confirmed} thing${confirmed === 1 ? " is" : "s are"} now understood well enough to act on`
               : "Nothing is settled yet"
           }, ${forming ? `${forming} more ${forming === 1 ? "is" : "are"} still taking shape` : "and the rest is still open"}. Right now it's paying closest attention to ${focus.toLowerCase()}.`
-        : "Ciatta doesn't know you yet. The first log is where the understanding starts.",
+        : "I don't know you yet. The first thing you share is where our understanding starts.",
       "Every log narrows what Ciatta has to guess.",
     ];
 
