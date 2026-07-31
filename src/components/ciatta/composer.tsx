@@ -82,8 +82,6 @@ export function Composer({
           <ImageIcon size={18} strokeWidth={1.6} />
         </button>
 
-        <span className="flex-1" />
-
         <button
           type="button"
           aria-label="Attach a file"
@@ -92,6 +90,9 @@ export function Composer({
         >
           <Paperclip size={18} strokeWidth={1.6} />
         </button>
+
+        <span className="flex-1" />
+
 
         <button
           type="button"
