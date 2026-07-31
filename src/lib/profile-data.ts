@@ -194,10 +194,10 @@ export function useProfile(): ProfileView {
         label: "Life stage",
         value: "Cycling",
         detail:
-          "Your life stage tells Ciatta which rhythms to expect. Cycling means it reads your days against a roughly monthly hormonal arc rather than a flat baseline.",
+          "Your life stage tells me which rhythms to expect. Cycling means I read your days against a roughly monthly rhythm rather than a flat one.",
         notes: [
           "Change this any time from Edit profile.",
-          "A wrong life stage is the fastest way to get wrong insights.",
+          "If this is wrong, everything I understand will be a little off.",
         ],
       },
       {
@@ -226,7 +226,7 @@ export function useProfile(): ProfileView {
           ? `${journey.emergingInsights.length} early threads`
           : "Listening",
         detail:
-          "Early threads are things Ciatta has noticed once and is holding onto in case they repeat. They aren't shown as insights until they do.",
+          "Early threads are things I've noticed once and am holding onto in case they repeat. I won't say more until they do.",
         notes: journey.emergingInsights.map((e) => e.body),
       },
       {
@@ -234,7 +234,7 @@ export function useProfile(): ProfileView {
         label: "Clearest area",
         value: strongest ? `${strongest.name} \u2014 ${strongest.tier.toLowerCase()}` : "Still forming",
         detail: strongest
-          ? `${strongest.name} is where Ciatta's picture of you is sharpest right now. ${strongest.detail}`
+          ? `${strongest.name} is where my understanding of you is clearest right now. ${strongest.detail}`
           : "No single area is clearer than the others yet.",
         notes: strongest ? strongest.evidence : [],
       },
@@ -250,7 +250,7 @@ export function useProfile(): ProfileView {
     const sources: SourceRow[] = [
       {
         id: "teach",
-        name: "Teach Ciatta",
+        name: "Teach me",
         status: events.length || facts.some((f) => f.savedAt) ? "Learning from it" : "Ready",
         active: true,
         body: "Anything you tell Ciatta directly — a quick log, a voice note, a fact about your body — becomes context it reasons with the same day.",
@@ -287,7 +287,7 @@ export function useProfile(): ProfileView {
 
     const timeline: TimelineStep[] = [];
     if (first)
-      timeline.push({ label: "Ciatta started listening", when: monthYear(first) });
+      timeline.push({ label: "I started listening", when: monthYear(first) });
     if (journey.observationCount >= 3 && times[2])
       timeline.push({
         label: "First sense of your normal",
@@ -313,7 +313,7 @@ export function useProfile(): ProfileView {
     timeline.push({
       label: understandings.length
         ? `Currently learning how ${focus.toLowerCase()} moves with your cycle`
-        : "Waiting on your first observation",
+        : "Waiting on the first thing you share",
       when: "Today",
       current: true,
     });
