@@ -100,6 +100,22 @@ function JourneyPage() {
   const { identity } = useIdentity();
   const firstName = identity.name.split(" ")[0];
 
+  // Journey is the same understanding, told as a story over time.
+  const { views } = useEngine();
+  const journey = views?.journey;
+  const shift = journey?.clearer[0]
+    ? {
+        ...story.shift,
+        statement: journey.clearer[0].now,
+        keyword: story.shift.keyword,
+        before: journey.clearer[0].before,
+        today: journey.clearer[0].now,
+      }
+    : story.shift;
+  const next = journey?.discoveries.length
+    ? journey.discoveries.map((d, i) => ({ id: `eng-${i}`, body: d.body, need: d.title }))
+    : story.next;
+
   useEffect(() => {
     if (hash !== "discovery") return;
     document.getElementById("discovery")?.scrollIntoView({ behavior: "smooth", block: "start" });
