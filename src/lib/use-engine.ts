@@ -12,19 +12,8 @@ import { useCheckIns, useQuickAddEvents, type CheckIn, type QuickAddEvent } from
 import type { EngineViews, ObservationInput } from "./engine-types";
 import { syncEngine } from "./engine.functions";
 import { useOnboarding, type Onboarding } from "./onboarding-store";
+import { useSession } from "./session";
 
-const DEVICE_KEY = "ciatta.device.v1";
-
-/** Stable per-device identity. A real account id can be attached later. */
-export function deviceKey(): string {
-  if (typeof window === "undefined") return "";
-  let key = window.localStorage.getItem(DEVICE_KEY);
-  if (!key) {
-    key = `dev-${crypto.randomUUID()}`;
-    window.localStorage.setItem(DEVICE_KEY, key);
-  }
-  return key;
-}
 
 function fromQuickAdd(events: QuickAddEvent[]): ObservationInput[] {
   return events.map((e) => ({
@@ -130,7 +119,8 @@ export function useEngine(): { views: EngineViews | null; loading: boolean } {
   const { checkIns, hydrated: checkInsReady } = useCheckIns();
   const { data: onboarding, hydrated: onboardingReady } = useOnboarding();
 
-  const ready = eventsReady && checkInsReady && onboardingReady;
+  const { userId, ready: sessionReady } = useSession();
+  const ready = eventsReady && checkInsReady && onboardingReady && sessionReady && !!userId;
 
   const payload = useMemo(() => {
     const fromOnb = fromOnboarding(onboarding);
@@ -143,6 +133,7 @@ export function useEngine(): { views: EngineViews | null; loading: boolean } {
   const query = useQuery({
     queryKey: [
       "engine",
+      userId ?? "anonymous",
       payload.observations.length,
       payload.observations[0]?.externalId ?? "none",
       onboarding.lifeStage,
@@ -152,7 +143,6 @@ export function useEngine(): { views: EngineViews | null; loading: boolean } {
     queryFn: () =>
       syncEngine({
         data: {
-          deviceKey: deviceKey(),
           observations: payload.observations,
           identity: payload.identity,
         },

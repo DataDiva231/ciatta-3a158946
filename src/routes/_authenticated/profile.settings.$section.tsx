@@ -4,7 +4,6 @@ import { Link, createFileRoute, notFound, useNavigate } from "@tanstack/react-ro
 import { Card, Chip, Screen, Toggle } from "@/components/ciatta/screen";
 import { deleteAllData, exportAllData } from "@/lib/ciatta-store";
 import { forgetEverything } from "@/lib/engine.functions";
-import { deviceKey } from "@/lib/use-engine";
 import { signOut } from "@/lib/onboarding-store";
 import { CONNECTED_APPS, useSettings } from "@/lib/profile-store";
 import { useAppearance } from "@/lib/use-appearance";
@@ -284,7 +283,7 @@ function Privacy() {
               type="button"
               onClick={() => {
                 // Forget on the device and in Ciatta's own memory.
-                void forgetEverything({ data: { deviceKey: deviceKey() } }).catch(() => {});
+                void forgetEverything().catch(() => {});
                 deleteAllData();
                 signOut();
                 setConfirmDelete(false);

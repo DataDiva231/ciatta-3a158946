@@ -7,7 +7,6 @@ import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { engineTrace } from "@/lib/engine.functions";
-import { deviceKey } from "@/lib/use-engine";
 
 export const Route = createFileRoute("/_authenticated/engine-trace")({
   head: () => ({
@@ -66,7 +65,7 @@ function EngineTracePage() {
   const query = useQuery({
     queryKey: ["engine-trace"],
     enabled: typeof window !== "undefined",
-    queryFn: () => engineTrace({ data: { deviceKey: deviceKey() } }),
+    queryFn: () => engineTrace(),
   });
 
   if (query.isPending)
