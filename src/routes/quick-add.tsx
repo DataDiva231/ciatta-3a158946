@@ -3,6 +3,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
 import { Understanding } from "@/components/ciatta/understanding";
 import { useQuickAddEvents, type QuickAddEvent } from "@/lib/ciatta-store";
+import { haptic } from "@/lib/haptics";
 import {
   buildSteps,
   CONFIRM_LABEL,
