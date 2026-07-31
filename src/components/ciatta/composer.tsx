@@ -60,9 +60,13 @@ export function Composer({
     onSubmit(parts.join("\n"));
   };
 
-  const pick = (list: FileList | null) => {
+  const pick = (list: FileList | null, mode?: "scan") => {
     if (!list?.length) return;
-    setFiles((prev) => [...prev, ...Array.from(list).map((f) => f.name)]);
+    setSheet(false);
+    setFiles((prev) => [
+      ...prev,
+      ...Array.from(list).map((f) => (mode === "scan" ? `Scanned: ${f.name}` : f.name)),
+    ]);
   };
 
   return (
