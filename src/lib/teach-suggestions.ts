@@ -63,6 +63,16 @@ export function buildTeachSuggestions(
       category: "Period Product",
       label: "My flow changed",
       reason: "Sharing this will help make your days ahead easier to plan.",
+      step: {
+        title: "How has it changed?",
+        sub: "Sharing this will help make your days ahead easier to plan.",
+        options: [
+          { label: "Heavier than before", note: "Changing more often" },
+          { label: "Lighter than before", note: "Easing off" },
+          { label: "Started suddenly", note: "Earlier than expected" },
+          { label: "Almost stopped", note: "Spotting only" },
+        ],
+      },
     });
   }
 
@@ -71,6 +81,16 @@ export function buildTeachSuggestions(
       category: "Symptoms",
       label: "I have a headache",
       reason: "Sharing this will help patterns like this stop surprising you.",
+      step: {
+        title: "What does it feel like?",
+        sub: "Sharing this will help patterns like this stop surprising you.",
+        options: [
+          { label: "Dull ache", note: "Background pressure" },
+          { label: "Sharp or throbbing", note: "Hard to ignore" },
+          { label: "Behind my eyes", note: "Light feels harsh" },
+          { label: "With nausea", note: "Stomach unsettled" },
+        ],
+      },
     });
   }
 
@@ -79,6 +99,16 @@ export function buildTeachSuggestions(
       category: "Sleep",
       label: "I slept poorly",
       reason: "Sharing this will help make tomorrow's recovery guidance more personal.",
+      step: {
+        title: "What made it hard?",
+        sub: "Sharing this will help make tomorrow's recovery guidance more personal.",
+        options: [
+          { label: "Difficulty falling asleep", note: "Mind still going" },
+          { label: "Woke up during the night", note: "More than once" },
+          { label: "Woke up early", note: "Couldn't drift back" },
+          { label: "Restless sleep", note: "Never fully settled" },
+        ],
+      },
     });
   }
 
@@ -89,8 +119,30 @@ export function buildTeachSuggestions(
       reason: evening
         ? "Sharing this will help effort be read against your recovery."
         : "Sharing this will help you know when to push and when to ease.",
+      step: evening
+        ? {
+            title: "How low does it feel?",
+            sub: "Sharing this will help effort be read against your recovery.",
+            options: [
+              { label: "Heavy and slow", note: "Everything takes effort" },
+              { label: "Fine until afternoon", note: "Faded later" },
+              { label: "Wired but tired", note: "Restless, not rested" },
+              { label: "Just need rest", note: "Nothing structured today" },
+            ],
+          }
+        : {
+            title: "Where is the stress sitting?",
+            sub: "Sharing this will help you know when to push and when to ease.",
+            options: [
+              { label: "In my body", note: "Tense shoulders, jaw" },
+              { label: "In my head", note: "Can't switch off" },
+              { label: "Work or deadlines", note: "Load is high" },
+              { label: "Life outside work", note: "Home or people" },
+            ],
+          },
     });
   }
+
 
   // The clearer things already are, the fewer moments to offer.
   const room = confidence >= 90 ? 1 : confidence >= 78 ? 2 : 3;
