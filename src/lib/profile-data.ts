@@ -137,7 +137,7 @@ export function useProfile(): ProfileView {
     const discoveries = [journey.todaysDiscovery, ...journey.recentDiscoveries];
     const understandings = discoveries.map(toUnderstanding);
 
-    // Every timestamp Ciatta holds, used for "tracking since" and the timeline.
+    // Every timestamp held, used for "learning since" and the timeline.
     const times = [
       ...events.map((e) => e.timestamp),
       ...checkIns.map((c) => c.savedAt || `${c.day}T09:00:00.000Z`),
@@ -162,7 +162,7 @@ export function useProfile(): ProfileView {
       const evidence = [...new Set(matches.flatMap((d) => d.signals))].slice(0, 5);
       const detail = strongest
         ? strongest.whyWeNoticed
-        : `Ciatta hasn't seen enough of your ${name.toLowerCase()} yet to say anything honest about it. A few logs is usually all it takes.`;
+        : `I haven't seen enough of your ${name.toLowerCase()} yet to say anything honest about it. A few moments shared is usually all it takes.`;
       const recentChange = strongest
         ? strongest.whatToTry
         : `Nothing has moved here yet. The first ${name.toLowerCase()} log starts the picture.`;
@@ -182,8 +182,8 @@ export function useProfile(): ProfileView {
         label: "Learning since",
         value: first ? monthYear(first) : "Today",
         detail: first
-          ? `Ciatta has been building this understanding since ${monthYear(first)}. Everything on this page is drawn from what you've logged since then \u2014 nothing is assumed.`
-          : "Ciatta started today. The first thing you log becomes the first line of your portrait.",
+          ? `I've been building my understanding of you since ${monthYear(first)}. Everything here comes from what you've shared since then \u2014 nothing is assumed.`
+          : "We started today. The first thing you share becomes the first line of your story.",
         notes: [
           `${journey.observationCount} observation${journey.observationCount === 1 ? "" : "s"} held so far.`,
           "Older logs still count. Recent ones simply count for more.",
@@ -243,7 +243,7 @@ export function useProfile(): ProfileView {
         label: "Looking at next",
         value: focus,
         detail: `${focus} is the thinnest part of the portrait, so it's where the next few logs will make the biggest difference.`,
-        notes: ["You can change what Ciatta leans toward under Preferences."],
+        notes: ["You can change what I lean toward under what matters most."],
       },
     ];
 
@@ -253,35 +253,35 @@ export function useProfile(): ProfileView {
         name: "Teach me",
         status: events.length || facts.some((f) => f.savedAt) ? "Learning from it" : "Ready",
         active: true,
-        body: "Anything you tell Ciatta directly — a quick log, a voice note, a fact about your body — becomes context it reasons with the same day.",
+        body: "Anything you tell me directly — a moment, a voice note, something about your body — becomes part of how I understand the same day.",
       },
       {
         id: "apple",
         name: "Apple Health",
         status: "Learning from it",
         active: true,
-        body: "Sleep timing, heart rate and movement give Ciatta the steady background rhythm it compares each new day against.",
+        body: "Sleep timing, heart rate and movement give me the steady background rhythm I compare each new day against.",
       },
       {
         id: "checkins",
         name: "Daily Check-ins",
         status: checkIns.length ? "Learning from it" : "Not started",
         active: true,
-        body: "How you felt is the one thing sensors can't measure. Check-ins let Ciatta connect what your body did with how the day actually landed.",
+        body: "How you felt is the one thing sensors can't measure. Check-ins let me connect what your body did with how the day actually landed.",
       },
       {
         id: "arc",
         name: "Ciatta Arc\u2122",
         status: "Coming soon",
         active: false,
-        body: "Continuous wearable sensing. It will fill in the hours between logs, so Ciatta stops having to infer them.",
+        body: "Continuous wearable sensing. It will fill in the hours in between, so I have less to guess at.",
       },
       {
         id: "webbee",
         name: "Webbee\u2122",
         status: "Coming soon",
         active: false,
-        body: "Menstrual sensing. It will let Ciatta read your cycle from your body directly, instead of from what you report.",
+        body: "Menstrual sensing. It will let me follow your cycle from your body directly, instead of from what you tell me.",
       },
     ];
 
@@ -333,13 +333,13 @@ export function useProfile(): ProfileView {
 
     const story = [
       first
-        ? `Ciatta has been learning you for ${months} ${months === 1 ? "month" : "months"}. ${
+        ? `I've been learning you for ${months} ${months === 1 ? "month" : "months"}. ${
             confirmed
               ? `${confirmed} thing${confirmed === 1 ? " is" : "s are"} now understood well enough to act on`
               : "Nothing is settled yet"
           }, ${forming ? `${forming} more ${forming === 1 ? "is" : "are"} still taking shape` : "and the rest is still open"}. Right now it's paying closest attention to ${focus.toLowerCase()}.`
         : "I don't know you yet. The first thing you share is where our understanding starts.",
-      "Every log narrows what Ciatta has to guess.",
+      "Every moment you share leaves me less to guess at.",
     ];
 
 
