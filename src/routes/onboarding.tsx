@@ -127,7 +127,7 @@ function Body({
   );
 }
 
-/** The Understanding, at onboarding scale. */
+/** The Understanding, at onboarding scale. Only used while Ciatta is forming. */
 function Orb({ size = 168, confidence = 42, active }: { size?: number; confidence?: number; active?: boolean }) {
   return (
     <div className="flex justify-center">
@@ -135,6 +135,17 @@ function Orb({ size = 168, confidence = 42, active }: { size?: number; confidenc
     </div>
   );
 }
+
+/** A quiet line of context above a question. No container, no color. */
+function Eyebrow({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="animate-in fade-in mb-5 text-center text-[11px] tracking-[0.14em] text-muted-foreground/80 uppercase duration-700">
+      {children}
+    </p>
+  );
+}
+
+
 
 function Question({ children }: { children: React.ReactNode }) {
   return (
