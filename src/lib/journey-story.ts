@@ -87,11 +87,24 @@ function needFor(confidence: number) {
   return "Still early — we're watching";
 }
 
-/** Curiosity, not a task. */
+/** Curiosity, not a task — one short sentence about the relationship itself. */
 function curiosityOf(body: string) {
-  const clean = body.replace(/\.$/, "");
-  const lowered = clean.charAt(0).toLowerCase() + clean.slice(1);
-  return `We're beginning to understand ${lowered}.`;
+  const clean = body.replace(/\.$/, "").trim();
+
+  const pair = clean.match(/between\s+(.+?)\s+and\s+(.+)$/i);
+  if (pair) {
+    const [, a, b] = pair;
+    return `We're beginning to see how ${a.toLowerCase()} influences your ${b
+      .toLowerCase()
+      .replace(/^(your|the)\s+/, "")}.`;
+  }
+
+  const stripped = clean.replace(
+    /^(we(?:'re| are)\s+(?:beginning to\s+)?(?:notice|noticing|see|seeing|understand|understanding)\s+)/i,
+    "",
+  );
+  const lowered = stripped.charAt(0).toLowerCase() + stripped.slice(1);
+  return `We're beginning to see ${lowered}.`;
 }
 
 export function useJourneyStory(): JourneyStory {
@@ -115,7 +128,7 @@ export function useJourneyStory(): JourneyStory {
     const why: WhyItChanged = {
       what: lead.title,
       why: lead.whyWeNoticed,
-      matters: lead.whatToTry,
+      matters: `Future ${topic} guidance will now become more personal.`,
     };
 
     const next: NextUnderstanding[] = (
