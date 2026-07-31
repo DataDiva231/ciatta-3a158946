@@ -53,11 +53,9 @@ export const ALL_KEYS = [
 ];
 
 
-export const SEED_FACTS: LearnedFact[] = [
-  { id: "seed-1", text: "Migraines usually arrive two days before your period.", savedAt: "" },
-  { id: "seed-2", text: "Coffee after 2pm keeps you awake past midnight.", savedAt: "" },
-  { id: "seed-3", text: "You feel strongest on the days right after your period ends.", savedAt: "" },
-];
+/** Nothing is known in advance. Facts only exist once the user teaches them. */
+export const SEED_FACTS: LearnedFact[] = [];
+
 
 function read<T>(key: string, fallback: T): T {
   if (typeof window === "undefined") return fallback;
