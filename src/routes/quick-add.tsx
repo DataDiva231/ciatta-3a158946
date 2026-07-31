@@ -384,6 +384,13 @@ function QuickAddPage() {
           )}
         </p>
 
+        {reason && index === (presetCategory ? 1 : 0) && (
+          <p className="animate-in fade-in mt-3 max-w-[34ch] text-[12.5px] leading-relaxed text-accent duration-700">
+            {reason}
+          </p>
+        )}
+
+
         {step.key === "category" && lastProduct && (
           <button
             type="button"
