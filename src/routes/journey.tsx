@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import type { OrbTone } from "@/components/ciatta/discovery-orb";
 import { useIdentity } from "@/lib/profile-store";
 import { useJourneyStory } from "@/lib/journey-story";
+import { useEngine } from "@/lib/use-engine";
 
 export const Route = createFileRoute("/journey")({
   head: () => ({
