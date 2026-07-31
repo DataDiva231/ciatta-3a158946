@@ -39,6 +39,8 @@ export const ONBOARDING_KEY = "ciatta.onboarding.v1";
 export const DEFAULT_ONBOARDING: Onboarding = {
   step: 0,
   completed: false,
+  firstObservationDone: false,
+
   name: "",
   birthMonth: "",
   birthDay: "",
