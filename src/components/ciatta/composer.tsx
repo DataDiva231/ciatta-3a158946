@@ -34,6 +34,7 @@ export function Composer({
     const clean = text.trim();
     if (!clean) return;
     setText("");
+    setExpanded(false);
     onSubmit(clean);
   };
 
