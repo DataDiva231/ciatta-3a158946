@@ -228,18 +228,3 @@ function TodayPage() {
     </div>
   );
 }
-
-function NarrativeBlock({ line }: { line: NarrativeLine }) {
-  return (
-    <div>
-      <p className="label-caps text-muted-foreground/60">{line.label}</p>
-      <p className="mt-1 text-[13px] leading-[1.55] text-foreground/80">
-        {line.parts.map((part, i) => (
-          <span key={i} className={part.accent ? "font-medium tabular-nums" : undefined}>
-            {part.text}
-          </span>
-        ))}
-      </p>
-    </div>
-  );
-}
