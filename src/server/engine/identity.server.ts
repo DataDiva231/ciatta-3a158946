@@ -63,7 +63,7 @@ export async function mergeIdentity(
   const merged = { ...((current.data.identity ?? {}) as Record<string, unknown>), ...patch };
   await supabaseAdmin
     .from("subjects")
-    .update({ identity: merged, updated_at: new Date().toISOString() })
+    .update({ identity: merged as never, updated_at: new Date().toISOString() })
     .eq("id", subjectId);
 }
 
