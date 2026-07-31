@@ -14,7 +14,238 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      beliefs: {
+        Row: {
+          contradiction: number
+          domain: string
+          first_formed_at: string
+          id: string
+          key: string
+          statement: string
+          status: string
+          strength: number
+          subject_id: string
+          support: number
+          updated_at: string
+        }
+        Insert: {
+          contradiction?: number
+          domain: string
+          first_formed_at?: string
+          id?: string
+          key: string
+          statement: string
+          status?: string
+          strength?: number
+          subject_id: string
+          support?: number
+          updated_at?: string
+        }
+        Update: {
+          contradiction?: number
+          domain?: string
+          first_formed_at?: string
+          id?: string
+          key?: string
+          statement?: string
+          status?: string
+          strength?: number
+          subject_id?: string
+          support?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "beliefs_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      memories: {
+        Row: {
+          detail: Json
+          first_seen_at: string
+          id: string
+          key: string
+          kind: string
+          last_seen_at: string
+          occurrences: number
+          subject_id: string
+          summary: string
+        }
+        Insert: {
+          detail?: Json
+          first_seen_at?: string
+          id?: string
+          key: string
+          kind: string
+          last_seen_at?: string
+          occurrences?: number
+          subject_id: string
+          summary: string
+        }
+        Update: {
+          detail?: Json
+          first_seen_at?: string
+          id?: string
+          key?: string
+          kind?: string
+          last_seen_at?: string
+          occurrences?: number
+          subject_id?: string
+          summary?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "memories_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      observations: {
+        Row: {
+          category: string
+          confidence: number
+          context: Json
+          created_at: string
+          id: string
+          occurred_at: string
+          source: string
+          subject_id: string
+          value: string
+        }
+        Insert: {
+          category: string
+          confidence?: number
+          context?: Json
+          created_at?: string
+          id?: string
+          occurred_at?: string
+          source: string
+          subject_id: string
+          value: string
+        }
+        Update: {
+          category?: string
+          confidence?: number
+          context?: Json
+          created_at?: string
+          id?: string
+          occurred_at?: string
+          source?: string
+          subject_id?: string
+          value?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "observations_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      relationship_events: {
+        Row: {
+          detail: Json
+          id: string
+          kind: string
+          label: string
+          occurred_at: string
+          subject_id: string
+        }
+        Insert: {
+          detail?: Json
+          id?: string
+          kind: string
+          label: string
+          occurred_at?: string
+          subject_id: string
+        }
+        Update: {
+          detail?: Json
+          id?: string
+          kind?: string
+          label?: string
+          occurred_at?: string
+          subject_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "relationship_events_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      subjects: {
+        Row: {
+          created_at: string
+          device_key: string
+          id: string
+          identity: Json
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          device_key: string
+          id?: string
+          identity?: Json
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          device_key?: string
+          id?: string
+          identity?: Json
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      understanding_snapshots: {
+        Row: {
+          created_at: string
+          depth: number
+          id: string
+          subject_id: string
+          summary: Json
+        }
+        Insert: {
+          created_at?: string
+          depth?: number
+          id?: string
+          subject_id: string
+          summary?: Json
+        }
+        Update: {
+          created_at?: string
+          depth?: number
+          id?: string
+          subject_id?: string
+          summary?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "understanding_snapshots_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
