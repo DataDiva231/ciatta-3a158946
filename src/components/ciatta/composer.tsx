@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { ImageIcon, Mic, Paperclip } from "lucide-react";
+import { useRef, useState } from "react";
+import { ArrowUp, ImageIcon, Mic, Paperclip } from "lucide-react";
 
 import { useVoiceMemo } from "@/lib/voice-memo";
 
@@ -22,20 +22,30 @@ export function Composer({
 }) {
   const [text, setText] = useState("");
   const [expanded, setExpanded] = useState(false);
+  const [files, setFiles] = useState<string[]>([]);
+  const imageInput = useRef<HTMLInputElement>(null);
+  const fileInput = useRef<HTMLInputElement>(null);
   const memo = useVoiceMemo((t) => {
     const clean = t.trim();
-    if (clean) onSubmit(clean);
+    if (clean) setText((prev) => (prev ? `${prev} ${clean}` : clean));
   });
 
   const recording = memo.state === "recording";
   const transcribing = memo.state === "transcribing";
+  const hasContent = text.trim().length > 0 || files.length > 0;
 
   const send = () => {
-    const clean = text.trim();
-    if (!clean) return;
+    if (!hasContent) return;
+    const parts = [text.trim(), ...files.map((n) => `Attached: ${n}`)].filter(Boolean);
     setText("");
+    setFiles([]);
     setExpanded(false);
-    onSubmit(clean);
+    onSubmit(parts.join("\n"));
+  };
+
+  const pick = (list: FileList | null) => {
+    if (!list?.length) return;
+    setFiles((prev) => [...prev, ...Array.from(list).map((f) => f.name)]);
   };
 
   return (
