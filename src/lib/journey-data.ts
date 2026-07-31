@@ -43,9 +43,10 @@ export type MilestoneView = {
 export type JourneyView = {
   /** True once localStorage has been read on the client. */
   hydrated: boolean;
-  /** False while the user has taught Ciatta too little — the demo story stands in. */
+  /** False until real logs exist — sections show invitations instead. */
   hasData: boolean;
-  todaysDiscovery: Discovery;
+  todaysDiscovery: Discovery | null;
+
   recentDiscoveries: Discovery[];
   emergingInsights: EmergingInsight[];
   milestone: MilestoneView;
