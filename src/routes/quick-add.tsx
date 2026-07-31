@@ -287,6 +287,11 @@ function QuickAddPage() {
         <p className="animate-in fade-in mt-3 text-center text-[13px] leading-relaxed text-muted-foreground duration-500">
           Tomorrow's understanding just became a little clearer.
         </p>
+        {reason && (
+          <p className="animate-in fade-in mt-2 text-center text-[12.5px] leading-relaxed text-muted-foreground/80 duration-700">
+            {reason}
+          </p>
+        )}
 
         <ul className="mt-9">
 
