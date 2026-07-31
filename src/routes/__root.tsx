@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { TabBar } from "../components/ciatta/tab-bar";
 import { useAppearance } from "../lib/use-appearance";
+import { supabase } from "@/integrations/supabase/client";
 
 function NotFoundComponent() {
   return (
