@@ -40,11 +40,11 @@ export const INTERESTS = [
 ];
 
 export const DEFAULT_IDENTITY: Identity = {
-  name: "Jenny Alvarez",
+  name: "",
   photo: "",
-  lifeStage: "Cycling",
-  goals: ["Recover well", "Understand my cycle"],
-  interests: ["Hormones", "Nutrition"],
+  lifeStage: "",
+  goals: [],
+  interests: [],
 };
 
 export function useIdentity() {
