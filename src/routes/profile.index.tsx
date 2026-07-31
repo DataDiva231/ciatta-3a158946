@@ -645,8 +645,8 @@ function ProfilePage() {
                     <Reveal open={open}>
                       <p className="pb-3 text-[14px] leading-relaxed text-muted-foreground">
                         {t.current
-                          ? `This is where Ciatta is right now. It's watching ${focus.toLowerCase()} most closely, and the next few logs will move this line.`
-                          : `At this point Ciatta had enough repeated evidence to change how it reads your days. Everything after ${t.when} was interpreted with this in mind.`}
+                          ? `This is where I am right now. I'm paying closest attention to ${focus.toLowerCase()}, and the next few logs will move this line.`
+                          : `By this point I had seen the same thing enough times to change how I read your days. Everything after ${t.when} I interpreted with this in mind.`}
                       </p>
                     </Reveal>
                   </li>
@@ -661,9 +661,10 @@ function ProfilePage() {
       <section className="mt-9 px-6">
         <SectionTitle note="Drag to reorder">Preferences</SectionTitle>
         <p className="mt-3 px-1 text-[14px] leading-relaxed text-muted-foreground">
-          Ciatta looks everywhere, but it looks hardest at what's near the top. Move a topic up and
-          future insights will lean toward it.
+          I look everywhere, but I look hardest at what&rsquo;s near the top. Move a topic up and
+          I&rsquo;ll lean toward it.
         </p>
+
 
         <PriorityList priorities={priorities} reorder={reorder} />
 
