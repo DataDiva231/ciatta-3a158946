@@ -536,13 +536,13 @@ function OnboardingPage() {
           <>
             {bar}
             <Body center>
-              <Orb size={150} confidence={confidence} />
-              <div className="mt-8">
+              <div>
                 <Question>Can I learn from Apple Health?</Question>
                 <Support>
-                  If you connect it, I&apos;ll pick up sleep, heart rate and movement on my own — and
-                  I won&apos;t need to ask you about them.
+                  If you share it, I&apos;ll notice your sleep, heart rate and movement quietly on
+                  my own — and I won&apos;t ask you about them again.
                 </Support>
+
               </div>
               <div className="mx-auto mt-6 flex max-w-[19rem] flex-wrap justify-center gap-2">
                 {["Sleep", "Heart rate", "Activity", "Workouts", "Recovery"].map((o) => (
