@@ -149,17 +149,28 @@ function QuickAddPage() {
   );
 
   /**
-   * Categories are ordered by what this woman actually teaches Ciatta, so the
-   * list gets more personal the more it is used.
+   * Thumb-first ordering: the categories reached for most often come first, so
+   * the chip group reads the same way every time.
    */
+  const CATEGORY_ORDER = [
+    "Period Product",
+    "Flow",
+    "Symptoms",
+    "Sleep",
+    "Medication",
+    "Nutrition",
+    "Activity",
+    "Something Else",
+  ];
+
   const options = useMemo(() => {
     if (step.key !== "category") return step.options;
-    const weight = new Map<string, number>();
-    events.slice(0, 30).forEach((e, i) => {
-      weight.set(e.category, (weight.get(e.category) ?? 0) + 30 - i);
-    });
-    return [...step.options].sort((a, b) => (weight.get(b.label) ?? 0) - (weight.get(a.label) ?? 0));
-  }, [step, events]);
+    return [...step.options].sort(
+      (a, b) => CATEGORY_ORDER.indexOf(a.label) - CATEGORY_ORDER.indexOf(b.label),
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step]);
+
 
 
   /** Records an answer and drops every answer that belonged to a later step. */
