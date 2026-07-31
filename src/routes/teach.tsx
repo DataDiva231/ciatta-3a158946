@@ -6,8 +6,13 @@ import { QuickAddSheet } from "@/components/ciatta/quick-add-sheet";
 import { Understanding } from "@/components/ciatta/understanding";
 
 import { useCheckIns, useQuickAddEvents } from "@/lib/ciatta-store";
+import { haptic } from "@/lib/haptics";
 import { buildNarrative } from "@/lib/narrative";
-import { buildTeachSuggestions, confidenceLine } from "@/lib/teach-suggestions";
+import {
+  buildTeachSuggestions,
+  confidenceLine,
+  type TeachSuggestion,
+} from "@/lib/teach-suggestions";
 
 
 export const Route = createFileRoute("/teach")({
@@ -39,7 +44,12 @@ function TeachPage() {
   const suggestions = buildTeachSuggestions(events, narrative.confidence.value);
   const [saved, setSaved] = useState(false);
   /** Quick Add lives inside this screen: a sheet over the current question. */
-  const [sheet, setSheet] = useState<{ category?: string; reason?: string } | null>(null);
+  const [sheet, setSheet] = useState<{
+    category?: string;
+    reason?: string;
+    step?: TeachSuggestion["step"];
+  } | null>(null);
+
   /** The short "✓ Flow: Moderate" line shown beneath the question. */
   const [confirmed, setConfirmed] = useState<string | null>(null);
 
@@ -107,8 +117,11 @@ function TeachPage() {
               <button
                 key={s.category}
                 type="button"
-                onClick={() => setSheet({ category: s.category, reason: s.reason })}
-                className="animate-in fade-in rounded-full bg-surface px-4 py-2.5 text-[13px] leading-none text-foreground shadow-[0_8px_24px_-22px_rgba(60,45,35,0.5)] transition-all duration-200 active:scale-[0.98] active:bg-secondary"
+                onClick={() => {
+                  haptic("tap");
+                  setSheet({ category: s.category, reason: s.reason, step: s.step });
+                }}
+                className="animate-in fade-in inline-flex h-[38px] items-center rounded-full bg-background px-4 text-[14px] leading-none text-foreground shadow-soft ring-1 ring-border/70 transition-all duration-200 active:scale-[0.97] active:bg-secondary"
               >
                 {s.label}
               </button>
@@ -116,6 +129,7 @@ function TeachPage() {
           </div>
         </div>
       )}
+
 
 
       <button
@@ -148,6 +162,7 @@ function TeachPage() {
       <QuickAddSheet
         open={sheet !== null}
         presetCategory={sheet?.category}
+        presetStep={sheet?.step}
         reason={sheet?.reason}
         onClose={() => setSheet(null)}
         onLogged={logged}

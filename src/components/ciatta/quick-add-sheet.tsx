@@ -83,10 +83,21 @@ function ProductGlyph({ icon }: { icon: QuickAddOption["icon"] }) {
   }
 }
 
+export type PresetStep = {
+  title: string;
+  sub: string;
+  options: QuickAddOption[];
+};
+
 export type QuickAddSheetProps = {
   open: boolean;
   /** Opens straight into a category, skipping the chips. */
   presetCategory?: string;
+  /**
+   * Opens straight into a tailored follow-up for the tapped moment. Choosing
+   * one of these options completes the log in a single step.
+   */
+  presetStep?: PresetStep;
   /** What sharing this gives back to her, shown under the sheet title. */
   reason?: string;
   onClose: () => void;
@@ -97,6 +108,7 @@ export type QuickAddSheetProps = {
 export function QuickAddSheet({
   open,
   presetCategory,
+  presetStep,
   reason,
   onClose,
   onLogged,
@@ -114,8 +126,12 @@ export function QuickAddSheet({
     setPending(null);
   }, [open, presetCategory]);
 
-  const steps = useMemo(() => buildSteps(answers), [answers]);
-  const step = steps[Math.min(index, steps.length - 1)];
+  const derived = useMemo(() => buildSteps(answers), [answers]);
+  const usePreset = Boolean(presetStep) && index === 1;
+  const steps = derived;
+  const step = usePreset
+    ? { key: "preset", layout: "list" as const, ...presetStep! }
+    : steps[Math.min(index, steps.length - 1)];
   const isCategory = step.key === "category";
 
   const options = useMemo(() => {
@@ -124,6 +140,7 @@ export function QuickAddSheet({
       (a, b) => CATEGORY_ORDER.indexOf(a.label) - CATEGORY_ORDER.indexOf(b.label),
     );
   }, [step, isCategory]);
+
 
   /** Writes the event and hands the summary back to the host screen. */
   const commit = (final: Answers) => {
@@ -155,12 +172,23 @@ export function QuickAddSheet({
   const choose = (option: QuickAddOption) => {
     if (pending) return;
     haptic("tap");
+    setPending(option.label);
+
+    // A tailored follow-up answers the moment in one step.
+    if (usePreset) {
+      const category = presetCategory ?? "Something Else";
+      window.setTimeout(() => {
+        setPending(null);
+        commit({ category, [valueKeyFor(category)]: option.label });
+      }, 180);
+      return;
+    }
+
     const keep = steps.slice(0, index).map((s) => s.key);
     const next: Answers = {};
     for (const k of keep) if (answers[k] !== undefined) next[k] = answers[k];
     next[step.key] = option.label;
 
-    setPending(option.label);
     // A short beat so the selection registers before the sheet transforms.
     window.setTimeout(() => {
       setPending(null);
@@ -172,6 +200,7 @@ export function QuickAddSheet({
       setIndex(index + 1);
     }, 180);
   };
+
 
   const back = () => {
     haptic("tap");
