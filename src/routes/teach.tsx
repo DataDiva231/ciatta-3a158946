@@ -5,15 +5,15 @@ import { Composer } from "@/components/ciatta/composer";
 import { QuickAddSheet } from "@/components/ciatta/quick-add-sheet";
 
 
-import { useCheckIns, useQuickAddEvents } from "@/lib/ciatta-store";
+import { useQuickAddEvents } from "@/lib/ciatta-store";
 import { haptic } from "@/lib/haptics";
-import { buildNarrative } from "@/lib/narrative";
 import {
   buildTeachSuggestions,
   confidenceLine,
   type TeachSuggestion,
 } from "@/lib/teach-suggestions";
 import { useEngine } from "@/lib/use-engine";
+
 
 
 export const Route = createFileRoute("/teach")({
