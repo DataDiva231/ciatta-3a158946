@@ -2,7 +2,7 @@ import { Link, useRouterState } from "@tanstack/react-router";
 
 type IconProps = { active: boolean };
 
-const stroke = (active: boolean) => (active ? "var(--clay)" : "var(--muted-foreground)");
+const stroke = (active: boolean) => (active ? "var(--foreground)" : "var(--muted-foreground)");
 
 function SunriseIcon({ active }: IconProps) {
   return (
