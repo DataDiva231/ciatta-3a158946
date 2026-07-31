@@ -5,6 +5,7 @@ import { usePriorities } from "@/lib/ciatta-store";
 import { signOut } from "@/lib/onboarding-store";
 import { useIdentity } from "@/lib/profile-store";
 import { useProfile, type Area, type SourceRow, type Understanding } from "@/lib/profile-data";
+import { useEngine } from "@/lib/use-engine";
 
 export const Route = createFileRoute("/profile/")({
   head: () => ({
