@@ -96,7 +96,7 @@ function JourneyPage() {
   }, [hash]);
 
   return (
-    <div className="px-6 pt-10 pb-16">
+    <div className="px-6 pt-14 pb-16">
       {/* Act one — the emotional centerpiece. */}
       <section id="discovery" className="animate-dissolve scroll-mt-6">
         <p className="flex items-center gap-2.5">
@@ -108,25 +108,26 @@ function JourneyPage() {
             Something became clearer
           </span>
         </p>
-        <h1 className="mt-6 font-serif text-[32px] leading-[1.14] tracking-[-0.015em]">
+        <h1 className="mt-10 max-w-[18ch] font-serif text-[40px] leading-[1.08] tracking-[-0.02em]">
           <Statement text={story.shift.statement} keyword={story.shift.keyword} />
         </h1>
 
-        <div className="mt-10 space-y-7">
+        <div className="mt-16 space-y-12">
           <div>
             <Caps>{story.shift.beforeLabel}</Caps>
-            <p className="mt-2.5 text-[15px] leading-[1.6] text-muted-foreground">
+            <p className="mt-4 text-[15px] leading-[1.7] text-muted-foreground">
               {story.shift.before}
             </p>
           </div>
           <div>
             <Caps tone="clay">{story.shift.todayLabel}</Caps>
-            <p className="mt-2.5 text-[16px] leading-[1.55]">{story.shift.today}</p>
+            <p className="mt-4 text-[17px] leading-[1.6]">{story.shift.today}</p>
           </div>
         </div>
       </section>
 
-      <span className="my-14 block h-px w-full bg-border" />
+      <span className="my-20 block h-px w-full bg-border" />
+
 
       {/* Act two — the quiet explanation. */}
       <section>
