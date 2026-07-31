@@ -15,6 +15,7 @@ import {
   Wind,
 } from "lucide-react";
 
+import mark from "@/assets/ciatta-mark.png.asset.json";
 import wordmark from "@/assets/ciatta-wordmark.png.asset.json";
 import { Composer } from "@/components/ciatta/composer";
 import { Understanding } from "@/components/ciatta/understanding";
@@ -308,26 +309,55 @@ function Wordmark({ width = 132 }: { width?: number }) {
 }
 
 /**
- * Splash. Identity and one slow breath — no copy, no controls, no indicator.
+ * Splash — "I've arrived." The mark inside a soft halo of contained light.
+ * No orb, no loader, no copy. The wordmark arrives a beat later.
  */
 function Splash() {
+  const [named, setNamed] = useState(false);
+  useEffect(() => {
+    const t = window.setTimeout(() => setNamed(true), 1700);
+    return () => window.clearTimeout(t);
+  }, []);
+
   return (
-    <div className="animate-dissolve flex h-[100svh] flex-col items-center justify-center bg-background">
+    <div className="flex h-[100svh] flex-col items-center justify-center bg-background">
       <div
-        className="animate-in fade-in duration-[1400ms]"
-        style={{ animationFillMode: "backwards" }}
+        className="animate-in fade-in animate-breathe relative flex items-center justify-center duration-[1600ms]"
+        style={{ width: 232, height: 232, animationFillMode: "backwards" }}
       >
-        <Understanding size={168} confidence={20} />
+        {/* Halo: one soft circle, holding coral / blush / lavender / pale blue */}
+        <span
+          aria-hidden="true"
+          className="absolute inset-0 rounded-full"
+          style={{
+            background:
+              "radial-gradient(circle at 36% 32%, color-mix(in oklab, var(--clay) 7%, transparent) 0%, transparent 52%)," +
+              "radial-gradient(circle at 70% 30%, oklch(0.88 0.04 340 / 0.07) 0%, transparent 54%)," +
+              "radial-gradient(circle at 70% 72%, oklch(0.85 0.05 292 / 0.06) 0%, transparent 56%)," +
+              "radial-gradient(circle at 30% 74%, oklch(0.88 0.04 232 / 0.07) 0%, transparent 56%)",
+            maskImage: "radial-gradient(circle, black 34%, transparent 70%)",
+            filter: "blur(14px)",
+
+          }}
+        />
+        <img
+          src={mark.url}
+          alt=""
+          aria-hidden="true"
+          className="relative dark:invert"
+          style={{ width: 104, height: 104 }}
+        />
       </div>
+
       <div
-        className="animate-in fade-in mt-14 duration-[1600ms]"
-        style={{ animationDelay: "500ms", animationFillMode: "backwards" }}
+        className={`mt-12 transition-opacity duration-[1200ms] ${named ? "opacity-100" : "opacity-0"}`}
       >
-        <Wordmark width={124} />
+        <Wordmark width={116} />
       </div>
     </div>
   );
 }
+
 
 /**
  * The beginning of the relationship rather than an account screen: one
@@ -341,15 +371,20 @@ function Welcome({ onChoose }: { onChoose: (method: string) => void }) {
   ];
 
   return (
-    <div className="animate-dissolve flex h-[100svh] flex-col">
+    <div className="animate-in fade-in slide-in-from-bottom-1 flex h-[100svh] flex-col duration-[900ms]">
       <div className="flex-1 overflow-y-auto px-8 pt-20">
-        <Wordmark width={104} />
-        <h1 className="animate-in fade-in mt-14 max-w-[17rem] font-serif text-[34px] leading-[1.12] tracking-[-0.02em] duration-700">
+        <img
+          src={mark.url}
+          alt="Ciatta"
+          className="dark:invert"
+          style={{ width: 44, height: 44 }}
+        />
+        <h1 className="animate-in fade-in mt-12 max-w-[17rem] font-serif text-[34px] leading-[1.12] tracking-[-0.02em] duration-700">
           I don&apos;t know you yet.
         </h1>
-        <p className="animate-in fade-in mt-4 max-w-[18rem] text-[14.5px] leading-relaxed text-muted-foreground duration-700">
-          That&apos;s where we start. Everything you share teaches me a little more, and it becomes
-          more personal every day.
+        <p className="animate-in fade-in mt-4 max-w-[19rem] text-[14.5px] leading-relaxed text-muted-foreground duration-700">
+          That&apos;s where we start. Everything you share helps me understand you a little more, and
+          that understanding becomes more personal every day.
         </p>
       </div>
 
@@ -362,14 +397,15 @@ function Welcome({ onChoose }: { onChoose: (method: string) => void }) {
               onClick={() => onChoose(method)}
               className={`w-full rounded-full px-6 py-[15px] text-[15px] transition-all duration-200 active:scale-[0.99] ${
                 i === 0
-                  ? "bg-accent font-medium text-accent-foreground shadow-[0_12px_28px_-20px_color-mix(in_oklab,var(--clay)_70%,transparent)]"
-                  : "bg-surface text-foreground shadow-[0_8px_20px_-18px_rgba(60,45,35,0.5)]"
+                  ? "bg-foreground font-medium text-background"
+                  : "bg-surface text-foreground ring-1 ring-border/60 ring-inset"
               }`}
             >
               {label}
             </button>
           ))}
         </div>
+
         <button
           type="button"
           onClick={() => onChoose("existing")}
@@ -742,7 +778,7 @@ function OnboardingPage() {
     );
 
   return (
-    <div className="min-h-[100svh] bg-background">
+    <div className="animate-in fade-in slide-in-from-bottom-2 min-h-[100svh] bg-background duration-[900ms]">
       {beat ? (
         <Beat line={beat} confidence={confidence} />
       ) : (
