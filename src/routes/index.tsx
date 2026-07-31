@@ -9,6 +9,7 @@ import { useCheckIns, useQuickAddEvents } from "@/lib/ciatta-store";
 import type { QuickAddEvent } from "@/lib/ciatta-store";
 import { buildNarrative, type NarrativeLine } from "@/lib/narrative";
 import { ONBOARDING_KEY } from "@/lib/onboarding-store";
+import { useEngine } from "@/lib/use-engine";
 
 
 export const Route = createFileRoute("/")({
