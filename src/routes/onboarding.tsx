@@ -631,10 +631,12 @@ function OnboardingPage() {
                             onChange={(e) => save({ [key]: e.target.value } as Partial<Onboarding>)}
                             className="flex-1 bg-transparent text-[17px] outline-none"
                           >
+                            <option value="">—</option>
                             {Array.from({ length: max }, (_, i) => String(i + start)).map((v) => (
                               <option key={v}>{v}</option>
                             ))}
                           </select>
+
                           <span className="text-[13px] text-muted-foreground">{unit}</span>
                         </label>
                       </Field>
