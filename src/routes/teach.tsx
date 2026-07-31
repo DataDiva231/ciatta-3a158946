@@ -75,21 +75,21 @@ function TeachPage() {
       {suggestions.length > 0 && (
         <div className="mt-7">
           <p className="label-caps">Suggested moments</p>
-          <div className="mt-3 flex flex-col gap-2.5">
+          <div className="mt-3 flex flex-wrap gap-2">
             {suggestions.map((s) => (
               <Link
                 key={s.category}
                 to="/quick-add"
-                search={{ category: s.category }}
-                className="animate-in fade-in text-[13px] leading-snug transition-opacity active:opacity-60"
+                search={{ category: s.category, reason: s.reason }}
+                className="animate-in fade-in rounded-full bg-surface px-4 py-2.5 text-[13px] leading-none text-foreground shadow-[0_8px_24px_-22px_rgba(60,45,35,0.5)] transition-all duration-200 active:scale-[0.98] active:bg-secondary"
               >
-                <span className="text-accent">{s.label}</span>{" "}
-                <span className="text-muted-foreground">{s.reason}</span>
+                {s.label}
               </Link>
             ))}
           </div>
         </div>
       )}
+
 
       <Link
         to="/quick-add"
