@@ -425,7 +425,6 @@ function ProfileHeader({ since }: { since: string }) {
 
 function ProfilePage() {
   const profile = useProfile();
-  const { identity } = useIdentity();
   const { priorities, reorder } = usePriorities(profile.defaultPriorities);
 
   const [openArea, setOpenArea] = useState<string | null>(null);
