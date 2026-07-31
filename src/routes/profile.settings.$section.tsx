@@ -281,6 +281,8 @@ function Privacy() {
             <button
               type="button"
               onClick={() => {
+                // Forget on the device and in Ciatta's own memory.
+                void forgetEverything({ data: { deviceKey: deviceKey() } }).catch(() => {});
                 deleteAllData();
                 signOut();
                 setConfirmDelete(false);
