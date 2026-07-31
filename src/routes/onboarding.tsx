@@ -400,8 +400,9 @@ function OnboardingPage() {
           <>
             {bar}
             <Body center>
-              <Orb size={150} confidence={confidence} />
-              <div className="mt-8">
+              <Eyebrow>We haven&apos;t met yet</Eyebrow>
+              <div>
+
                 <Question>{node.ask?.(data)}</Question>
                 {node.why?.(data) && <Support>{node.why(data)}</Support>}
               </div>
