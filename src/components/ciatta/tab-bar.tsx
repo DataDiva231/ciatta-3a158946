@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 
 type IconProps = { active: boolean };
@@ -68,7 +69,13 @@ const tabs = [
 
 export function TabBar() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  // Which screen we're on is only certain in the browser: rendering the bar
+  // during SSR and then hiding it on hydration mismatches the markup.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
   if (
+    !mounted ||
     pathname.startsWith("/quick-add") ||
     pathname.startsWith("/onboarding") ||
     pathname.startsWith("/first-observation") ||
