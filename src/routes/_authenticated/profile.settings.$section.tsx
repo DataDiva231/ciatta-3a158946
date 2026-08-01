@@ -5,6 +5,7 @@ import { Card, Chip, Screen, Toggle } from "@/components/ciatta/screen";
 import { deleteAllData, exportAllData } from "@/lib/ciatta-store";
 import { forgetEverything } from "@/lib/engine.functions";
 import { endSession } from "@/lib/session";
+import { useAppleHealth } from "@/lib/use-apple-health";
 import { CONNECTED_APPS, useSettings } from "@/lib/profile-store";
 import { useAppearance } from "@/lib/use-appearance";
 
