@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      audit_events: {
+        Row: {
+          detail: Json
+          event_type: string
+          id: number
+          ip_address: string | null
+          occurred_at: string
+          outcome: string
+          prev_hash: string | null
+          record_hash: string
+          session_id: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          detail?: Json
+          event_type: string
+          id?: number
+          ip_address?: string | null
+          occurred_at?: string
+          outcome?: string
+          prev_hash?: string | null
+          record_hash: string
+          session_id?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          detail?: Json
+          event_type?: string
+          id?: number
+          ip_address?: string | null
+          occurred_at?: string
+          outcome?: string
+          prev_hash?: string | null
+          record_hash?: string
+          session_id?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       beliefs: {
         Row: {
           contradiction: number
@@ -57,6 +99,50 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "beliefs_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      health_connections: {
+        Row: {
+          connected_at: string | null
+          created_at: string
+          disconnected_at: string | null
+          id: string
+          last_import_at: string | null
+          metrics: string[]
+          provider: string
+          subject_id: string
+          updated_at: string
+        }
+        Insert: {
+          connected_at?: string | null
+          created_at?: string
+          disconnected_at?: string | null
+          id?: string
+          last_import_at?: string | null
+          metrics?: string[]
+          provider: string
+          subject_id: string
+          updated_at?: string
+        }
+        Update: {
+          connected_at?: string | null
+          created_at?: string
+          disconnected_at?: string | null
+          id?: string
+          last_import_at?: string | null
+          metrics?: string[]
+          provider?: string
+          subject_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "health_connections_subject_id_fkey"
             columns: ["subject_id"]
             isOneToOne: false
             referencedRelation: "subjects"
@@ -151,6 +237,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      rate_limit_counters: {
+        Row: {
+          bucket_key: string
+          hits: number
+          window_start: string
+        }
+        Insert: {
+          bucket_key: string
+          hits?: number
+          window_start: string
+        }
+        Update: {
+          bucket_key?: string
+          hits?: number
+          window_start?: string
+        }
+        Relationships: []
       }
       relationship_events: {
         Row: {
@@ -248,7 +352,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      consume_rate_limit: {
+        Args: { _bucket_key: string; _limit: number; _window_seconds: number }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
