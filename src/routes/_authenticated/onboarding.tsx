@@ -34,6 +34,7 @@ import {
   type FlowNode,
 } from "@/lib/onboarding-flow";
 import { useIdentity } from "@/lib/profile-store";
+import { useAppleHealth } from "@/lib/use-apple-health";
 
 export const Route = createFileRoute("/_authenticated/onboarding")({
   head: () => ({
@@ -302,6 +303,7 @@ function OnboardingPage() {
   const navigate = useNavigate();
   const { data, save, hydrated } = useOnboarding();
   const { save: saveIdentity } = useIdentity();
+  const health = useAppleHealth();
 
   const [history, setHistory] = useState<string[]>(["welcome"]);
   const [dir, setDir] = useState<1 | -1>(1);
@@ -560,10 +562,14 @@ function OnboardingPage() {
             </Body>
             <div className="shrink-0 px-8 pt-3 pb-10">
               <PrimaryButton
-                label="Connect Apple Health"
+                label={health.busy ? "One moment\u2026" : "Connect Apple Health"}
                 onClick={() => {
-                  save({ appleHealthConnected: true });
-                  advance({ ...data, appleHealthConnected: true });
+                  // iOS asks; whatever is granted is recorded server-side and
+                  // read straight into the engine.
+                  void health.connect().then((granted) => {
+                    save({ appleHealthConnected: granted });
+                    advance({ ...data, appleHealthConnected: granted });
+                  });
                 }}
               />
               <button
