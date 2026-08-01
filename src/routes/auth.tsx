@@ -446,17 +446,24 @@ function AuthPage() {
         );
         return;
       }
+      const repeated = (data.user?.identities?.length ?? 1) === 0;
       log("signUp response", {
         hasSession: Boolean(data.session),
         confirmed: Boolean(data.user?.email_confirmed_at),
+        repeatedSignup: repeated,
       });
       if (data.user?.email_confirmed_at && data.session) {
         enter(false);
         return;
       }
-      setNotice(null);
+      setNotice(
+        repeated
+          ? "This email already has an account waiting to be verified. Check your inbox, or resend below."
+          : null,
+      );
       setPhase("verify");
       return;
+
     }
     log("signIn request", { email: address });
     const { data, error: err } = await supabase.auth.signInWithPassword({
