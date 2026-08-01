@@ -142,10 +142,28 @@ function Appearance() {
 function Apps() {
   const { settings, save } = useSettings();
   const [busy, setBusy] = useState<string | null>(null);
+  const health = useAppleHealth();
 
-  const toggle = (id: string) => {
-    setBusy(id);
+  const toggle = async (id: string) => {
     const on = settings.apps.includes(id);
+
+    // Apple Health is real: consent is asked for and recorded, not simulated.
+    if (id === "apple-health") {
+      setBusy(id);
+      try {
+        if (on || health.connected) {
+          await health.disconnect();
+          save({ apps: settings.apps.filter((a) => a !== id) });
+        } else if (await health.connect()) {
+          save({ apps: [...settings.apps, id] });
+        }
+      } finally {
+        setBusy(null);
+      }
+      return;
+    }
+
+    setBusy(id);
     setTimeout(() => {
       save({ apps: on ? settings.apps.filter((a) => a !== id) : [...settings.apps, id] });
       setBusy(null);
@@ -155,24 +173,29 @@ function Apps() {
   return (
     <Card>
       {CONNECTED_APPS.map((a) => {
-        const on = settings.apps.includes(a.id);
+        const isHealth = a.id === "apple-health";
+        const on = isHealth ? health.connected : settings.apps.includes(a.id);
         return (
           <div key={a.id} className="flex items-start justify-between gap-4 px-4 py-3.5">
             <span className="min-w-0">
               <span className="block text-[15px]">{a.name}</span>
               <span className="mt-0.5 block text-[13px] leading-relaxed text-muted-foreground">
-                {a.body}
+                {isHealth && health.error ? health.error : a.body}
               </span>
             </span>
             <button
               type="button"
-              onClick={() => toggle(a.id)}
-              disabled={busy === a.id}
+              onClick={() => void toggle(a.id)}
+              disabled={busy === a.id || (isHealth && health.busy)}
               className={`shrink-0 rounded-full border px-3.5 py-2 text-[13px] transition-colors disabled:opacity-60 ${
                 on ? "border-border text-muted-foreground" : "border-accent text-accent"
               }`}
             >
-              {busy === a.id ? "\u2026" : on ? "Disconnect" : "Connect"}
+              {busy === a.id || (isHealth && health.busy)
+                ? "\u2026"
+                : on
+                  ? "Disconnect"
+                  : "Connect"}
             </button>
           </div>
         );
@@ -180,6 +203,7 @@ function Apps() {
     </Card>
   );
 }
+
 
 function Privacy() {
   const navigate = useNavigate();
