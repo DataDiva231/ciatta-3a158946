@@ -14,6 +14,8 @@ export const Route = createFileRoute("/_authenticated")({
   beforeLoad: async () => {
     const { data, error } = await supabase.auth.getUser();
     if (error || !data.user) throw redirect({ to: "/auth" });
+    // An unverified email waits at the inbox screen, not inside the app.
+    if (!data.user.email_confirmed_at) throw redirect({ to: "/auth" });
     return { user: data.user };
   },
   component: () => <Outlet />,
