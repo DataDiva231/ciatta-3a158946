@@ -93,35 +93,74 @@ function Fade({
 
 /* ------------------------------------------------------------------ splash */
 
-/** The brand alone, held long enough to be read and remembered. */
-function Splash({ leaving }: { leaving: boolean }) {
-  const [inView, setInView] = useState(false);
+/**
+ * The brand introduction: the mark breathes into view, dissolves into the
+ * wordmark, and the wordmark is held a full three seconds before onboarding.
+ */
+function Splash({ onDone }: { onDone: () => void }) {
+  // 0 mark in · 1 mark held · 2 wordmark · 3 leaving
+  const [step, setStep] = useState(0);
+
   useEffect(() => {
-    const t = window.setTimeout(() => setInView(true), 80);
-    return () => window.clearTimeout(t);
-  }, []);
+    const timers = [
+      window.setTimeout(() => setStep(1), 80),
+      window.setTimeout(() => setStep(2), 2000),
+      window.setTimeout(() => setStep(3), 5400), // wordmark held ~3s
+      window.setTimeout(onDone, 6300),
+    ];
+    return () => timers.forEach((t) => window.clearTimeout(t));
+  }, [onDone]);
+
+  const markVisible = step === 1;
+  const wordVisible = step === 2;
+
   return (
     <div className="relative flex h-[100svh] items-center justify-center bg-background">
       <Living />
-      <div
-        className="relative transition-opacity ease-out"
-        style={{
-          opacity: leaving ? 0 : inView ? 1 : 0,
-          transitionDuration: leaving ? "900ms" : "1200ms",
-        }}
-      >
+      <div className="relative flex items-center justify-center">
+        <div
+          aria-hidden={!markVisible}
+          className="absolute transition-all ease-out"
+          style={{
+            opacity: markVisible ? 1 : 0,
+            transform: `scale(${markVisible ? 1 : 0.92})`,
+            transitionDuration: "1100ms",
+          }}
+        >
+          <span
+            aria-hidden="true"
+            className="animate-breathe absolute -inset-10 rounded-full"
+            style={{
+              background:
+                "radial-gradient(circle, color-mix(in oklab, var(--clay) 22%, transparent) 0%, transparent 70%)",
+            }}
+          />
+          <img
+            src={mark.url}
+            alt="Ciatta"
+            className="relative dark:invert"
+            style={{ width: 64, height: 64 }}
+          />
+        </div>
         <img
           src={wordmark.url}
           alt="Ciatta"
           width={1920}
           height={562}
-          className="dark:invert"
-          style={{ width: 168, height: "auto" }}
+          className="dark:invert transition-all ease-out"
+          style={{
+            width: 168,
+            height: "auto",
+            opacity: wordVisible ? 1 : 0,
+            transform: `translateY(${wordVisible ? 0 : 4}px)`,
+            transitionDuration: wordVisible ? "1100ms" : "900ms",
+          }}
         />
       </div>
     </div>
   );
 }
+
 
 /* --------------------------------------------------------- living intro */
 
