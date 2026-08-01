@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 
 import mark from "@/assets/ciatta-mark.png.asset.json";
@@ -9,97 +9,215 @@ import { supabase } from "@/integrations/supabase/client";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Sign in — Ciatta" },
+      { title: "Begin with Ciatta — a quiet start" },
       {
         name: "description",
         content:
-          "Sign in to Ciatta. Everything Ciatta learns about you stays inside your own account.",
+          "Ciatta learns your body by listening. Create your account and everything it comes to understand stays private to you.",
       },
-      { property: "og:title", content: "Sign in — Ciatta" },
+      { property: "og:title", content: "Begin with Ciatta — a quiet start" },
       {
         property: "og:description",
-        content: "Ciatta begins with curiosity. Sign in to start your own understanding.",
+        content: "Ciatta learns your body by listening. What you share stays yours.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+      { name: "twitter:title", content: "Begin with Ciatta — a quiet start" },
+      {
+        name: "twitter:description",
+        content: "Ciatta learns your body by listening. What you share stays yours.",
       },
     ],
   }),
   component: AuthPage,
 });
 
-function Halo({ size = 232, markSize = 104 }: { size?: number; markSize?: number }) {
-  return (
-    <div
-      className="animate-breathe relative flex items-center justify-center"
-      style={{ width: size, height: size }}
-    >
-      <span
-        aria-hidden="true"
-        className="absolute inset-0 rounded-full"
-        style={{
-          background:
-            "radial-gradient(circle at 36% 32%, color-mix(in oklab, var(--clay) 7%, transparent) 0%, transparent 52%)," +
-            "radial-gradient(circle at 70% 30%, oklch(0.88 0.04 340 / 0.07) 0%, transparent 54%)," +
-            "radial-gradient(circle at 70% 72%, oklch(0.85 0.05 292 / 0.06) 0%, transparent 56%)," +
-            "radial-gradient(circle at 30% 74%, oklch(0.88 0.04 232 / 0.07) 0%, transparent 56%)",
-          maskImage: "radial-gradient(circle, black 34%, transparent 70%)",
-          filter: "blur(14px)",
-        }}
-      />
-      <img
-        src={mark.url}
-        alt=""
-        aria-hidden="true"
-        className="relative dark:invert"
-        style={{ width: markSize, height: markSize }}
-      />
-    </div>
-  );
-}
+/* ------------------------------------------------------------------ chrome */
 
 /**
- * Splash — the brand is allowed to be remembered before anything is asked.
- * Mark settles, the wordmark fades in, it is held, then everything fades away.
+ * One reading column, centered on every screen size. On a phone it fills the
+ * width; on a tablet or desktop it stays a column rather than a stretched page.
  */
-function Splash({ leaving }: { leaving: boolean }) {
-  const [markIn, setMarkIn] = useState(false);
-  const [named, setNamed] = useState(false);
-
-  useEffect(() => {
-    const a = window.setTimeout(() => setMarkIn(true), 60);
-    const b = window.setTimeout(() => setNamed(true), 1100);
-    return () => {
-      window.clearTimeout(a);
-      window.clearTimeout(b);
-    };
-  }, []);
-
+function Shell({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
-    <div
-      className="flex h-[100svh] flex-col items-center justify-center bg-background transition-opacity duration-[1100ms]"
-      style={{ opacity: leaving ? 0 : 1 }}
-    >
+    <div className="relative flex min-h-[100svh] flex-col items-center bg-background">
+      <Living />
       <div
-        className="transition-opacity duration-[1400ms]"
-        style={{ opacity: markIn ? 1 : 0 }}
+        className={`relative flex w-full max-w-[27rem] flex-1 flex-col px-8 sm:px-10 ${className}`}
       >
-        <Halo />
-      </div>
-      <div
-        className="mt-12 transition-opacity duration-[1600ms]"
-        style={{ opacity: named ? 1 : 0 }}
-      >
-        <img src={wordmark.url} alt="Ciatta" className="dark:invert" style={{ width: 148 }} />
+        {children}
       </div>
     </div>
   );
 }
 
-const RULES = [
-  { label: "8–30 characters", test: (v: string) => v.length >= 8 && v.length <= 30 },
-  { label: "1 uppercase character", test: (v: string) => /[A-Z]/.test(v) },
-  { label: "1 lowercase character", test: (v: string) => /[a-z]/.test(v) },
-  { label: "1 number", test: (v: string) => /\d/.test(v) },
-  { label: "1 special character", test: (v: string) => /[^A-Za-z0-9]/.test(v) },
+/** Almost motionless light. The words are the animation, not the background. */
+function Living() {
+  return (
+    <div
+      aria-hidden="true"
+      className="animate-breathe pointer-events-none absolute inset-0 overflow-hidden"
+      style={{
+        background:
+          "radial-gradient(120% 70% at 18% 8%, color-mix(in oklab, var(--clay) 5%, transparent) 0%, transparent 62%)," +
+          "radial-gradient(110% 70% at 88% 78%, oklch(0.88 0.04 340 / 0.05) 0%, transparent 62%)",
+      }}
+    />
+  );
+}
+
+function Fade({
+  show,
+  children,
+  ms = 900,
+  className = "",
+}: {
+  show: boolean;
+  children: React.ReactNode;
+  ms?: number;
+  className?: string;
+}) {
+  return (
+    <div
+      className={`transition-all ease-out ${className}`}
+      style={{
+        opacity: show ? 1 : 0,
+        transform: show ? "translateY(0)" : "translateY(6px)",
+        transitionDuration: `${ms}ms`,
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ splash */
+
+/** The brand alone, held long enough to be read and remembered. */
+function Splash({ leaving }: { leaving: boolean }) {
+  const [inView, setInView] = useState(false);
+  useEffect(() => {
+    const t = window.setTimeout(() => setInView(true), 80);
+    return () => window.clearTimeout(t);
+  }, []);
+  return (
+    <div className="relative flex h-[100svh] items-center justify-center bg-background">
+      <Living />
+      <div
+        className="relative transition-opacity ease-out"
+        style={{
+          opacity: leaving ? 0 : inView ? 1 : 0,
+          transitionDuration: leaving ? "900ms" : "1200ms",
+        }}
+      >
+        <img
+          src={wordmark.url}
+          alt="Ciatta"
+          width={1920}
+          height={562}
+          className="dark:invert"
+          style={{ width: 168, height: "auto" }}
+        />
+      </div>
+    </div>
+  );
+}
+
+/* --------------------------------------------------------- living intro */
+
+const SLIDES: { title: string; lines: string[] }[] = [
+  {
+    title: "I don't know you yet.",
+    lines: ["Every body has its own rhythm.", "I'm here to learn yours."],
+  },
+  {
+    title: "I learn by listening.",
+    lines: ["Not from perfect data.", "From the small things you notice every day."],
+  },
+  {
+    title: "Understanding takes time.",
+    lines: ["One observation becomes a pattern.", "Patterns become understanding."],
+  },
+  {
+    title: "What you share stays yours.",
+    lines: [
+      "Your information belongs to you. Always.",
+      "You choose what I learn and what you keep private.",
+    ],
+  },
+  {
+    title: "Let's begin.",
+    lines: ["One conversation.", "We'll start small.", "I'll remember what matters."],
+  },
 ];
+
+function LivingIntro({ onStart }: { onStart: () => void }) {
+  const [i, setI] = useState(0);
+  const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    if (i >= SLIDES.length - 1) return;
+    const out = window.setTimeout(() => setVisible(false), 2400);
+    const next = window.setTimeout(() => {
+      setI((n) => n + 1);
+      setVisible(true);
+    }, 3000);
+    return () => {
+      window.clearTimeout(out);
+      window.clearTimeout(next);
+    };
+  }, [i]);
+
+  const slide = SLIDES[i];
+
+  return (
+    <Shell className="pt-16 pb-12">
+      <img
+        src={mark.url}
+        alt="Ciatta"
+        className="dark:invert"
+        style={{ width: 40, height: 40 }}
+      />
+
+      <div className="flex flex-1 flex-col justify-center py-10">
+        <Fade show={visible} ms={700}>
+          <h1 className="max-w-[17rem] font-serif text-[34px] leading-[1.12] tracking-[-0.02em]">
+            {slide.title}
+          </h1>
+          <div className="mt-5 max-w-[19rem] space-y-2.5 text-[14.5px] leading-relaxed text-muted-foreground">
+            {slide.lines.map((line) => (
+              <p key={line}>{line}</p>
+            ))}
+          </div>
+        </Fade>
+      </div>
+
+      <div className="shrink-0">
+        <div className="mb-8 flex gap-2">
+          {SLIDES.map((s, n) => (
+            <span
+              key={s.title}
+              aria-hidden="true"
+              className="h-[5px] w-[5px] rounded-full transition-colors duration-700"
+              style={{
+                background: n === i ? "var(--foreground)" : "var(--border)",
+              }}
+            />
+          ))}
+        </div>
+        <button
+          type="button"
+          onClick={onStart}
+          className="w-full rounded-full bg-foreground px-6 py-[15px] text-[15px] font-medium text-background transition-all duration-200 active:scale-[0.99]"
+        >
+          Get Started
+        </button>
+      </div>
+    </Shell>
+  );
+}
+
+/* ----------------------------------------------------------------- glyphs */
 
 function AppleGlyph() {
   return (
@@ -129,54 +247,89 @@ function GoogleGlyph() {
   );
 }
 
+const RULES = [
+  { label: "8–30 characters", test: (v: string) => v.length >= 8 && v.length <= 30 },
+  { label: "1 uppercase character", test: (v: string) => /[A-Z]/.test(v) },
+  { label: "1 lowercase character", test: (v: string) => /[a-z]/.test(v) },
+  { label: "1 number", test: (v: string) => /\d/.test(v) },
+  { label: "1 special character", test: (v: string) => /[^A-Za-z0-9]/.test(v) },
+];
+
+/* ------------------------------------------------------------------- page */
+
+type Phase = "splash" | "intro" | "choose" | "email" | "handoff" | "greeting";
+
 function AuthPage() {
   const navigate = useNavigate();
-  const [phase, setPhase] = useState<"splash" | "choose" | "email">("splash");
+  const [phase, setPhase] = useState<Phase>("splash");
   const [splashLeaving, setSplashLeaving] = useState(false);
   const [mode, setMode] = useState<"signup" | "signin">("signup");
-  const [busy, setBusy] = useState<"apple" | "google" | "email" | null>(null);
+  const [busy, setBusy] = useState<"apple" | "google" | "email" | "reset" | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [reveal, setReveal] = useState(false);
+  const [returning, setReturning] = useState(false);
+  const settled = useRef(false);
 
   const passwordOk = useMemo(() => RULES.every((r) => r.test(password)), [password]);
 
-  // Already signed in? Go straight in — sessions survive app launches.
+  /** After any successful sign-in: one warm line, then the conversation. */
+  const enter = useCallback(
+    (isReturning: boolean) => {
+      if (settled.current) return;
+      settled.current = true;
+      setReturning(isReturning);
+      setPhase("greeting");
+      window.setTimeout(() => {
+        navigate({ to: isReturning ? "/" : "/onboarding", replace: true });
+      }, 2300);
+    },
+    [navigate],
+  );
+
+  // A session already in the browser means we're mid-relationship, not new.
   useEffect(() => {
     let alive = true;
-    const cleanups: number[] = [];
+    const timers: number[] = [];
     void supabase.auth.getSession().then(({ data }) => {
       if (!alive) return;
       if (data.session) {
-        navigate({ to: "/", replace: true });
+        const user = data.session.user;
+        const createdAt = user.created_at ? new Date(user.created_at).getTime() : 0;
+        const fresh = createdAt > 0 && Date.now() - createdAt < 90_000;
+        enter(!fresh);
         return;
       }
-      // The wordmark is held long enough to be recognised, then fades out.
-      const fade = window.setTimeout(() => alive && setSplashLeaving(true), 4200);
-      const done = window.setTimeout(() => alive && setPhase("choose"), 5300);
-      cleanups.push(fade, done);
+      // The wordmark is held for about three seconds, then dissolves.
+      timers.push(window.setTimeout(() => alive && setSplashLeaving(true), 3000));
+      timers.push(window.setTimeout(() => alive && setPhase("intro"), 3900));
     });
     return () => {
       alive = false;
-      cleanups.forEach((t) => window.clearTimeout(t));
+      timers.forEach((t) => window.clearTimeout(t));
     };
-  }, [navigate]);
+  }, [enter]);
 
   const continueWith = async (provider: "google" | "apple") => {
-    setBusy(provider);
     setError(null);
+    setBusy(provider);
+    setPhase("handoff");
+    await new Promise((r) => window.setTimeout(r, 1200));
     const result = await lovable.auth.signInWithOAuth(provider, {
       redirect_uri: window.location.origin,
     });
     if (result.error) {
       setBusy(null);
+      setPhase("choose");
       setError("That didn't complete. Try once more.");
       return;
     }
-    if (result.redirected) return; // The browser is on its way to the provider.
-    navigate({ to: "/", replace: true });
+    if (result.redirected) return; // On its way to the provider.
+    const { data } = await supabase.auth.getUser();
+    const createdAt = data.user?.created_at ? new Date(data.user.created_at).getTime() : 0;
+    enter(createdAt > 0 && Date.now() - createdAt >= 90_000);
   };
 
   const submitEmail = async () => {
@@ -206,7 +359,7 @@ function AuthPage() {
         setNotice("Check your email to confirm, and we'll pick up right here.");
         return;
       }
-      navigate({ to: "/", replace: true });
+      enter(false);
       return;
     }
     const { error: err } = await supabase.auth.signInWithPassword({
@@ -218,28 +371,122 @@ function AuthPage() {
       setError("Those details didn't match. Try again.");
       return;
     }
-    navigate({ to: "/", replace: true });
+    enter(true);
+  };
+
+  const forgotPassword = async () => {
+    setError(null);
+    setNotice(null);
+    if (!email.trim()) {
+      setError("Add your email first, and I'll send a reset link.");
+      return;
+    }
+    setBusy("reset");
+    const { error: err } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    setBusy(null);
+    if (err) {
+      setError("That didn't send. Try once more.");
+      return;
+    }
+    setNotice("A reset link is on its way to your inbox.");
   };
 
   if (phase === "splash") return <Splash leaving={splashLeaving} />;
+  if (phase === "intro") return <LivingIntro onStart={() => setPhase("choose")} />;
+
+  if (phase === "handoff") {
+    return (
+      <div className="relative flex h-[100svh] items-center justify-center bg-background px-10">
+        <Living />
+        <p className="animate-in fade-in relative max-w-[19rem] text-center font-serif text-[22px] leading-[1.3] duration-[900ms]">
+          One secure step, then we&apos;ll continue our conversation.
+        </p>
+      </div>
+    );
+  }
+
+  if (phase === "greeting") {
+    return (
+      <div className="relative flex h-[100svh] flex-col items-center justify-center bg-background px-10">
+        <Living />
+        <div className="animate-in fade-in relative text-center duration-[1000ms]">
+          <h1 className="font-serif text-[30px] leading-[1.16] tracking-[-0.02em]">
+            {returning ? "Welcome back." : "Nice to meet you."}
+          </h1>
+          <p className="mt-3 text-[14.5px] text-muted-foreground">
+            {returning ? "Let's continue." : "Let's begin."}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   const legal = (
     <p className="mt-6 text-center text-[12.5px] leading-relaxed text-muted-foreground">
       By continuing, you agree to Ciatta&apos;s{" "}
-      <Link to="/terms" className="underline underline-offset-2">
+      <Link to="/terms" className="text-foreground underline underline-offset-2">
         Terms of Use
       </Link>{" "}
       and{" "}
-      <Link to="/privacy" className="underline underline-offset-2">
+      <Link to="/privacy" className="text-foreground underline underline-offset-2">
         Privacy Policy
       </Link>
       .
     </p>
   );
 
+  const social = (
+    <div className="space-y-3">
+      <button
+        type="button"
+        disabled={busy !== null}
+        onClick={() => void continueWith("apple")}
+        className="flex w-full items-center justify-center gap-2.5 rounded-full border border-border bg-background px-6 py-[15px] text-[15px] font-medium transition-all duration-200 active:scale-[0.99] disabled:opacity-60"
+      >
+        <AppleGlyph />
+        Continue with Apple
+      </button>
+      <button
+        type="button"
+        disabled={busy !== null}
+        onClick={() => void continueWith("google")}
+        className="flex w-full items-center justify-center gap-2.5 rounded-full border border-border bg-background px-6 py-[15px] text-[15px] font-medium transition-all duration-200 active:scale-[0.99] disabled:opacity-60"
+      >
+        <GoogleGlyph />
+        Continue with Google
+      </button>
+    </div>
+  );
+
+  const swap = (
+    <button
+      type="button"
+      onClick={() => {
+        setMode(mode === "signup" ? "signin" : "signup");
+        setError(null);
+        setNotice(null);
+      }}
+      className="mt-6 w-full text-center text-[13.5px] text-muted-foreground"
+    >
+      {mode === "signup" ? (
+        <>
+          Already have an account?{" "}
+          <span className="text-foreground underline underline-offset-2">Sign In</span>
+        </>
+      ) : (
+        <>
+          Don&apos;t have an account?{" "}
+          <span className="text-foreground underline underline-offset-2">Create Account</span>
+        </>
+      )}
+    </button>
+  );
+
   if (phase === "email") {
     return (
-      <div className="animate-in fade-in flex min-h-[100svh] flex-col bg-background px-8 pt-14 pb-12 duration-[700ms]">
+      <Shell className="animate-in fade-in pt-14 pb-12 duration-[700ms]">
         <button
           type="button"
           onClick={() => {
@@ -253,11 +500,11 @@ function AuthPage() {
         </button>
 
         <h1 className="mt-10 font-serif text-[32px] leading-[1.12] tracking-[-0.02em]">
-          {mode === "signup" ? "Everything begins here." : "Welcome back."}
+          {mode === "signup" ? "Create your account" : "Welcome back."}
         </h1>
-        <p className="mt-3 max-w-[19rem] text-[14.5px] leading-relaxed text-muted-foreground">
+        <p className="mt-3 max-w-[20rem] text-[14.5px] leading-relaxed text-muted-foreground">
           {mode === "signup"
-            ? "Create an account so what I learn stays yours."
+            ? "Your account keeps your understanding private, secure, and available only to you."
             : "Sign in, and we'll continue where we left off."}
         </p>
 
@@ -287,12 +534,26 @@ function AuthPage() {
               className="absolute inset-y-0 right-4 flex items-center text-muted-foreground"
             >
               {reveal ? (
-                <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <svg
+                  viewBox="0 0 24 24"
+                  width="19"
+                  height="19"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                >
                   <path d="M3 3l18 18M10.6 10.7a2 2 0 002.8 2.8" />
                   <path d="M6.3 6.9C4.3 8.2 2.8 10 2 12c1.7 4 5.6 6.5 10 6.5 1.7 0 3.3-.4 4.7-1.1M9.9 5.7A10 10 0 0112 5.5c4.4 0 8.3 2.5 10 6.5a13 13 0 01-2.4 3.4" />
                 </svg>
               ) : (
-                <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <svg
+                  viewBox="0 0 24 24"
+                  width="19"
+                  height="19"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                >
                   <path d="M2 12c1.7-4 5.6-6.5 10-6.5S20.3 8 22 12c-1.7 4-5.6 6.5-10 6.5S3.7 16 2 12z" />
                   <circle cx="12" cy="12" r="2.6" />
                 </svg>
@@ -301,7 +562,7 @@ function AuthPage() {
           </div>
         </div>
 
-        {mode === "signup" && (
+        {mode === "signup" ? (
           <ul className="mt-5 space-y-2.5">
             {RULES.map((rule) => {
               const met = rule.test(password);
@@ -321,6 +582,15 @@ function AuthPage() {
               );
             })}
           </ul>
+        ) : (
+          <button
+            type="button"
+            disabled={busy !== null}
+            onClick={() => void forgotPassword()}
+            className="mt-4 self-start text-[13.5px] text-muted-foreground underline underline-offset-2 disabled:opacity-60"
+          >
+            Forgot password?
+          </button>
         )}
 
         <div className="mt-auto pt-10">
@@ -330,89 +600,58 @@ function AuthPage() {
             onClick={() => void submitEmail()}
             className="w-full rounded-full bg-foreground px-6 py-[15px] text-[15px] font-medium text-background transition-all duration-200 active:scale-[0.99] disabled:opacity-60"
           >
-            {busy === "email"
-              ? "Just a moment…"
-              : mode === "signup"
-                ? "Sign Up with Email"
-                : "Sign In"}
+            {busy === "email" ? "Just a moment…" : "Continue"}
           </button>
 
-          {error && (
-            <p className="mt-4 text-center text-[13.5px] text-muted-foreground">{error}</p>
-          )}
+          {error && <p className="mt-4 text-center text-[13.5px] text-muted-foreground">{error}</p>}
           {notice && (
             <p className="mt-4 text-center text-[13.5px] text-muted-foreground">{notice}</p>
           )}
 
-          <button
-            type="button"
-            onClick={() => {
-              setMode(mode === "signup" ? "signin" : "signup");
-              setError(null);
-              setNotice(null);
-            }}
-            className="mt-6 w-full text-center text-[13.5px] text-muted-foreground"
-          >
-            {mode === "signup" ? (
-              <>
-                Already have an account?{" "}
-                <span className="text-foreground underline underline-offset-2">Sign in</span>
-              </>
-            ) : (
-              <>
-                New here?{" "}
-                <span className="text-foreground underline underline-offset-2">Create account</span>
-              </>
-            )}
-          </button>
+          <div className="my-7 flex items-center gap-4">
+            <span className="h-px flex-1 bg-border" />
+            <span className="text-[11px] tracking-[0.14em] text-muted-foreground uppercase">or</span>
+            <span className="h-px flex-1 bg-border" />
+          </div>
+
+          {social}
+          {swap}
           {legal}
         </div>
-      </div>
+      </Shell>
     );
   }
 
   return (
-    <div className="animate-in fade-in slide-in-from-bottom-1 flex min-h-[100svh] flex-col bg-background duration-[900ms]">
-      <div className="flex-1 px-8 pt-20">
-        <img src={mark.url} alt="Ciatta" className="dark:invert" style={{ width: 44, height: 44 }} />
-        <h1 className="mt-12 max-w-[17rem] font-serif text-[34px] leading-[1.12] tracking-[-0.02em]">
-          I don&apos;t know you yet.
+    <Shell className="animate-in fade-in pt-20 pb-10 duration-[900ms]">
+      <div className="flex-1">
+        <img
+          src={mark.url}
+          alt="Ciatta"
+          className="dark:invert"
+          style={{ width: 40, height: 40 }}
+        />
+        <h1 className="mt-12 max-w-[17rem] font-serif text-[32px] leading-[1.12] tracking-[-0.02em]">
+          Create your account
         </h1>
-        <p className="mt-4 max-w-[19rem] text-[14.5px] leading-relaxed text-muted-foreground">
-          Everything begins here. Create an account so what I learn stays yours — inside your own
-          account, only ever yours.
+        <p className="mt-4 max-w-[20rem] text-[14.5px] leading-relaxed text-muted-foreground">
+          Your account keeps your understanding private, secure, and available only to you.
         </p>
       </div>
 
-      <div className="shrink-0 px-8 pb-10">
-        <div className="space-y-3">
-          <button
-            type="button"
-            disabled={busy !== null}
-            onClick={() => void continueWith("apple")}
-            className="flex w-full items-center justify-center gap-2.5 rounded-full bg-foreground px-6 py-[15px] text-[15px] font-medium text-background transition-all duration-200 active:scale-[0.99] disabled:opacity-60"
-          >
-            <AppleGlyph />
-            {busy === "apple" ? "Just a moment…" : "Continue with Apple"}
-          </button>
-          <button
-            type="button"
-            disabled={busy !== null}
-            onClick={() => void continueWith("google")}
-            className="flex w-full items-center justify-center gap-2.5 rounded-full border border-border bg-background px-6 py-[15px] text-[15px] font-medium transition-all duration-200 active:scale-[0.99] disabled:opacity-60"
-          >
-            <GoogleGlyph />
-            {busy === "google" ? "Just a moment…" : "Continue with Google"}
-          </button>
-          <button
-            type="button"
-            disabled={busy !== null}
-            onClick={() => setPhase("email")}
-            className="w-full rounded-full bg-muted px-6 py-[15px] text-[15px] font-medium transition-all duration-200 active:scale-[0.99] disabled:opacity-60"
-          >
-            Continue with Email
-          </button>
-        </div>
+      <div className="shrink-0">
+        {social}
+        <button
+          type="button"
+          disabled={busy !== null}
+          onClick={() => {
+            setMode("signup");
+            setPhase("email");
+          }}
+          className="mt-3 w-full rounded-full bg-foreground px-6 py-[15px] text-[15px] font-medium text-background transition-all duration-200 active:scale-[0.99] disabled:opacity-60"
+        >
+          Continue with Email
+        </button>
 
         {error && <p className="mt-4 text-center text-[13.5px] text-muted-foreground">{error}</p>}
 
@@ -425,10 +664,10 @@ function AuthPage() {
           className="mt-6 w-full text-center text-[13.5px] text-muted-foreground"
         >
           Already have an account?{" "}
-          <span className="text-foreground underline underline-offset-2">Sign in</span>
+          <span className="text-foreground underline underline-offset-2">Sign In</span>
         </button>
         {legal}
       </div>
-    </div>
+    </Shell>
   );
 }
