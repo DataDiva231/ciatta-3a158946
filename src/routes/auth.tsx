@@ -544,6 +544,50 @@ function AuthPage() {
     );
   }
 
+  if (phase === "verify") {
+    return (
+      <Shell className="animate-in fade-in pt-20 pb-12 duration-[700ms]">
+        <div className="flex-1">
+          <img src={mark.url} alt="Ciatta" className="dark:invert" style={{ width: 40, height: 40 }} />
+          <h1 className="mt-12 max-w-[18rem] font-serif text-[32px] leading-[1.12] tracking-[-0.02em]">
+            Check your email.
+          </h1>
+          <p className="mt-4 max-w-[20rem] text-[14.5px] leading-relaxed text-muted-foreground">
+            I&apos;ve sent a verification link to
+          </p>
+          <p className="mt-1.5 text-[15px] font-medium break-all">{email.trim()}</p>
+          <p className="mt-4 max-w-[20rem] text-[14.5px] leading-relaxed text-muted-foreground">
+            Open it and we&apos;ll continue right here — this screen notices the moment you do.
+          </p>
+        </div>
+
+        <div className="shrink-0">
+          <button
+            type="button"
+            disabled={busy !== null}
+            onClick={() => void resendVerification()}
+            className="w-full rounded-full bg-foreground px-6 py-[15px] text-[15px] font-medium text-background transition-all duration-200 active:scale-[0.99] disabled:opacity-60"
+          >
+            {busy === "resend" ? "Sending…" : "Resend email"}
+          </button>
+          <button
+            type="button"
+            disabled={busy !== null}
+            onClick={() => void changeEmail()}
+            className="mt-3 w-full rounded-full border border-border bg-background px-6 py-[15px] text-[15px] font-medium transition-all duration-200 active:scale-[0.99] disabled:opacity-60"
+          >
+            Change email address
+          </button>
+
+          {error && <p className="mt-4 text-center text-[13.5px] text-muted-foreground">{error}</p>}
+          {notice && <p className="mt-4 text-center text-[13.5px] text-muted-foreground">{notice}</p>}
+        </div>
+      </Shell>
+    );
+  }
+
+
+
   if (phase === "greeting") {
     return (
       <div className="relative flex h-[100svh] flex-col items-center justify-center bg-background px-10">
