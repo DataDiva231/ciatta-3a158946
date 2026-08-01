@@ -71,16 +71,13 @@ const weightRelevant = (d: Onboarding) =>
 /* -------------------------------------------------------------------- graph */
 
 export const FLOW: FlowNode[] = [
-  { id: "welcome", kind: "intro" },
-  { id: "privacy", kind: "intro" },
-  { id: "session", kind: "intro" },
-
   {
     id: "name",
     kind: "text",
     ask: () => "What should I call you?",
-    why: () => "I'll speak to you by name from here on.",
+    why: () => "It's a small thing. But conversations are better when we know each other's names.",
   },
+
 
   {
     id: "birth",

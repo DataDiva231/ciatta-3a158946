@@ -305,7 +305,7 @@ function OnboardingPage() {
   const { save: saveIdentity } = useIdentity();
   const health = useAppleHealth();
 
-  const [history, setHistory] = useState<string[]>(["welcome"]);
+  const [history, setHistory] = useState<string[]>(["name"]);
   const [dir, setDir] = useState<1 | -1>(1);
   const [beat, setBeat] = useState<string | null>(null);
   const usedAcks = useRef<string[]>([]);
