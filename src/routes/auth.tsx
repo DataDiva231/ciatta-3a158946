@@ -93,35 +93,74 @@ function Fade({
 
 /* ------------------------------------------------------------------ splash */
 
-/** The brand alone, held long enough to be read and remembered. */
-function Splash({ leaving }: { leaving: boolean }) {
-  const [inView, setInView] = useState(false);
+/**
+ * The brand introduction: the mark breathes into view, dissolves into the
+ * wordmark, and the wordmark is held a full three seconds before onboarding.
+ */
+function Splash({ onDone }: { onDone: () => void }) {
+  // 0 mark in · 1 mark held · 2 wordmark · 3 leaving
+  const [step, setStep] = useState(0);
+
   useEffect(() => {
-    const t = window.setTimeout(() => setInView(true), 80);
-    return () => window.clearTimeout(t);
-  }, []);
+    const timers = [
+      window.setTimeout(() => setStep(1), 80),
+      window.setTimeout(() => setStep(2), 2000),
+      window.setTimeout(() => setStep(3), 5400), // wordmark held ~3s
+      window.setTimeout(onDone, 6300),
+    ];
+    return () => timers.forEach((t) => window.clearTimeout(t));
+  }, [onDone]);
+
+  const markVisible = step === 1;
+  const wordVisible = step === 2;
+
   return (
     <div className="relative flex h-[100svh] items-center justify-center bg-background">
       <Living />
-      <div
-        className="relative transition-opacity ease-out"
-        style={{
-          opacity: leaving ? 0 : inView ? 1 : 0,
-          transitionDuration: leaving ? "900ms" : "1200ms",
-        }}
-      >
+      <div className="relative flex items-center justify-center">
+        <div
+          aria-hidden={!markVisible}
+          className="absolute transition-all ease-out"
+          style={{
+            opacity: markVisible ? 1 : 0,
+            transform: `scale(${markVisible ? 1 : 0.92})`,
+            transitionDuration: "1100ms",
+          }}
+        >
+          <span
+            aria-hidden="true"
+            className="animate-breathe absolute -inset-16 rounded-full blur-xl"
+            style={{
+              background:
+                "radial-gradient(circle, color-mix(in oklab, var(--clay) 12%, transparent) 0%, transparent 70%)",
+            }}
+          />
+          <img
+            src={mark.url}
+            alt="Ciatta"
+            className="relative dark:invert"
+            style={{ width: 64, height: 64 }}
+          />
+        </div>
         <img
           src={wordmark.url}
           alt="Ciatta"
           width={1920}
           height={562}
-          className="dark:invert"
-          style={{ width: 168, height: "auto" }}
+          className="dark:invert transition-all ease-out"
+          style={{
+            width: 168,
+            height: "auto",
+            opacity: wordVisible ? 1 : 0,
+            transform: `translateY(${wordVisible ? 0 : 4}px)`,
+            transitionDuration: wordVisible ? "1100ms" : "900ms",
+          }}
         />
       </div>
     </div>
   );
 }
+
 
 /* --------------------------------------------------------- living intro */
 
@@ -257,14 +296,18 @@ const RULES = [
 
 /* ------------------------------------------------------------------- page */
 
-type Phase = "splash" | "intro" | "choose" | "email" | "handoff" | "greeting";
+type Phase = "splash" | "intro" | "choose" | "email" | "verify" | "handoff" | "greeting";
+
+/** Development-visible trail for every authentication step. */
+const log = (step: string, detail?: unknown) => {
+  if (import.meta.env.DEV) console.info(`[auth] ${step}`, detail ?? "");
+};
 
 function AuthPage() {
   const navigate = useNavigate();
   const [phase, setPhase] = useState<Phase>("splash");
-  const [splashLeaving, setSplashLeaving] = useState(false);
   const [mode, setMode] = useState<"signup" | "signin">("signup");
-  const [busy, setBusy] = useState<"apple" | "google" | "email" | "reset" | null>(null);
+  const [busy, setBusy] = useState<"apple" | "google" | "email" | "reset" | "resend" | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [email, setEmail] = useState("");
@@ -280,47 +323,89 @@ function AuthPage() {
     (isReturning: boolean) => {
       if (settled.current) return;
       settled.current = true;
+      log("entering app", { returning: isReturning });
       setReturning(isReturning);
       setPhase("greeting");
       window.setTimeout(() => {
-        navigate({ to: isReturning ? "/" : "/onboarding", replace: true });
+        navigate({ to: isReturning ? "/" : "/onboarding", replace: true }).catch((e: unknown) =>
+          console.error("[auth] navigation failed", e),
+        );
       }, 2300);
     },
     [navigate],
   );
 
+  /** A verified session continues; an unverified one waits at the inbox. */
+  const settle = useCallback(
+    (user: { created_at?: string; email?: string | null; email_confirmed_at?: string | null }) => {
+      if (!user.email_confirmed_at) {
+        log("session found but email unverified", { email: user.email });
+        if (user.email) setEmail(user.email);
+        setPhase("verify");
+        return;
+      }
+      const createdAt = user.created_at ? new Date(user.created_at).getTime() : 0;
+      const fresh = createdAt > 0 && Date.now() - createdAt < 90_000;
+      enter(!fresh);
+    },
+    [enter],
+  );
+
   // A session already in the browser means we're mid-relationship, not new.
   useEffect(() => {
     let alive = true;
-    const timers: number[] = [];
-    void supabase.auth.getSession().then(({ data }) => {
+    void supabase.auth.getSession().then(({ data, error: err }) => {
       if (!alive) return;
-      if (data.session) {
-        const user = data.session.user;
-        const createdAt = user.created_at ? new Date(user.created_at).getTime() : 0;
-        const fresh = createdAt > 0 && Date.now() - createdAt < 90_000;
-        enter(!fresh);
-        return;
-      }
-      // The wordmark is held for about three seconds, then dissolves.
-      timers.push(window.setTimeout(() => alive && setSplashLeaving(true), 3000));
-      timers.push(window.setTimeout(() => alive && setPhase("intro"), 3900));
+      if (err) console.error("[auth] getSession failed", err);
+      log("initial session", { hasSession: Boolean(data.session) });
+      if (data.session) settle(data.session.user);
     });
     return () => {
       alive = false;
-      timers.forEach((t) => window.clearTimeout(t));
     };
-  }, [enter]);
+  }, [settle]);
+
+  // While waiting at the inbox, notice the moment verification lands.
+  useEffect(() => {
+    if (phase !== "verify") return;
+    let alive = true;
+    const check = async () => {
+      const { data, error: err } = await supabase.auth.refreshSession();
+      if (!alive) return;
+      if (err) {
+        log("refreshSession while verifying", err.message);
+        return;
+      }
+      const user = data.session?.user;
+      if (user?.email_confirmed_at) {
+        log("verification detected");
+        enter(false);
+      }
+    };
+    const id = window.setInterval(() => void check(), 4000);
+    void check();
+    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
+      log("auth state change", event);
+      if (session?.user.email_confirmed_at) enter(false);
+    });
+    return () => {
+      alive = false;
+      window.clearInterval(id);
+      sub.subscription.unsubscribe();
+    };
+  }, [phase, enter]);
 
   const continueWith = async (provider: "google" | "apple") => {
     setError(null);
     setBusy(provider);
     setPhase("handoff");
+    log("oauth start", provider);
     await new Promise((r) => window.setTimeout(r, 1200));
     const result = await lovable.auth.signInWithOAuth(provider, {
       redirect_uri: window.location.origin,
     });
     if (result.error) {
+      console.error("[auth] oauth failed", result.error);
       setBusy(null);
       setPhase("choose");
       setError("That didn't complete. Try once more.");
@@ -328,15 +413,15 @@ function AuthPage() {
     }
     if (result.redirected) return; // On its way to the provider.
     const { data } = await supabase.auth.getUser();
-    const createdAt = data.user?.created_at ? new Date(data.user.created_at).getTime() : 0;
-    enter(createdAt > 0 && Date.now() - createdAt >= 90_000);
+    if (data.user) settle(data.user);
   };
 
   const submitEmail = async () => {
     setError(null);
     setNotice(null);
-    if (!email.trim()) {
-      setError("I'll need an email address to reach you.");
+    const address = email.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(address)) {
+      setError("That email doesn't look complete — check it once more.");
       return;
     }
     if (mode === "signup" && !passwordOk) {
@@ -345,33 +430,83 @@ function AuthPage() {
     }
     setBusy("email");
     if (mode === "signup") {
+      log("signUp request", { email: address });
       const { data, error: err } = await supabase.auth.signUp({
-        email: email.trim(),
+        email: address,
         password,
-        options: { emailRedirectTo: window.location.origin },
+        options: { emailRedirectTo: `${window.location.origin}/auth` },
       });
       setBusy(null);
       if (err) {
-        setError(err.message);
+        console.error("[auth] signUp failed", err);
+        setError(
+          err.message.toLowerCase().includes("already registered")
+            ? "There's already an account with this email. Sign in instead."
+            : err.message,
+        );
         return;
       }
-      if (!data.session) {
-        setNotice("Check your email to confirm, and we'll pick up right here.");
+      log("signUp response", {
+        hasSession: Boolean(data.session),
+        confirmed: Boolean(data.user?.email_confirmed_at),
+      });
+      if (data.user?.email_confirmed_at && data.session) {
+        enter(false);
         return;
       }
-      enter(false);
+      setNotice(null);
+      setPhase("verify");
       return;
     }
-    const { error: err } = await supabase.auth.signInWithPassword({
-      email: email.trim(),
+    log("signIn request", { email: address });
+    const { data, error: err } = await supabase.auth.signInWithPassword({
+      email: address,
       password,
     });
     setBusy(null);
     if (err) {
+      console.error("[auth] signIn failed", err);
+      if (err.message.toLowerCase().includes("not confirmed")) {
+        setPhase("verify");
+        return;
+      }
       setError("Those details didn't match. Try again.");
       return;
     }
-    enter(true);
+    if (data.user) settle(data.user);
+  };
+
+  const resendVerification = async () => {
+    setError(null);
+    setNotice(null);
+    setBusy("resend");
+    log("resend verification", { email });
+    const { error: err } = await supabase.auth.resend({
+      type: "signup",
+      email: email.trim(),
+      options: { emailRedirectTo: `${window.location.origin}/auth` },
+    });
+    setBusy(null);
+    if (err) {
+      console.error("[auth] resend failed", err);
+      setError(
+        err.message.toLowerCase().includes("rate")
+          ? "That's been sent recently — give it a minute before trying again."
+          : "That didn't send. Try once more.",
+      );
+      return;
+    }
+    setNotice("Sent. It should arrive in a moment.");
+  };
+
+  const changeEmail = async () => {
+    setError(null);
+    setNotice(null);
+    settled.current = false;
+    await supabase.auth.signOut().catch(() => undefined);
+    setPassword("");
+    setMode("signup");
+    setPhase("email");
   };
 
   const forgotPassword = async () => {
@@ -387,13 +522,15 @@ function AuthPage() {
     });
     setBusy(null);
     if (err) {
+      console.error("[auth] password reset failed", err);
       setError("That didn't send. Try once more.");
       return;
     }
     setNotice("A reset link is on its way to your inbox.");
   };
 
-  if (phase === "splash") return <Splash leaving={splashLeaving} />;
+  if (phase === "splash") return <Splash onDone={() => setPhase("intro")} />;
+
   if (phase === "intro") return <LivingIntro onStart={() => setPhase("choose")} />;
 
   if (phase === "handoff") {
@@ -406,6 +543,50 @@ function AuthPage() {
       </div>
     );
   }
+
+  if (phase === "verify") {
+    return (
+      <Shell className="animate-in fade-in pt-20 pb-12 duration-[700ms]">
+        <div className="flex-1">
+          <img src={mark.url} alt="Ciatta" className="dark:invert" style={{ width: 40, height: 40 }} />
+          <h1 className="mt-12 max-w-[18rem] font-serif text-[32px] leading-[1.12] tracking-[-0.02em]">
+            Check your email.
+          </h1>
+          <p className="mt-4 max-w-[20rem] text-[14.5px] leading-relaxed text-muted-foreground">
+            I&apos;ve sent a verification link to
+          </p>
+          <p className="mt-1.5 text-[15px] font-medium break-all">{email.trim()}</p>
+          <p className="mt-4 max-w-[20rem] text-[14.5px] leading-relaxed text-muted-foreground">
+            Open it and we&apos;ll continue right here — this screen notices the moment you do.
+          </p>
+        </div>
+
+        <div className="shrink-0">
+          <button
+            type="button"
+            disabled={busy !== null}
+            onClick={() => void resendVerification()}
+            className="w-full rounded-full bg-foreground px-6 py-[15px] text-[15px] font-medium text-background transition-all duration-200 active:scale-[0.99] disabled:opacity-60"
+          >
+            {busy === "resend" ? "Sending…" : "Resend email"}
+          </button>
+          <button
+            type="button"
+            disabled={busy !== null}
+            onClick={() => void changeEmail()}
+            className="mt-3 w-full rounded-full border border-border bg-background px-6 py-[15px] text-[15px] font-medium transition-all duration-200 active:scale-[0.99] disabled:opacity-60"
+          >
+            Change email address
+          </button>
+
+          {error && <p className="mt-4 text-center text-[13.5px] text-muted-foreground">{error}</p>}
+          {notice && <p className="mt-4 text-center text-[13.5px] text-muted-foreground">{notice}</p>}
+        </div>
+      </Shell>
+    );
+  }
+
+
 
   if (phase === "greeting") {
     return (
