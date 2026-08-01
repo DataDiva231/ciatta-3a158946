@@ -13,7 +13,24 @@ export const Route = createFileRoute("/api/transcribe")({
         // A voice memo is personal health information: only a signed-in person
         // may send one, and the session is verified here, on the server.
         const userId = await requireUser(request);
-        if (!userId) return new Response("Unauthorized", { status: 401 });
+        const { audit } = await import("@/server/security/audit.server");
+        if (!userId) {
+          await audit({ event: "transcription.request", outcome: "denied", request });
+          return new Response("Unauthorized", { status: 401 });
+        }
+
+        const { guard, RateLimited } = await import("@/server/security/rate-limit.server");
+        try {
+          await guard("transcription", { userId, request });
+        } catch (error) {
+          if (error instanceof RateLimited) {
+            return new Response(error.message, {
+              status: 429,
+              headers: { "Retry-After": String(error.retryAfterSeconds) },
+            });
+          }
+          throw error;
+        }
 
         const key = process.env.LOVABLE_API_KEY;
         if (!key) return new Response("Missing LOVABLE_API_KEY", { status: 500 });
@@ -26,6 +43,14 @@ export const Route = createFileRoute("/api/transcribe")({
         if (audio.size > 20 * 1024 * 1024) {
           return new Response("That recording is too long to transcribe", { status: 413 });
         }
+
+        await audit({
+          userId,
+          event: "transcription.request",
+          request,
+          detail: { bytes: audio.size },
+        });
+
 
         const upstream = new FormData();
         upstream.append("model", "openai/gpt-4o-transcribe");

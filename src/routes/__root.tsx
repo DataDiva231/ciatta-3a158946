@@ -156,9 +156,15 @@ function RootComponent() {
       if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
       router.invalidate();
       if (event !== "SIGNED_OUT") queryClient.invalidateQueries();
+      if (event === "SIGNED_IN") {
+        void import("../lib/audit.functions").then(({ recordSessionEvent }) =>
+          recordSessionEvent({ data: { event: "sign_in" } }).catch(() => undefined),
+        );
+      }
     });
     return () => data.subscription.unsubscribe();
   }, [router, queryClient]);
+
 
 
   return (

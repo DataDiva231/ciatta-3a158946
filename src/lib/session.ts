@@ -48,6 +48,13 @@ export function useSession(): Session {
 
 /** Ends the session immediately, everywhere. */
 export async function endSession(): Promise<void> {
+  // Recorded while the token is still valid, so the sign out is auditable.
+  try {
+    const { recordSessionEvent } = await import("./audit.functions");
+    await recordSessionEvent({ data: { event: "sign_out" } });
+  } catch {
+    // Never block someone from leaving.
+  }
   await supabase.auth.signOut();
   if (typeof window !== "undefined") {
     // Nothing Ciatta learned lives on the device after a sign out.
@@ -56,6 +63,7 @@ export async function endSession(): Promise<void> {
     }
   }
 }
+
 
 /** The bearer token for authenticated calls to our own HTTP endpoints. */
 export async function accessToken(): Promise<string | null> {
