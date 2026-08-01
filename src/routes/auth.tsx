@@ -146,6 +146,7 @@ function AuthPage() {
   // Already signed in? Go straight in — sessions survive app launches.
   useEffect(() => {
     let alive = true;
+    const cleanups: number[] = [];
     void supabase.auth.getSession().then(({ data }) => {
       if (!alive) return;
       if (data.session) {
@@ -157,7 +158,6 @@ function AuthPage() {
       const done = window.setTimeout(() => alive && setPhase("choose"), 5300);
       cleanups.push(fade, done);
     });
-    const cleanups: number[] = [];
     return () => {
       alive = false;
       cleanups.forEach((t) => window.clearTimeout(t));
