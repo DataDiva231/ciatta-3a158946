@@ -10,9 +10,12 @@ export const Route = createFileRoute("/api/public/health/sync")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const expected = process.env["SUPABASE_ANON_KEY"];
+        const accepted = [
+          process.env["SUPABASE_PUBLISHABLE_KEY"],
+          process.env["SUPABASE_ANON_KEY"],
+        ].filter(Boolean);
         const provided = request.headers.get("apikey");
-        if (!expected || provided !== expected) {
+        if (!provided || !accepted.includes(provided)) {
           return new Response("Unauthorized", { status: 401 });
         }
 
