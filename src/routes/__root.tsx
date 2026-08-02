@@ -79,9 +79,21 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      {
+        name: "viewport",
+        content:
+          "width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no",
+      },
       { name: "author", content: "Ciatta" },
+      { name: "application-name", content: "Ciatta" },
+      { name: "apple-mobile-web-app-capable", content: "yes" },
+      { name: "mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-title", content: "Ciatta" },
+      { name: "apple-mobile-web-app-status-bar-style", content: "default" },
+      { name: "theme-color", content: "#F8F6F3" },
+      { name: "format-detection", content: "telephone=no" },
       { property: "og:type", content: "website" },
+      { property: "og:site_name", content: "Ciatta" },
       { name: "twitter:card", content: "summary_large_image" },
       { title: "Today — Ciatta" },
       { property: "og:title", content: "Today — Ciatta" },
@@ -101,16 +113,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content:
           "Ciatta listens to your sleep, rhythm and cycle, and shares what it's beginning to understand about your body.",
       },
-      {
-        property: "og:image",
-        content:
-          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/acac960c-52f4-41d7-a3ac-b90ca4473cb2/id-preview-0e3355b1--b08088c5-97b7-47cc-8b5a-1ae97a03e2e8.lovable.app-1785362990144.png",
-      },
-      {
-        name: "twitter:image",
-        content:
-          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/acac960c-52f4-41d7-a3ac-b90ca4473cb2/id-preview-0e3355b1--b08088c5-97b7-47cc-8b5a-1ae97a03e2e8.lovable.app-1785362990144.png",
-      },
+      { property: "og:image", content: "https://ciatta.io/og-ciatta.jpg" },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      { property: "og:image:alt", content: "Ciatta" },
+      { name: "twitter:image", content: "https://ciatta.io/og-ciatta.jpg" },
     ],
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -120,9 +127,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap",
       },
 
+      { rel: "manifest", href: "/manifest.json" },
       { rel: "icon", href: "/favicon.png", type: "image/png" },
+      { rel: "apple-touch-icon", href: "/icon-180.png", sizes: "180x180" },
+      { rel: "apple-touch-icon-precomposed", href: "/icon-180.png" },
     ],
   }),
+
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
