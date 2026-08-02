@@ -6,6 +6,7 @@ import wordmark from "@/assets/ciatta-wordmark.png.asset.json";
 import { Composer } from "@/components/ciatta/composer";
 import { Understanding } from "@/components/ciatta/understanding";
 
+import { APPLE_HEALTH_LABELS } from "@/lib/apple-health";
 import { MONTHS, useOnboarding, type Onboarding } from "@/lib/onboarding-store";
 import {
   a,
