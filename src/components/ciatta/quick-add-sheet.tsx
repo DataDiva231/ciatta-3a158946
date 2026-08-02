@@ -233,7 +233,7 @@ export function QuickAddSheet({
         role="dialog"
         aria-modal="true"
         aria-label="Quick Add"
-        className="animate-sheet-up relative w-full max-w-[480px] rounded-t-[28px] bg-surface pb-[max(1.5rem,env(safe-area-inset-bottom))] shadow-[0_-24px_60px_-30px_rgba(60,45,35,0.45)]"
+        className="animate-sheet-up relative w-full max-w-[480px] rounded-t-[28px] bg-background pb-[max(1.5rem,env(safe-area-inset-bottom))]"
       >
         <div className="flex justify-center pt-2.5">
           <span className="h-1 w-9 rounded-full bg-border" />
