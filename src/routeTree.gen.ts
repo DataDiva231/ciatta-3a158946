@@ -27,7 +27,6 @@ import { Route as AuthenticatedTeachRouteImport } from './routes/_authenticated/
 import { Route as ApiTranscribeRouteImport } from './routes/api/transcribe'
 import { Route as AuthenticatedProfileIndexRouteImport } from './routes/_authenticated/profile.index'
 import { Route as AuthenticatedProfileEditRouteImport } from './routes/_authenticated/profile.edit'
-import { Route as ApiPublicGetreqCheckRouteImport } from './routes/api/public/getreq-check'
 import { Route as AuthenticatedConnectionsProviderCallbackRouteImport } from './routes/_authenticated/connections.$provider.callback'
 import { Route as AuthenticatedProfileSettingsSectionRouteImport } from './routes/_authenticated/profile.settings.$section'
 import { Route as ApiPublicHealthSyncRouteImport } from './routes/api/public/health/sync'
@@ -127,11 +126,6 @@ const AuthenticatedProfileEditRoute =
     path: '/profile/edit',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const ApiPublicGetreqCheckRoute = ApiPublicGetreqCheckRouteImport.update({
-  id: '/api/public/getreq-check',
-  path: '/api/public/getreq-check',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AuthenticatedConnectionsProviderCallbackRoute =
   AuthenticatedConnectionsProviderCallbackRouteImport.update({
     id: '/connections/$provider/callback',
@@ -177,7 +171,6 @@ export interface FileRoutesByFullPath {
   '/teach': typeof AuthenticatedTeachRoute
   '/api/transcribe': typeof ApiTranscribeRoute
   '/profile/edit': typeof AuthenticatedProfileEditRoute
-  '/api/public/getreq-check': typeof ApiPublicGetreqCheckRoute
   '/profile/': typeof AuthenticatedProfileIndexRoute
   '/connections/$provider/callback': typeof AuthenticatedConnectionsProviderCallbackRoute
   '/profile/settings/$section': typeof AuthenticatedProfileSettingsSectionRoute
@@ -202,7 +195,6 @@ export interface FileRoutesByTo {
   '/api/transcribe': typeof ApiTranscribeRoute
   '/': typeof AuthenticatedIndexRoute
   '/profile/edit': typeof AuthenticatedProfileEditRoute
-  '/api/public/getreq-check': typeof ApiPublicGetreqCheckRoute
   '/profile': typeof AuthenticatedProfileIndexRoute
   '/connections/$provider/callback': typeof AuthenticatedConnectionsProviderCallbackRoute
   '/profile/settings/$section': typeof AuthenticatedProfileSettingsSectionRoute
@@ -229,7 +221,6 @@ export interface FileRoutesById {
   '/api/transcribe': typeof ApiTranscribeRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/profile/edit': typeof AuthenticatedProfileEditRoute
-  '/api/public/getreq-check': typeof ApiPublicGetreqCheckRoute
   '/_authenticated/profile/': typeof AuthenticatedProfileIndexRoute
   '/_authenticated/connections/$provider/callback': typeof AuthenticatedConnectionsProviderCallbackRoute
   '/_authenticated/profile/settings/$section': typeof AuthenticatedProfileSettingsSectionRoute
@@ -256,7 +247,6 @@ export interface FileRouteTypes {
     | '/teach'
     | '/api/transcribe'
     | '/profile/edit'
-    | '/api/public/getreq-check'
     | '/profile/'
     | '/connections/$provider/callback'
     | '/profile/settings/$section'
@@ -281,7 +271,6 @@ export interface FileRouteTypes {
     | '/api/transcribe'
     | '/'
     | '/profile/edit'
-    | '/api/public/getreq-check'
     | '/profile'
     | '/connections/$provider/callback'
     | '/profile/settings/$section'
@@ -307,7 +296,6 @@ export interface FileRouteTypes {
     | '/api/transcribe'
     | '/_authenticated/'
     | '/_authenticated/profile/edit'
-    | '/api/public/getreq-check'
     | '/_authenticated/profile/'
     | '/_authenticated/connections/$provider/callback'
     | '/_authenticated/profile/settings/$section'
@@ -323,7 +311,6 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   TermsRoute: typeof TermsRoute
   ApiTranscribeRoute: typeof ApiTranscribeRoute
-  ApiPublicGetreqCheckRoute: typeof ApiPublicGetreqCheckRoute
   ApiPublicHealthSyncRoute: typeof ApiPublicHealthSyncRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
@@ -457,13 +444,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProfileEditRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/api/public/getreq-check': {
-      id: '/api/public/getreq-check'
-      path: '/api/public/getreq-check'
-      fullPath: '/api/public/getreq-check'
-      preLoaderRoute: typeof ApiPublicGetreqCheckRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_authenticated/connections/$provider/callback': {
       id: '/_authenticated/connections/$provider/callback'
       path: '/connections/$provider/callback'
@@ -548,7 +528,6 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   TermsRoute: TermsRoute,
   ApiTranscribeRoute: ApiTranscribeRoute,
-  ApiPublicGetreqCheckRoute: ApiPublicGetreqCheckRoute,
   ApiPublicHealthSyncRoute: ApiPublicHealthSyncRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
