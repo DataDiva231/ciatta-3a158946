@@ -197,66 +197,37 @@ function Footer({
 
 /* --------------------------------------------------------------- suggestions */
 
-const GLYPHS = [
-  Moon,
-  Droplet,
-  Waves,
-  Leaf,
-  Flame,
-  Feather,
-  Sun,
-  Wind,
-  HeartPulse,
-  Brain,
-  Activity,
-  Sparkles,
-];
-
-/** A suggestion, in Ciatta's voice: warm glyph, plain words, no chrome. */
+/** A suggestion: a small pill chip. Plain words, no icon, no chrome. */
 function Suggestion({
   choice,
-  index,
   checked,
   dimmed,
   onToggle,
 }: {
   choice: Choice;
-  index: number;
   checked: boolean;
   dimmed?: boolean;
   onToggle: () => void;
 }) {
-  const Glyph = GLYPHS[index % GLYPHS.length];
   return (
     <button
       type="button"
       onClick={onToggle}
       aria-pressed={checked}
-      className={`flex h-full w-full items-center gap-2.5 px-4 py-3.5 text-left transition-all duration-200 active:scale-[0.985] ${
-        choice.hint ? "rounded-[20px]" : "rounded-full"
-      } ${
+      className={`inline-flex max-w-full items-baseline gap-1.5 rounded-full px-3.5 py-2 text-left transition-all duration-200 active:scale-[0.97] ${
         checked
           ? "bg-accent/10 shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--clay)_35%,transparent)]"
           : "bg-surface shadow-[0_8px_20px_-18px_rgba(60,45,35,0.5)]"
       } ${dimmed ? "opacity-35" : ""}`}
     >
-      <Glyph
-        size={16}
-        strokeWidth={1.6}
-        aria-hidden="true"
-        className={checked ? "shrink-0 text-accent" : "shrink-0 text-accent/70"}
-      />
-      <span className="min-w-0">
-        <span className="block text-[14.5px] leading-snug text-foreground">{choice.value}</span>
-        {choice.hint && (
-          <span className="mt-0.5 block text-[12px] leading-snug text-muted-foreground">
-            {choice.hint}
-          </span>
-        )}
-      </span>
+      <span className="text-[13.5px] leading-snug text-foreground">{choice.value}</span>
+      {choice.hint && (
+        <span className="text-[11.5px] leading-snug text-muted-foreground">{choice.hint}</span>
+      )}
     </button>
   );
 }
+
 
 /** Quiet iOS-style field used for the few structured answers. */
 function Field({ children }: { children: React.ReactNode }) {
