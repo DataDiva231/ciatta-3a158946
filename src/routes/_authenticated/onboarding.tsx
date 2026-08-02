@@ -1,19 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import {
-  Activity,
-  Brain,
-  Droplet,
-  Feather,
-  Flame,
-  HeartPulse,
-  Leaf,
-  Moon,
-  Sparkles,
-  Sun,
-  Waves,
-  Wind,
-} from "lucide-react";
 
 import mark from "@/assets/ciatta-mark.png.asset.json";
 import wordmark from "@/assets/ciatta-wordmark.png.asset.json";
