@@ -4,6 +4,8 @@ import { useQueryClient } from "@tanstack/react-query";
 
 import { usePriorities } from "@/lib/ciatta-store";
 import { endSession } from "@/lib/session";
+import { requestTour } from "@/lib/product-tour";
+
 import { useIdentity } from "@/lib/profile-store";
 import { useProfile, type Area, type SourceRow, type Understanding } from "@/lib/profile-data";
 import { useEngine } from "@/lib/use-engine";
@@ -564,6 +566,8 @@ function ProfilePage() {
           <SettingsLink section="notifications" label="Notifications" />
           <SettingsLink section="appearance" label="Appearance" />
           <SettingsLink section="sources" label="Connected sources" />
+          <ShowTourRow />
+
         </div>
       </section>
 
@@ -586,7 +590,26 @@ function ProfilePage() {
   );
 }
 
+/** Replays the quiet introduction to the four core surfaces. */
+function ShowTourRow() {
+  const navigate = useNavigate();
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        requestTour();
+        navigate({ to: "/" });
+      }}
+      className={`flex w-full items-center justify-between gap-4 py-3.5 text-left text-[16px] ${pressable}`}
+    >
+      Show product tour
+      <Chevron />
+    </button>
+  );
+}
+
 function SignOutRow() {
+
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   return (
