@@ -564,6 +564,8 @@ function ProfilePage() {
           <SettingsLink section="notifications" label="Notifications" />
           <SettingsLink section="appearance" label="Appearance" />
           <SettingsLink section="sources" label="Connected sources" />
+          <ShowTourRow />
+
         </div>
       </section>
 
