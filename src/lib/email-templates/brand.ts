@@ -169,5 +169,23 @@ export const disclaimer = {
   maxWidth: '480px',
 }
 
+export const WORDMARK_SRC =
+  'https://ciatta.io/__l5e/assets-v1/c22bbd29-2d65-4b0d-9653-6ff44f58e7c7/ciatta-wordmark.png'
+
+export const wordmarkImg = {
+  display: 'block',
+  margin: '0 auto',
+  width: '150px',
+  height: 'auto',
+  border: '0',
+}
+
+export const footerWordmarkImg = {
+  display: 'block',
+  width: '86px',
+  height: 'auto',
+  border: '0',
+}
+
 export const PRIVACY_URL = 'https://ciatta.io/privacy'
 export const HELP_URL = 'https://ciatta.io/terms'
