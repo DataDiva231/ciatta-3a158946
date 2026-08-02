@@ -226,7 +226,7 @@ export function QuickAddSheet({
         type="button"
         aria-label="Close Quick Add"
         onClick={onClose}
-        className="animate-in fade-in absolute inset-0 bg-foreground/12 backdrop-blur-[2px] duration-500"
+        className="animate-in fade-in absolute inset-0 bg-background duration-500"
       />
 
       <div
