@@ -494,41 +494,83 @@ function OnboardingPage() {
           />
         );
 
-      case "connect":
+      case "connect": {
+        const canConnect = health.availabilityReady && health.available;
+        const isConnected = health.connected;
+        const chips = isConnected
+          ? health.metrics.map((m) => APPLE_HEALTH_LABELS[m])
+          : ["Sleep", "Heart rate", "Activity", "Workouts", "Recovery"];
+
         return (
           <>
             {bar}
             <Body center>
               <div>
-                <Question>Can I learn from Apple Health?</Question>
+                <Question>
+                  {isConnected ? "Apple Health is connected." : "Can I learn from Apple Health?"}
+                </Question>
                 <Support>
-                  If you share it, I&apos;ll notice your sleep, heart rate and movement quietly on
-                  my own — and I won&apos;t ask you about them again.
+                  {isConnected
+                    ? "Thank you. From here on, these arrive on their own — I won\u2019t ask you about them again."
+                    : "If you share it, I\u2019ll notice your sleep, heart rate and movement quietly on my own — and I won\u2019t ask you about them again."}
                 </Support>
               </div>
               <div className="mx-auto mt-6 flex max-w-[19rem] flex-wrap justify-center gap-2">
-                {["Sleep", "Heart rate", "Activity", "Workouts", "Recovery"].map((o) => (
+                {chips.map((o) => (
                   <span
                     key={o}
-                    className="rounded-full bg-surface px-3.5 py-2 text-[12.5px] text-muted-foreground shadow-[0_8px_20px_-18px_rgba(60,45,35,0.5)]"
+                    className={`rounded-full px-3.5 py-2 text-[12.5px] shadow-[0_8px_20px_-18px_rgba(60,45,35,0.5)] ${
+                      isConnected
+                        ? "bg-accent/10 text-foreground"
+                        : "bg-surface text-muted-foreground"
+                    }`}
                   >
                     {o}
                   </span>
                 ))}
               </div>
+              {!isConnected && health.availabilityReady && !health.available && (
+                <p className="mx-auto mt-6 max-w-[19rem] text-[13px] leading-relaxed text-muted-foreground">
+                  Apple Health is available in the iPhone app.
+                </p>
+              )}
+              {health.error && !isConnected && canConnect && (
+                <p className="mx-auto mt-5 max-w-[19rem] text-[13px] leading-relaxed text-muted-foreground">
+                  {health.error}
+                </p>
+              )}
             </Body>
             <div className="shrink-0 px-8 pt-3 pb-10">
-              <PrimaryButton
-                label={health.busy ? "One moment\u2026" : "Connect Apple Health"}
-                onClick={() => {
-                  // iOS asks; whatever is granted is recorded server-side and
-                  // read straight into the engine.
-                  void health.connect().then((granted) => {
-                    save({ appleHealthConnected: granted });
-                    advance({ ...data, appleHealthConnected: granted });
-                  });
-                }}
-              />
+              {isConnected ? (
+                <PrimaryButton
+                  label="Continue"
+                  onClick={() => {
+                    save({ appleHealthConnected: true });
+                    advance({ ...data, appleHealthConnected: true });
+                  }}
+                />
+              ) : canConnect ? (
+                <PrimaryButton
+                  label={health.busy ? "One moment\u2026" : "Connect Apple Health"}
+                  disabled={health.busy}
+                  onClick={() => {
+                    // iOS asks; whatever is granted is recorded server-side and
+                    // read straight into the engine.
+                    void health.connect().then((granted) => {
+                      if (!granted) return;
+                      save({ appleHealthConnected: true });
+                    });
+                  }}
+                />
+              ) : (
+                <PrimaryButton
+                  label="Connect Apple Health"
+                  disabled
+                  onClick={() => {
+                    /* unavailable on the web */
+                  }}
+                />
+              )}
               <button
                 type="button"
                 onClick={() => {
@@ -537,11 +579,12 @@ function OnboardingPage() {
                 }}
                 className="mx-auto mt-3.5 block px-3 py-1 text-[13.5px] text-muted-foreground"
               >
-                I&apos;ll tell you myself
+                {isConnected ? "Skip for now" : "I\u2019ll tell you myself"}
               </button>
             </div>
           </>
         );
+      }
 
       case "notifications":
         return (
