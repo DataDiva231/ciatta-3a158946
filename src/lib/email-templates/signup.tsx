@@ -35,26 +35,26 @@ interface SignupEmailProps {
 export const SignupEmail = ({
   siteName,
   siteUrl,
-  recipient,
   confirmationUrl,
 }: SignupEmailProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>One step before we begin — confirm your email.</Preview>
+    <Preview>One last step — confirm your email.</Preview>
     <Body style={main}>
       <Container style={container}>
         <Text style={wordmark}>ciatta</Text>
-        <Heading style={h1}>Let's begin.</Heading>
+        <Heading style={h1}>Let&apos;s begin.</Heading>
         <Text style={text}>
-          Confirm {recipient} and I'll start learning you — quietly, at your
-          pace.
+          One last step. Confirm your email, and we&apos;ll begin building a
+          continuous understanding of your body, together.
         </Text>
         <Button style={button} href={confirmationUrl}>
           Confirm email
         </Button>
         <Hr style={hr} />
         <Text style={footer}>
-          If you didn't create an account, you can safely ignore this email.{' '}
+          If you didn&apos;t create a Ciatta account, you can safely ignore this
+          email.{' '}
           <Link href={siteUrl} style={link}>
             {siteName}
           </Link>

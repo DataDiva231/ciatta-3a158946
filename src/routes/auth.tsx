@@ -296,16 +296,41 @@ const RULES = [
 
 /* ------------------------------------------------------------------- page */
 
-type Phase = "splash" | "intro" | "choose" | "email" | "verify" | "handoff" | "greeting";
+type Phase =
+  | "splash"
+  | "intro"
+  | "choose"
+  | "email"
+  | "verify"
+  | "confirming"
+  | "handoff"
+  | "greeting";
 
 /** Development-visible trail for every authentication step. */
 const log = (step: string, detail?: unknown) => {
   if (import.meta.env.DEV) console.info(`[auth] ${step}`, detail ?? "");
 };
 
+/**
+ * A return from the confirmation email carries its proof in the URL — either a
+ * PKCE code, a one-time token hash, or tokens in the fragment. Any of them mean
+ * "this person just confirmed", so we never show them the intro or a form again.
+ */
+function readConfirmation(): { code?: string; tokenHash?: string; type?: string } | null {
+  if (typeof window === "undefined") return null;
+  const query = new URLSearchParams(window.location.search);
+  const hash = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+  const code = query.get("code") ?? undefined;
+  const tokenHash = query.get("token_hash") ?? hash.get("token_hash") ?? undefined;
+  const type = query.get("type") ?? hash.get("type") ?? undefined;
+  const hasTokens = Boolean(hash.get("access_token"));
+  if (!code && !tokenHash && !hasTokens) return null;
+  return { code, tokenHash, type };
+}
+
 function AuthPage() {
   const navigate = useNavigate();
-  const [phase, setPhase] = useState<Phase>("splash");
+  const [phase, setPhase] = useState<Phase>(() => (readConfirmation() ? "confirming" : "splash"));
   const [mode, setMode] = useState<"signup" | "signin">("signup");
   const [busy, setBusy] = useState<"apple" | "google" | "email" | "reset" | "resend" | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -351,8 +376,57 @@ function AuthPage() {
     [enter],
   );
 
+  /**
+   * Returning from the confirmation email: finish the verification, sign them
+   * in, and carry them straight back into the conversation they left. They must
+   * never land on a create-account form after succeeding.
+   */
+  useEffect(() => {
+    const proof = readConfirmation();
+    if (!proof) return;
+    let alive = true;
+
+    const finish = async () => {
+      log("confirmation return", { hasCode: Boolean(proof.code), hasHash: Boolean(proof.tokenHash) });
+      try {
+        if (proof.code) {
+          const { error: err } = await supabase.auth.exchangeCodeForSession(proof.code);
+          if (err) log("code exchange failed", err.message);
+        } else if (proof.tokenHash) {
+          const { error: err } = await supabase.auth.verifyOtp({
+            token_hash: proof.tokenHash,
+            type: (proof.type as "signup" | "email" | "magiclink" | "invite") ?? "signup",
+          });
+          if (err) log("verifyOtp failed", err.message);
+        }
+      } catch (e) {
+        console.error("[auth] confirmation failed", e);
+      }
+      // Tokens in the fragment are picked up by the client itself; either way the
+      // session is what decides.
+      const { data } = await supabase.auth.getSession();
+      if (!alive) return;
+      window.history.replaceState({}, "", "/auth");
+      const user = data.session?.user;
+      if (user?.email_confirmed_at) {
+        // A brief, calm beat so the transition reads as continuation.
+        window.setTimeout(() => alive && enter(false), 900);
+        return;
+      }
+      if (user?.email) setEmail(user.email);
+      setPhase("verify");
+      setNotice("That link has already been used or has expired. Send a fresh one below.");
+    };
+
+    void finish();
+    return () => {
+      alive = false;
+    };
+  }, [enter]);
+
   // A session already in the browser means we're mid-relationship, not new.
   useEffect(() => {
+    if (readConfirmation()) return;
     let alive = true;
     void supabase.auth.getSession().then(({ data, error: err }) => {
       if (!alive) return;
@@ -364,6 +438,7 @@ function AuthPage() {
       alive = false;
     };
   }, [settle]);
+
 
   // While waiting at the inbox, notice the moment verification lands.
   useEffect(() => {
@@ -539,6 +614,17 @@ function AuthPage() {
   if (phase === "splash") return <Splash onDone={() => setPhase("intro")} />;
 
   if (phase === "intro") return <LivingIntro onStart={() => setPhase("choose")} />;
+
+  if (phase === "confirming") {
+    return (
+      <div className="relative flex h-[100svh] items-center justify-center bg-background px-10">
+        <Living />
+        <p className="animate-in fade-in relative max-w-[19rem] text-center font-serif text-[22px] leading-[1.3] duration-[900ms]">
+          Thank you. Picking up right where we left off.
+        </p>
+      </div>
+    );
+  }
 
   if (phase === "handoff") {
     return (
