@@ -4,6 +4,8 @@ import { useQueryClient } from "@tanstack/react-query";
 
 import { usePriorities } from "@/lib/ciatta-store";
 import { endSession } from "@/lib/session";
+import { requestTour } from "@/lib/product-tour";
+
 import { useIdentity } from "@/lib/profile-store";
 import { useProfile, type Area, type SourceRow, type Understanding } from "@/lib/profile-data";
 import { useEngine } from "@/lib/use-engine";
