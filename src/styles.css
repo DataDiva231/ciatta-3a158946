@@ -231,12 +231,7 @@
   font-weight: 500;
 }
 
+/* Flat canvas: no radial light, no tint. One background color everywhere. */
 @utility aura {
-  background:
-    radial-gradient(
-      120% 80% at 50% 30%,
-      color-mix(in oklab, var(--clay) 16%, transparent) 0%,
-      transparent 62%
-    ),
-    var(--color-background);
+  background: var(--color-background);
 }
