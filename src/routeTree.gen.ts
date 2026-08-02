@@ -30,6 +30,7 @@ import { Route as AuthenticatedProfileEditRouteImport } from './routes/_authenti
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
 import { Route as AuthenticatedProfileSettingsSectionRouteImport } from './routes/_authenticated/profile.settings.$section'
+import { Route as AuthenticatedConnectionsProviderCallbackRouteImport } from './routes/_authenticated/connections.$provider.callback'
 
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
@@ -140,6 +141,12 @@ const AuthenticatedProfileSettingsSectionRoute =
     path: '/profile/settings/$section',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedConnectionsProviderCallbackRoute =
+  AuthenticatedConnectionsProviderCallbackRouteImport.update({
+    id: '/connections/$provider/callback',
+    path: '/connections/$provider/callback',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
@@ -159,6 +166,7 @@ export interface FileRoutesByFullPath {
   '/api/transcribe': typeof ApiTranscribeRoute
   '/profile/edit': typeof AuthenticatedProfileEditRoute
   '/profile/': typeof AuthenticatedProfileIndexRoute
+  '/connections/$provider/callback': typeof AuthenticatedConnectionsProviderCallbackRoute
   '/profile/settings/$section': typeof AuthenticatedProfileSettingsSectionRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -181,6 +189,7 @@ export interface FileRoutesByTo {
   '/': typeof AuthenticatedIndexRoute
   '/profile/edit': typeof AuthenticatedProfileEditRoute
   '/profile': typeof AuthenticatedProfileIndexRoute
+  '/connections/$provider/callback': typeof AuthenticatedConnectionsProviderCallbackRoute
   '/profile/settings/$section': typeof AuthenticatedProfileSettingsSectionRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -205,6 +214,7 @@ export interface FileRoutesById {
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/profile/edit': typeof AuthenticatedProfileEditRoute
   '/_authenticated/profile/': typeof AuthenticatedProfileIndexRoute
+  '/_authenticated/connections/$provider/callback': typeof AuthenticatedConnectionsProviderCallbackRoute
   '/_authenticated/profile/settings/$section': typeof AuthenticatedProfileSettingsSectionRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -229,6 +239,7 @@ export interface FileRouteTypes {
     | '/api/transcribe'
     | '/profile/edit'
     | '/profile/'
+    | '/connections/$provider/callback'
     | '/profile/settings/$section'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -251,6 +262,7 @@ export interface FileRouteTypes {
     | '/'
     | '/profile/edit'
     | '/profile'
+    | '/connections/$provider/callback'
     | '/profile/settings/$section'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -274,6 +286,7 @@ export interface FileRouteTypes {
     | '/_authenticated/'
     | '/_authenticated/profile/edit'
     | '/_authenticated/profile/'
+    | '/_authenticated/connections/$provider/callback'
     | '/_authenticated/profile/settings/$section'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -439,6 +452,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProfileSettingsSectionRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/connections/$provider/callback': {
+      id: '/_authenticated/connections/$provider/callback'
+      path: '/connections/$provider/callback'
+      fullPath: '/connections/$provider/callback'
+      preLoaderRoute: typeof AuthenticatedConnectionsProviderCallbackRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
@@ -455,6 +475,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedProfileEditRoute: typeof AuthenticatedProfileEditRoute
   AuthenticatedProfileIndexRoute: typeof AuthenticatedProfileIndexRoute
+  AuthenticatedConnectionsProviderCallbackRoute: typeof AuthenticatedConnectionsProviderCallbackRoute
   AuthenticatedProfileSettingsSectionRoute: typeof AuthenticatedProfileSettingsSectionRoute
 }
 
@@ -471,6 +492,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedProfileEditRoute: AuthenticatedProfileEditRoute,
   AuthenticatedProfileIndexRoute: AuthenticatedProfileIndexRoute,
+  AuthenticatedConnectionsProviderCallbackRoute:
+    AuthenticatedConnectionsProviderCallbackRoute,
   AuthenticatedProfileSettingsSectionRoute:
     AuthenticatedProfileSettingsSectionRoute,
 }
