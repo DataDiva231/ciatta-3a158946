@@ -7,6 +7,7 @@ import {
   Head,
   Hr,
   Html,
+  Img,
   Link,
   Preview,
   Row,
@@ -25,12 +26,13 @@ import {
   footerLink,
   footerLinks,
   footerSection,
-  footerWordmark,
+  footerWordmarkImg,
   headerSection,
   hr,
   main,
   note,
-  wordmark,
+  WORDMARK_SRC,
+  wordmarkImg,
 } from './brand'
 
 interface LayoutProps {
@@ -48,7 +50,12 @@ export const EmailLayout = ({ preview, children, closing }: LayoutProps) => (
       <Section style={canvas}>
         <Container style={container}>
           <Section style={headerSection}>
-            <Text style={wordmark}>ciatta</Text>
+            <Img
+              src={WORDMARK_SRC}
+              alt="Ciatta"
+              width="150"
+              style={wordmarkImg}
+            />
           </Section>
           <Hr style={hr} />
 
@@ -62,7 +69,12 @@ export const EmailLayout = ({ preview, children, closing }: LayoutProps) => (
           <Section style={footerSection}>
             <Row>
               <Column>
-                <Text style={footerWordmark}>ciatta</Text>
+                <Img
+                  src={WORDMARK_SRC}
+                  alt="Ciatta"
+                  width="86"
+                  style={footerWordmarkImg}
+                />
               </Column>
               <Column>
                 <Text style={footerLinks}>
