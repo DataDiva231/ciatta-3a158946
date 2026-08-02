@@ -62,10 +62,11 @@ export function ProfileIcon({ active }: IconProps) {
 }
 
 const tabs = [
-  { to: "/", label: "Today", Icon: SunriseIcon },
-  { to: "/teach", label: "Teach", Icon: TeachIcon },
-  { to: "/journey", label: "Journey", Icon: JourneyIcon },
+  { to: "/", label: "Today", Icon: SunriseIcon, tour: "today" },
+  { to: "/teach", label: "Teach", Icon: TeachIcon, tour: "teach" },
+  { to: "/journey", label: "Journey", Icon: JourneyIcon, tour: "journey" },
 ] as const;
+
 
 export function TabBar() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
