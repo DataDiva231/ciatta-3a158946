@@ -78,9 +78,9 @@ function TopBar({ onBack, ratio }: { onBack?: () => void; ratio?: number }) {
         </button>
       )}
       {ratio !== undefined && (
-        <span className="pointer-events-none absolute inset-x-0 top-6 mx-auto block h-[2px] w-24 overflow-hidden rounded-full bg-border/70">
+        <span className="pointer-events-none absolute inset-x-0 top-6 mx-auto block h-[2px] w-24 overflow-hidden rounded-full bg-border">
           <span
-            className="block h-full rounded-full bg-accent/70 transition-[width] duration-500 ease-out"
+            className="block h-full rounded-full bg-foreground transition-[width] duration-500 ease-out"
             style={{ width: `${Math.max(6, Math.round(ratio * 100))}%` }}
           />
         </span>
@@ -157,7 +157,7 @@ function PrimaryButton({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className="w-full rounded-full bg-accent px-6 py-[15px] text-[15px] font-medium text-accent-foreground shadow-[0_12px_28px_-20px_color-mix(in_oklab,var(--clay)_70%,transparent)] transition-all duration-200 active:scale-[0.99] disabled:opacity-35 disabled:shadow-none"
+      className="w-full rounded-full bg-foreground px-6 py-[15px] text-[15px] font-medium text-background transition-all duration-200 active:scale-[0.99] disabled:opacity-35"
     >
       {label}
     </button>
@@ -217,8 +217,8 @@ function Suggestion({
       aria-pressed={checked}
       className={`inline-flex max-w-full items-baseline gap-1.5 rounded-full px-3.5 py-2 text-left transition-all duration-200 active:scale-[0.97] ${
         checked
-          ? "bg-accent/10 shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--clay)_35%,transparent)]"
-          : "bg-surface shadow-[0_8px_20px_-18px_rgba(60,45,35,0.5)]"
+          ? "bg-foreground/[0.055] shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--foreground)_16%,transparent)]"
+          : "bg-transparent shadow-[inset_0_0_0_1px_var(--border)]"
       } ${dimmed ? "opacity-35" : ""}`}
     >
       <span className="text-[13.5px] leading-snug text-foreground">{choice.value}</span>
@@ -233,7 +233,7 @@ function Suggestion({
 /** Quiet iOS-style field used for the few structured answers. */
 function Field({ children }: { children: React.ReactNode }) {
   return (
-    <div className="rounded-2xl bg-surface px-4 py-3 shadow-[0_8px_20px_-18px_rgba(60,45,35,0.5)]">
+    <div className="rounded-2xl px-4 py-3 shadow-[inset_0_0_0_1px_var(--border)]">
       {children}
     </div>
   );
@@ -520,10 +520,10 @@ function OnboardingPage() {
                 {chips.map((o) => (
                   <span
                     key={o}
-                    className={`rounded-full px-3.5 py-2 text-[12.5px] shadow-[0_8px_20px_-18px_rgba(60,45,35,0.5)] ${
+                    className={`rounded-full px-3.5 py-2 text-[12.5px] shadow-[inset_0_0_0_1px_var(--border)] ${
                       isConnected
-                        ? "bg-accent/10 text-foreground"
-                        : "bg-surface text-muted-foreground"
+                        ? "bg-foreground/[0.055] text-foreground"
+                        : "text-muted-foreground"
                     }`}
                   >
                     {o}
@@ -872,7 +872,7 @@ function SummaryScreen({ data, onFinish }: { data: Onboarding; onFinish: () => v
           <Orb size={104} confidence={92} active />
         </div>
 
-        <div className="mx-auto mt-7 max-w-[21rem] rounded-[26px] bg-surface px-5 py-5 shadow-[0_18px_44px_-32px_rgba(60,45,35,0.55)]">
+        <div className="mx-auto mt-7 max-w-[21rem] rounded-[26px] px-5 py-5 shadow-[inset_0_0_0_1px_var(--border)]">
           <div className="space-y-4">
             {lines.map((line, i) => (
               <div
