@@ -186,7 +186,9 @@ function RootComponent() {
             <Outlet />
           </div>
           <TabBar />
+          <ProductTour />
         </div>
+
       </div>
     </QueryClientProvider>
   );
