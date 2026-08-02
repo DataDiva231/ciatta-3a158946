@@ -110,8 +110,10 @@ function TodayPage() {
         <Link
           to="/profile"
           aria-label="Profile"
+          data-tour="profile"
           className="-mr-2 mt-0.5 inline-flex h-10 w-10 items-center justify-center rounded-full transition-opacity hover:opacity-70"
         >
+
           <ProfileIcon active={false} />
         </Link>
       </header>
