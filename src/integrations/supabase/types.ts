@@ -111,33 +111,51 @@ export type Database = {
           connected_at: string | null
           created_at: string
           disconnected_at: string | null
+          external_account_id: string | null
           id: string
+          last_error: string | null
           last_import_at: string | null
+          last_sync_at: string | null
           metrics: string[]
           provider: string
+          scopes: string[]
+          status: string
           subject_id: string
+          token_ciphertext: string | null
           updated_at: string
         }
         Insert: {
           connected_at?: string | null
           created_at?: string
           disconnected_at?: string | null
+          external_account_id?: string | null
           id?: string
+          last_error?: string | null
           last_import_at?: string | null
+          last_sync_at?: string | null
           metrics?: string[]
           provider: string
+          scopes?: string[]
+          status?: string
           subject_id: string
+          token_ciphertext?: string | null
           updated_at?: string
         }
         Update: {
           connected_at?: string | null
           created_at?: string
           disconnected_at?: string | null
+          external_account_id?: string | null
           id?: string
+          last_error?: string | null
           last_import_at?: string | null
+          last_sync_at?: string | null
           metrics?: string[]
           provider?: string
+          scopes?: string[]
+          status?: string
           subject_id?: string
+          token_ciphertext?: string | null
           updated_at?: string
         }
         Relationships: [
