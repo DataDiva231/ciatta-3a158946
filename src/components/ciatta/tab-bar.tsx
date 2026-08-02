@@ -86,9 +86,9 @@ export function TabBar() {
   return (
     <nav
       aria-label="Primary"
-      className="pointer-events-auto sticky bottom-0 z-20 bg-background px-3 pt-2 pb-3"
+      className="pointer-events-auto sticky bottom-0 z-20 px-3 pt-2 pb-3"
     >
-      <ul className="flex items-stretch justify-between rounded-full border border-border/60 bg-background px-2 py-2">
+      <ul className="flex items-stretch justify-between rounded-full border border-background/25 bg-background/80 px-2 py-2 shadow-[0_1px_18px_-12px_color-mix(in_oklab,var(--foreground)_22%,transparent)] backdrop-blur-[18px] backdrop-saturate-[1.4]">
         {tabs.map(({ to, label, Icon }) => (
           <li key={to} className="flex-1">
             <Link
