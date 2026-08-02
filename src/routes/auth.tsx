@@ -296,16 +296,41 @@ const RULES = [
 
 /* ------------------------------------------------------------------- page */
 
-type Phase = "splash" | "intro" | "choose" | "email" | "verify" | "handoff" | "greeting";
+type Phase =
+  | "splash"
+  | "intro"
+  | "choose"
+  | "email"
+  | "verify"
+  | "confirming"
+  | "handoff"
+  | "greeting";
 
 /** Development-visible trail for every authentication step. */
 const log = (step: string, detail?: unknown) => {
   if (import.meta.env.DEV) console.info(`[auth] ${step}`, detail ?? "");
 };
 
+/**
+ * A return from the confirmation email carries its proof in the URL — either a
+ * PKCE code, a one-time token hash, or tokens in the fragment. Any of them mean
+ * "this person just confirmed", so we never show them the intro or a form again.
+ */
+function readConfirmation(): { code?: string; tokenHash?: string; type?: string } | null {
+  if (typeof window === "undefined") return null;
+  const query = new URLSearchParams(window.location.search);
+  const hash = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+  const code = query.get("code") ?? undefined;
+  const tokenHash = query.get("token_hash") ?? hash.get("token_hash") ?? undefined;
+  const type = query.get("type") ?? hash.get("type") ?? undefined;
+  const hasTokens = Boolean(hash.get("access_token"));
+  if (!code && !tokenHash && !hasTokens) return null;
+  return { code, tokenHash, type };
+}
+
 function AuthPage() {
   const navigate = useNavigate();
-  const [phase, setPhase] = useState<Phase>("splash");
+  const [phase, setPhase] = useState<Phase>(() => (readConfirmation() ? "confirming" : "splash"));
   const [mode, setMode] = useState<"signup" | "signin">("signup");
   const [busy, setBusy] = useState<"apple" | "google" | "email" | "reset" | "resend" | null>(null);
   const [error, setError] = useState<string | null>(null);
