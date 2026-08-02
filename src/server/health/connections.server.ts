@@ -18,6 +18,8 @@ export type ProviderCredentials = {
   expiresAt?: string;
   scopes?: string[];
   externalAccountId?: string;
+  /** Pending authorization state, echoed back on the callback. */
+  oauthState?: string;
   /** Where the last sync stopped, so the next one resumes. */
   cursor?: string;
 };
