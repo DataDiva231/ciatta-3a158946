@@ -64,7 +64,7 @@ function SettingsSection() {
     <Screen title={meta.title} subtitle={meta.subtitle}>
       {section === "notifications" && <Notifications />}
       {section === "appearance" && <Appearance />}
-      {section === "apps" && <Apps />}
+      {(section === "sources" || section === "apps") && <ConnectedSources />}
       {section === "privacy" && <Privacy />}
       {section === "help" && <Help />}
       {section === "about" && <About />}
