@@ -114,20 +114,20 @@
   --font-serif: "Instrument Serif", ui-serif, Georgia, serif;
   --font-sans:
     "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --shadow-soft: 0 18px 40px -28px color-mix(in oklab, var(--clay) 26%, transparent);
+  --shadow-soft: 0 0 0 0 transparent;
 
 }
 
 :root {
   --radius: 0.875rem;
 
-  /* Neutrals */
+  /* Neutrals — one single flat background color across every surface. */
   --background: oklch(0.9738 0.0045 78.3); /* Ciatta Neutral #F8F6F3 */
-  --surface: oklch(0.993 0.004 56.4); /* Porcelain #FFFCFA */
-  --card: oklch(0.993 0.004 56.4);
-  --popover: oklch(0.993 0.004 56.4);
-  --secondary: oklch(0.956 0.007 80.7); /* Stone #F3F0EB */
-  --muted: oklch(0.956 0.007 80.7);
+  --surface: oklch(0.9738 0.0045 78.3);
+  --card: oklch(0.9738 0.0045 78.3);
+  --popover: oklch(0.9738 0.0045 78.3);
+  --secondary: oklch(0.9738 0.0045 78.3);
+  --muted: oklch(0.9738 0.0045 78.3);
   --border: oklch(0.915 0.01 72.7); /* Mist #E7E2DC */
   --input: oklch(0.915 0.01 72.7);
 
@@ -165,11 +165,11 @@
 /* Night reading: same warmth, lowered. */
 .dark {
   --background: oklch(0.21 0.008 60);
-  --surface: oklch(0.253 0.009 60);
-  --card: oklch(0.253 0.009 60);
-  --popover: oklch(0.253 0.009 60);
-  --secondary: oklch(0.295 0.01 60);
-  --muted: oklch(0.295 0.01 60);
+  --surface: oklch(0.21 0.008 60);
+  --card: oklch(0.21 0.008 60);
+  --popover: oklch(0.21 0.008 60);
+  --secondary: oklch(0.21 0.008 60);
+  --muted: oklch(0.21 0.008 60);
   --border: oklch(0.34 0.011 60);
   --input: oklch(0.34 0.011 60);
 
@@ -231,12 +231,7 @@
   font-weight: 500;
 }
 
+/* Flat canvas: no radial light, no tint. One background color everywhere. */
 @utility aura {
-  background:
-    radial-gradient(
-      120% 80% at 50% 30%,
-      color-mix(in oklab, var(--clay) 16%, transparent) 0%,
-      transparent 62%
-    ),
-    var(--color-background);
+  background: var(--color-background);
 }

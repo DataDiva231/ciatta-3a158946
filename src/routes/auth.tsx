@@ -51,19 +51,9 @@ function Shell({ children, className = "" }: { children: React.ReactNode; classN
   );
 }
 
-/** Almost motionless light. The words are the animation, not the background. */
+/** The canvas stays perfectly flat: the words are the only thing that moves. */
 function Living() {
-  return (
-    <div
-      aria-hidden="true"
-      className="animate-breathe pointer-events-none absolute inset-0 overflow-hidden"
-      style={{
-        background:
-          "radial-gradient(120% 70% at 18% 8%, color-mix(in oklab, var(--clay) 5%, transparent) 0%, transparent 62%)," +
-          "radial-gradient(110% 70% at 88% 78%, oklch(0.88 0.04 340 / 0.05) 0%, transparent 62%)",
-      }}
-    />
-  );
+  return null;
 }
 
 function Fade({
@@ -127,14 +117,6 @@ function Splash({ onDone }: { onDone: () => void }) {
             transitionDuration: "1100ms",
           }}
         >
-          <span
-            aria-hidden="true"
-            className="animate-breathe absolute -inset-16 rounded-full blur-xl"
-            style={{
-              background:
-                "radial-gradient(circle, color-mix(in oklab, var(--clay) 12%, transparent) 0%, transparent 70%)",
-            }}
-          />
           <img
             src={mark.url}
             alt="Ciatta"

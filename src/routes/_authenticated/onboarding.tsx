@@ -217,7 +217,7 @@ function Suggestion({
       aria-pressed={checked}
       className={`inline-flex max-w-full items-baseline gap-1.5 rounded-full px-3.5 py-2 text-left transition-all duration-200 active:scale-[0.97] ${
         checked
-          ? "bg-foreground/[0.055] shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--foreground)_16%,transparent)]"
+          ? "bg-transparent shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--foreground)_16%,transparent)]"
           : "bg-transparent shadow-[inset_0_0_0_1px_var(--border)]"
       } ${dimmed ? "opacity-35" : ""}`}
     >
@@ -522,7 +522,7 @@ function OnboardingPage() {
                     key={o}
                     className={`rounded-full px-3.5 py-2 text-[12.5px] shadow-[inset_0_0_0_1px_var(--border)] ${
                       isConnected
-                        ? "bg-foreground/[0.055] text-foreground"
+                        ? "bg-transparent text-foreground"
                         : "text-muted-foreground"
                     }`}
                   >

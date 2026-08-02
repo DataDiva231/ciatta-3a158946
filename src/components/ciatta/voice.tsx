@@ -42,16 +42,8 @@ export function VoiceTeach({
           transform: recording ? `scale(${1 + memo.level * 0.04})` : "scale(1)",
         }}
       >
-        {/* Concentric warmth, answering the voice. */}
-        <span
-          aria-hidden="true"
-          className="absolute inset-0 rounded-full transition-all duration-500"
-          style={{
-            background:
-              "radial-gradient(circle, color-mix(in oklab, var(--clay) 18%, transparent) 0%, transparent 72%)",
-            transform: `scale(${recording ? 1.1 + memo.level * 0.18 : 1})`,
-          }}
-        />
+        {/* No ambient glow: the canvas stays flat. */}
+
         <span
           aria-hidden="true"
           className="absolute rounded-full transition-all duration-300"

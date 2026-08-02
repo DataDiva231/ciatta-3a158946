@@ -279,7 +279,7 @@ function Privacy() {
           role="dialog"
           aria-modal="true"
           aria-label="Delete your data"
-          className="fixed inset-0 z-50 flex items-end justify-center bg-foreground/25 px-4 pb-8"
+          className="fixed inset-0 z-50 flex items-end justify-center bg-background px-4 pb-8"
           onClick={() => setConfirmDelete(false)}
         >
           <div

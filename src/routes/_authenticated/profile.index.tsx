@@ -386,12 +386,9 @@ function ProfileHeader({ since }: { since: string }) {
       ) : (
         <span
           aria-hidden="true"
-          className="flex h-[64px] w-[64px] shrink-0 items-center justify-center rounded-full bg-secondary font-serif text-[24px] text-muted-foreground"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle at 30% 25%, color-mix(in oklab, var(--clay) 22%, transparent), transparent 70%)",
-          }}
+          className="flex h-[64px] w-[64px] shrink-0 items-center justify-center rounded-full border border-border font-serif text-[24px] text-muted-foreground"
         >
+
           {identity.name.charAt(0)}
         </span>
       )}
