@@ -10,6 +10,9 @@ export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
       { title: "Begin with Ciatta — a quiet start" },
+      // Installed-app name must stay "Ciatta" even on this route.
+      { name: "apple-mobile-web-app-title", content: "Ciatta" },
+      { name: "application-name", content: "Ciatta" },
       {
         name: "description",
         content:
