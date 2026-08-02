@@ -615,6 +615,17 @@ function AuthPage() {
 
   if (phase === "intro") return <LivingIntro onStart={() => setPhase("choose")} />;
 
+  if (phase === "confirming") {
+    return (
+      <div className="relative flex h-[100svh] items-center justify-center bg-background px-10">
+        <Living />
+        <p className="animate-in fade-in relative max-w-[19rem] text-center font-serif text-[22px] leading-[1.3] duration-[900ms]">
+          Thank you. Picking up right where we left off.
+        </p>
+      </div>
+    );
+  }
+
   if (phase === "handoff") {
     return (
       <div className="relative flex h-[100svh] items-center justify-center bg-background px-10">
