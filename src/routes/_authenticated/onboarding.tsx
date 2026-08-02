@@ -1,19 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import {
-  Activity,
-  Brain,
-  Droplet,
-  Feather,
-  Flame,
-  HeartPulse,
-  Leaf,
-  Moon,
-  Sparkles,
-  Sun,
-  Waves,
-  Wind,
-} from "lucide-react";
 
 import mark from "@/assets/ciatta-mark.png.asset.json";
 import wordmark from "@/assets/ciatta-wordmark.png.asset.json";
@@ -211,66 +197,37 @@ function Footer({
 
 /* --------------------------------------------------------------- suggestions */
 
-const GLYPHS = [
-  Moon,
-  Droplet,
-  Waves,
-  Leaf,
-  Flame,
-  Feather,
-  Sun,
-  Wind,
-  HeartPulse,
-  Brain,
-  Activity,
-  Sparkles,
-];
-
-/** A suggestion, in Ciatta's voice: warm glyph, plain words, no chrome. */
+/** A suggestion: a small pill chip. Plain words, no icon, no chrome. */
 function Suggestion({
   choice,
-  index,
   checked,
   dimmed,
   onToggle,
 }: {
   choice: Choice;
-  index: number;
   checked: boolean;
   dimmed?: boolean;
   onToggle: () => void;
 }) {
-  const Glyph = GLYPHS[index % GLYPHS.length];
   return (
     <button
       type="button"
       onClick={onToggle}
       aria-pressed={checked}
-      className={`flex h-full w-full items-center gap-2.5 px-4 py-3.5 text-left transition-all duration-200 active:scale-[0.985] ${
-        choice.hint ? "rounded-[20px]" : "rounded-full"
-      } ${
+      className={`inline-flex max-w-full items-baseline gap-1.5 rounded-full px-3.5 py-2 text-left transition-all duration-200 active:scale-[0.97] ${
         checked
           ? "bg-accent/10 shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--clay)_35%,transparent)]"
           : "bg-surface shadow-[0_8px_20px_-18px_rgba(60,45,35,0.5)]"
       } ${dimmed ? "opacity-35" : ""}`}
     >
-      <Glyph
-        size={16}
-        strokeWidth={1.6}
-        aria-hidden="true"
-        className={checked ? "shrink-0 text-accent" : "shrink-0 text-accent/70"}
-      />
-      <span className="min-w-0">
-        <span className="block text-[14.5px] leading-snug text-foreground">{choice.value}</span>
-        {choice.hint && (
-          <span className="mt-0.5 block text-[12px] leading-snug text-muted-foreground">
-            {choice.hint}
-          </span>
-        )}
-      </span>
+      <span className="text-[13.5px] leading-snug text-foreground">{choice.value}</span>
+      {choice.hint && (
+        <span className="text-[11.5px] leading-snug text-muted-foreground">{choice.hint}</span>
+      )}
     </button>
   );
 }
+
 
 /** Quiet iOS-style field used for the few structured answers. */
 function Field({ children }: { children: React.ReactNode }) {
@@ -595,16 +552,15 @@ function OnboardingPage() {
                 <Question>Should I tell you when something changes?</Question>
                 <Support>One quiet note a day, and only when something has really shifted.</Support>
               </div>
-              <div className="mx-auto mt-7 w-full max-w-[19rem] space-y-2.5">
+              <div className="mx-auto mt-7 flex w-full max-w-[19rem] flex-wrap justify-center gap-2">
                 {(
                   [
                     ["Yes, let me know", "allow"],
                     ["Not for now", "later"],
                   ] as const
-                ).map(([label, value], i) => (
+                ).map(([label, value]) => (
                   <Suggestion
                     key={value}
-                    index={i === 0 ? 11 : 5}
                     choice={{ value: label }}
                     checked={data.notifications === value}
                     onToggle={() => {
@@ -709,15 +665,10 @@ function QuestionScreen({
           )}
         </div>
 
-        <div
-          className={`mx-auto mt-7 grid w-full max-w-[21rem] gap-2 ${
-            options.length > 4 ? "grid-cols-2" : "grid-cols-1"
-          }`}
-        >
-          {options.map((o, i) => (
+        <div className="mx-auto mt-7 flex w-full max-w-[21rem] flex-wrap gap-2">
+          {options.map((o) => (
             <Suggestion
               key={o.value}
-              index={i}
               choice={o}
               checked={selected.includes(o.value)}
               dimmed={multi && !selected.includes(o.value) && selected.length >= max}
@@ -877,24 +828,19 @@ function SummaryScreen({ data, onFinish }: { data: Onboarding; onFinish: () => v
 
         <div className="mx-auto mt-7 max-w-[21rem] rounded-[26px] bg-surface px-5 py-5 shadow-[0_18px_44px_-32px_rgba(60,45,35,0.55)]">
           <div className="space-y-4">
-            {lines.map((line, i) => {
-              const Glyph = GLYPHS[i % GLYPHS.length];
-              return (
-                <div
-                  key={line}
-                  className="animate-dissolve flex gap-3"
-                  style={{ animationDelay: `${i * 110}ms`, animationFillMode: "backwards" }}
-                >
-                  <Glyph
-                    size={16}
-                    strokeWidth={1.6}
-                    aria-hidden="true"
-                    className="mt-[3px] shrink-0 text-accent/80"
-                  />
-                  <p className="text-[14.5px] leading-relaxed text-foreground/85">{line}</p>
-                </div>
-              );
-            })}
+            {lines.map((line, i) => (
+              <div
+                key={line}
+                className="animate-dissolve flex gap-3"
+                style={{ animationDelay: `${i * 110}ms`, animationFillMode: "backwards" }}
+              >
+                <span
+                  aria-hidden="true"
+                  className="mt-[7px] h-[5px] w-[5px] shrink-0 rounded-full bg-accent/70"
+                />
+                <p className="text-[14.5px] leading-relaxed text-foreground/85">{line}</p>
+              </div>
+            ))}
           </div>
         </div>
 
@@ -960,22 +906,11 @@ function Building({ onDone, data }: { onDone: () => void; data: Onboarding }) {
                 }`}
               >
                 <span
-                  className={`flex h-[18px] w-[18px] items-center justify-center rounded-full transition-colors duration-500 ${
+                  aria-hidden="true"
+                  className={`h-[7px] w-[7px] shrink-0 rounded-full transition-colors duration-500 ${
                     complete ? "bg-accent" : "shadow-[inset_0_0_0_1px_var(--fog)]"
                   } ${active ? "animate-breathe" : ""}`}
-                >
-                  {complete && (
-                    <svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-                      <path
-                        d="M2.5 6.3 4.8 8.6 9.5 3.9"
-                        stroke="var(--accent-foreground)"
-                        strokeWidth="1.9"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  )}
-                </span>
+                />
                 <span className="text-[14.5px] leading-snug">{line}</span>
               </div>
             );
