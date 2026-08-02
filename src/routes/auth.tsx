@@ -376,8 +376,57 @@ function AuthPage() {
     [enter],
   );
 
+  /**
+   * Returning from the confirmation email: finish the verification, sign them
+   * in, and carry them straight back into the conversation they left. They must
+   * never land on a create-account form after succeeding.
+   */
+  useEffect(() => {
+    const proof = readConfirmation();
+    if (!proof) return;
+    let alive = true;
+
+    const finish = async () => {
+      log("confirmation return", { hasCode: Boolean(proof.code), hasHash: Boolean(proof.tokenHash) });
+      try {
+        if (proof.code) {
+          const { error: err } = await supabase.auth.exchangeCodeForSession(proof.code);
+          if (err) log("code exchange failed", err.message);
+        } else if (proof.tokenHash) {
+          const { error: err } = await supabase.auth.verifyOtp({
+            token_hash: proof.tokenHash,
+            type: (proof.type as "signup" | "email" | "magiclink" | "invite") ?? "signup",
+          });
+          if (err) log("verifyOtp failed", err.message);
+        }
+      } catch (e) {
+        console.error("[auth] confirmation failed", e);
+      }
+      // Tokens in the fragment are picked up by the client itself; either way the
+      // session is what decides.
+      const { data } = await supabase.auth.getSession();
+      if (!alive) return;
+      window.history.replaceState({}, "", "/auth");
+      const user = data.session?.user;
+      if (user?.email_confirmed_at) {
+        // A brief, calm beat so the transition reads as continuation.
+        window.setTimeout(() => alive && enter(false), 900);
+        return;
+      }
+      if (user?.email) setEmail(user.email);
+      setPhase("verify");
+      setNotice("That link has already been used or has expired. Send a fresh one below.");
+    };
+
+    void finish();
+    return () => {
+      alive = false;
+    };
+  }, [enter]);
+
   // A session already in the browser means we're mid-relationship, not new.
   useEffect(() => {
+    if (readConfirmation()) return;
     let alive = true;
     void supabase.auth.getSession().then(({ data, error: err }) => {
       if (!alive) return;
@@ -389,6 +438,7 @@ function AuthPage() {
       alive = false;
     };
   }, [settle]);
+
 
   // While waiting at the inbox, notice the moment verification lands.
   useEffect(() => {
