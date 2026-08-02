@@ -10,7 +10,6 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import "../styles.css";
-import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { TabBar } from "../components/ciatta/tab-bar";
 import { useAppearance } from "../lib/use-appearance";
