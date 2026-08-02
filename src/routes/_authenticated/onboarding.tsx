@@ -906,22 +906,11 @@ function Building({ onDone, data }: { onDone: () => void; data: Onboarding }) {
                 }`}
               >
                 <span
-                  className={`flex h-[18px] w-[18px] items-center justify-center rounded-full transition-colors duration-500 ${
+                  aria-hidden="true"
+                  className={`h-[7px] w-[7px] shrink-0 rounded-full transition-colors duration-500 ${
                     complete ? "bg-accent" : "shadow-[inset_0_0_0_1px_var(--fog)]"
                   } ${active ? "animate-breathe" : ""}`}
-                >
-                  {complete && (
-                    <svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-                      <path
-                        d="M2.5 6.3 4.8 8.6 9.5 3.9"
-                        stroke="var(--accent-foreground)"
-                        strokeWidth="1.9"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  )}
-                </span>
+                />
                 <span className="text-[14.5px] leading-snug">{line}</span>
               </div>
             );
