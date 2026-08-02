@@ -165,11 +165,11 @@
 /* Night reading: same warmth, lowered. */
 .dark {
   --background: oklch(0.21 0.008 60);
-  --surface: oklch(0.253 0.009 60);
-  --card: oklch(0.253 0.009 60);
-  --popover: oklch(0.253 0.009 60);
-  --secondary: oklch(0.295 0.01 60);
-  --muted: oklch(0.295 0.01 60);
+  --surface: oklch(0.21 0.008 60);
+  --card: oklch(0.21 0.008 60);
+  --popover: oklch(0.21 0.008 60);
+  --secondary: oklch(0.21 0.008 60);
+  --muted: oklch(0.21 0.008 60);
   --border: oklch(0.34 0.011 60);
   --input: oklch(0.34 0.011 60);
 
