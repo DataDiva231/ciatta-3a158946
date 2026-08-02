@@ -102,6 +102,8 @@ export function useAppleHealth() {
     metrics: (status.data?.metrics ?? []) as AppleHealthMetric[],
     lastImportAt: status.data?.lastImportAt ?? null,
     available: available.data ?? false,
+    /** False until the capability check has actually answered. */
+    availabilityReady: available.isSuccess,
     busy,
     error,
     connect,
