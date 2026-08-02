@@ -20,9 +20,14 @@ const TITLES: Record<string, { title: string; subtitle: string }> = {
     title: "Appearance",
     subtitle: "How Ciatta looks on this device.",
   },
+  sources: {
+    title: "Connected sources",
+    subtitle: "Each source you connect gives Ciatta another angle on the same body.",
+  },
+  // Kept so older links still land somewhere sensible.
   apps: {
-    title: "Connected apps",
-    subtitle: "Each app you connect gives Ciatta another angle on the same body.",
+    title: "Connected sources",
+    subtitle: "Each source you connect gives Ciatta another angle on the same body.",
   },
   privacy: {
     title: "Privacy",
