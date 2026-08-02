@@ -90,14 +90,16 @@ export function TabBar() {
       className="pointer-events-auto sticky bottom-0 z-20 px-3 pt-2 pb-3"
     >
       <ul className="flex items-stretch justify-between rounded-full border border-background/25 bg-background/80 px-2 py-2 shadow-[0_1px_18px_-12px_color-mix(in_oklab,var(--foreground)_22%,transparent)] backdrop-blur-[18px] backdrop-saturate-[1.4]">
-        {tabs.map(({ to, label, Icon }) => (
+        {tabs.map(({ to, label, Icon, tour }) => (
           <li key={to} className="flex-1">
             <Link
               to={to}
+              data-tour={tour}
               activeOptions={{ exact: to === "/" }}
               className="relative flex flex-col items-center gap-1 rounded-full py-1 text-[11px] text-muted-foreground transition-colors duration-300"
               activeProps={{ className: "text-foreground" }}
             >
+
               {({ isActive }) => (
                 <>
                   <Icon active={isActive} />
