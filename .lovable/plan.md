@@ -1,40 +1,26 @@
-## Ciatta refinement pass
+## What I found
 
-No new screens or data changes. This is a systematic pass over type, the hero visual, chrome, layout, and voice.
+I checked the email setup for `notify.ciatta.io`:
 
-### 1. Typography
-- Swap the Google Fonts link in the root layout: **Instrument Serif** (400 + italic) and **Inter** (400/500/600).
-- `--font-serif: "Instrument Serif"`, `--font-sans: "Inter"` in `src/styles.css`. Instrument Serif renders larger than Newsreader at the same size, so headline sizes drop ~1–2px and tracking tightens slightly.
-- Audit every `font-serif` usage. Keep serif only on: Today's greeting + understanding headline + guidance lead, Teach prompt, onboarding welcome/question/summary screens, Journey discovery headlines, major insight headlines, screen titles.
-- Everything else — metrics, labels, chips, list rows, settings, forms, quick-add options, buttons, timeline meta — becomes Inter. Several places currently use serif for numbers and small values; those move to Inter with tabular figures.
+- **Sending domain: verified.** The root domain `ciatta.io` and the delegated subdomain `notify.ciatta.io` both check out.
+- **DNS records: fully propagated.** The verification TXT record and both NS delegation records (`ns3.lovable.cloud`, `ns4.lovable.cloud`) are live — that's why the domain flipped to Verified.
+- **Still pending: the send-path activation step only.** Status reads exactly: "Send path not ready — Timed out waiting for email delivery path verification."
 
-### 2. One Understanding visual
-- Retire the translucent bust figure (`ciatta-figure-cut`) and the separate aura/gradient motifs. The **breathing orb** becomes the single evolving Understanding mark.
-- Build `src/components/ciatta/understanding.tsx`: one component taking `size` (sm/md/lg/hero) and `confidence` (0–100). Confidence drives scale, bloom opacity, and inner detail so the same object visibly matures as Ciatta learns.
-- Reuse it on Today (hero), Teach, Journey discoveries (replacing `discovery-orb` tones with the shared mark), onboarding welcome + Building Your Understanding, and Quick Add's confirmation.
-- Delete `discovery-orb.tsx` and the figure assets/preload once nothing references them.
+So this is **not** a DNS configuration issue on your side. Nothing to add or change at your registrar.
 
-### 3. Reduce visual noise
-- Remove card containers and 1px borders where they only group content: Today's metric divider stack, Teach's "other ways" bordered grid, Journey cards, Profile grouped-list boxes, Quick Add option tiles.
-- Replace with whitespace, generous vertical rhythm, a very soft tonal surface (`--surface`) where separation is genuinely needed, and one barely-there shadow token for elevation.
-- Keep hairline dividers only in Settings-style lists where scanning matters.
+The send-path check is the last step of provisioning: the platform calls the app's email webhook route on the **published** app to confirm mail can actually be dispatched. Your webhook route exists in the codebase at the correct path, but that route only becomes reachable when the app is published with it. If the published deployment predates the email routes, the check has nothing to answer it and times out — which matches what we're seeing.
 
-### 4. Editorial composition
-- Today: greeting and date top-left, orb offset asymmetrically, one large serif understanding statement, confidence as quiet inline text, two supporting lines in Inter, one guidance line. No stat rows reading like a dashboard.
-- Teach: orb, one serif prompt, one primary action (Quick Add), secondary ways demoted to a plain text row.
-- Journey: single-column editorial rhythm — big serif discovery headline, plain reasoning paragraph, generous section gaps.
-- Profile: hero + long-form sections; groups become titled type blocks, not boxes.
-- Quick Add: one question per screen, large serif question, unadorned options.
+## Plan
 
-### 5. Voice component
-- New `src/components/ciatta/voice.tsx` reused by Talk, Quick Add notes, and Teach: a calm circular presence (same Understanding language, not a mic glyph), an amplitude-reactive breathing ring while recording, live transcript rendered as editorial serif text rather than a form field, and copy framed as teaching ("Ciatta is listening…"). Wires to the existing `voice-memo.ts` / `api/transcribe` path unchanged.
+1. **Confirm the email routes are complete and unblocked** — re-verify the auth webhook route, the email templates registry, and that `/lovable/*` requests bypass the app's middleware and route guards (an early redirect on that path would also make the send-path probe time out).
+2. **Publish the app** so the email webhook route goes live at your production domain. This is the step that lets the send-path check succeed.
+3. **Rerun email setup** from Cloud → Emails so the platform re-probes the delivery path instead of waiting for the timed-out attempt to retry.
+4. **Re-check status** once, to confirm the send path flips to ready. No repeated polling.
+5. **Test send end-to-end** — trigger a real signup verification email, then read the delivery logs to confirm a `sent` event for the recipient and that the branded Ciatta template rendered. If the log shows a rejection or suppression instead, report the exact reason.
+6. **Raise the auth email rate limit** once sending is active (the default hourly cap is very low and will throttle real signups).
 
-### 6. Motion & color
-- Standardize on fade, 2–4% scale, breathing loop, progressive reveal; strip any transform/slide beyond `slide-in-from-bottom-1/2`. Durations 300–700ms, `prefers-reduced-motion` respected.
-- Keep the existing OKLCH palette. Audit clay usage down to accent-only (interaction, attention, confidence); semantic moss/wheat/brick reserved for real status.
+## Technical notes
 
-### Technical notes
-- Files touched: `src/routes/__root.tsx`, `src/styles.css`, all route files, `src/components/ciatta/*`.
-- New: `understanding.tsx`, `voice.tsx`. Removed: `discovery-orb.tsx`, bust figure assets and its preload link.
-- No changes to `narrative.ts`, `ciatta-store.ts`, `profile-data.ts`, `journey-data.ts`, or the onboarding flow graph — logic and data stay exactly as they are.
-- Verified visually with Playwright across Today, Teach, Quick Add, Journey, Profile, and onboarding in light and dark.
+- Verification blocker is platform-side provisioning, not DNS; no registrar changes needed.
+- The send-path probe hits `src/routes/lovable/email/auth/webhook.ts`, which delegates to `createAuthEmailHandler`. It will be left as-is apart from confirming `/lovable/*` passthrough in `src/start.ts` and root-route `beforeLoad`.
+- No SQL migrations, email tables, or queues are involved — delivery state lives platform-side. Please proceed with the proposed plan. Publish the latest build containing the email webhook routes, rerun the email delivery setup, verify that the send-path activation completes successfully, and perform an end-to-end signup test. Confirm the final result with delivery logs showing a successful verification email sent from `noreply@ciatta.io`
