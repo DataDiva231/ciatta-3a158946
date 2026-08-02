@@ -117,14 +117,6 @@ function Splash({ onDone }: { onDone: () => void }) {
             transitionDuration: "1100ms",
           }}
         >
-          <span
-            aria-hidden="true"
-            className="animate-breathe absolute -inset-16 rounded-full blur-xl"
-            style={{
-              background:
-                "radial-gradient(circle, color-mix(in oklab, var(--clay) 12%, transparent) 0%, transparent 70%)",
-            }}
-          />
           <img
             src={mark.url}
             alt="Ciatta"
