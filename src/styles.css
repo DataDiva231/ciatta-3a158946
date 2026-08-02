@@ -121,13 +121,13 @@
 :root {
   --radius: 0.875rem;
 
-  /* Neutrals */
+  /* Neutrals — one single flat background color across every surface. */
   --background: oklch(0.9738 0.0045 78.3); /* Ciatta Neutral #F8F6F3 */
-  --surface: oklch(0.993 0.004 56.4); /* Porcelain #FFFCFA */
-  --card: oklch(0.993 0.004 56.4);
-  --popover: oklch(0.993 0.004 56.4);
-  --secondary: oklch(0.956 0.007 80.7); /* Stone #F3F0EB */
-  --muted: oklch(0.956 0.007 80.7);
+  --surface: oklch(0.9738 0.0045 78.3);
+  --card: oklch(0.9738 0.0045 78.3);
+  --popover: oklch(0.9738 0.0045 78.3);
+  --secondary: oklch(0.9738 0.0045 78.3);
+  --muted: oklch(0.9738 0.0045 78.3);
   --border: oklch(0.915 0.01 72.7); /* Mist #E7E2DC */
   --input: oklch(0.915 0.01 72.7);
 
