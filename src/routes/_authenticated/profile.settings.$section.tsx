@@ -2,11 +2,13 @@ import { useState } from "react";
 import { Link, createFileRoute, notFound, useNavigate } from "@tanstack/react-router";
 
 import { Card, Chip, Screen, Toggle } from "@/components/ciatta/screen";
+import { SourceCard } from "@/components/ciatta/source-card";
 import { deleteAllData, exportAllData } from "@/lib/ciatta-store";
 import { forgetEverything } from "@/lib/engine.functions";
+import { SOURCES } from "@/lib/health-sources";
 import { endSession } from "@/lib/session";
-import { useAppleHealth } from "@/lib/use-apple-health";
-import { CONNECTED_APPS, useSettings } from "@/lib/profile-store";
+import { useSources } from "@/lib/use-sources";
+import { useSettings } from "@/lib/profile-store";
 import { useAppearance } from "@/lib/use-appearance";
 
 const TITLES: Record<string, { title: string; subtitle: string }> = {
