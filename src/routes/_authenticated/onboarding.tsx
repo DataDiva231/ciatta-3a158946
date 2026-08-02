@@ -552,16 +552,15 @@ function OnboardingPage() {
                 <Question>Should I tell you when something changes?</Question>
                 <Support>One quiet note a day, and only when something has really shifted.</Support>
               </div>
-              <div className="mx-auto mt-7 w-full max-w-[19rem] space-y-2.5">
+              <div className="mx-auto mt-7 flex w-full max-w-[19rem] flex-wrap justify-center gap-2">
                 {(
                   [
                     ["Yes, let me know", "allow"],
                     ["Not for now", "later"],
                   ] as const
-                ).map(([label, value], i) => (
+                ).map(([label, value]) => (
                   <Suggestion
                     key={value}
-                    index={i === 0 ? 11 : 5}
                     choice={{ value: label }}
                     checked={data.notifications === value}
                     onToggle={() => {
