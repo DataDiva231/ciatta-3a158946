@@ -38,15 +38,18 @@ export function useAppleHealth() {
   const revoke = useServerFn(disconnectAppleHealth);
   const importSamples = useServerFn(importAppleHealth);
 
-  const status = useQuery({
-    queryKey: ["apple-health", userId],
-    queryFn: () => readStatus(),
-    enabled: ready && Boolean(userId),
-  });
-
   const available = useQuery({
     queryKey: ["apple-health-available"],
     queryFn: () => appleHealthAvailable(),
+  });
+
+  const status = useQuery({
+    queryKey: ["apple-health", userId],
+    queryFn: () => readStatus(),
+    // HealthKit is a native-only capability. Avoid creating an authenticated
+    // server-function request on the web, where the result can only be unused.
+    enabled: ready && Boolean(userId) && available.isSuccess && available.data === true,
+    retry: false,
   });
 
   const refresh = useCallback(async () => {
