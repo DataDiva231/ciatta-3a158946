@@ -834,24 +834,19 @@ function SummaryScreen({ data, onFinish }: { data: Onboarding; onFinish: () => v
 
         <div className="mx-auto mt-7 max-w-[21rem] rounded-[26px] bg-surface px-5 py-5 shadow-[0_18px_44px_-32px_rgba(60,45,35,0.55)]">
           <div className="space-y-4">
-            {lines.map((line, i) => {
-              const Glyph = GLYPHS[i % GLYPHS.length];
-              return (
-                <div
-                  key={line}
-                  className="animate-dissolve flex gap-3"
-                  style={{ animationDelay: `${i * 110}ms`, animationFillMode: "backwards" }}
-                >
-                  <Glyph
-                    size={16}
-                    strokeWidth={1.6}
-                    aria-hidden="true"
-                    className="mt-[3px] shrink-0 text-accent/80"
-                  />
-                  <p className="text-[14.5px] leading-relaxed text-foreground/85">{line}</p>
-                </div>
-              );
-            })}
+            {lines.map((line, i) => (
+              <div
+                key={line}
+                className="animate-dissolve flex gap-3"
+                style={{ animationDelay: `${i * 110}ms`, animationFillMode: "backwards" }}
+              >
+                <span
+                  aria-hidden="true"
+                  className="mt-[7px] h-[5px] w-[5px] shrink-0 rounded-full bg-accent/70"
+                />
+                <p className="text-[14.5px] leading-relaxed text-foreground/85">{line}</p>
+              </div>
+            ))}
           </div>
         </div>
 
