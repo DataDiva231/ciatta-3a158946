@@ -665,15 +665,10 @@ function QuestionScreen({
           )}
         </div>
 
-        <div
-          className={`mx-auto mt-7 grid w-full max-w-[21rem] gap-2 ${
-            options.length > 4 ? "grid-cols-2" : "grid-cols-1"
-          }`}
-        >
-          {options.map((o, i) => (
+        <div className="mx-auto mt-7 flex w-full max-w-[21rem] flex-wrap gap-2">
+          {options.map((o) => (
             <Suggestion
               key={o.value}
-              index={i}
               choice={o}
               checked={selected.includes(o.value)}
               dimmed={multi && !selected.includes(o.value) && selected.length >= max}
