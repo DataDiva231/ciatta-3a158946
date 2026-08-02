@@ -572,16 +572,18 @@ function OnboardingPage() {
                   }}
                 />
               )}
-              <button
-                type="button"
-                onClick={() => {
-                  save({ appleHealthConnected: false });
-                  advance({ ...data, appleHealthConnected: false });
-                }}
-                className="mx-auto mt-3.5 block px-3 py-1 text-[13.5px] text-muted-foreground"
-              >
-                {isConnected ? "Skip for now" : "I\u2019ll tell you myself"}
-              </button>
+              {!isConnected && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    save({ appleHealthConnected: false });
+                    advance({ ...data, appleHealthConnected: false });
+                  }}
+                  className="mx-auto mt-3.5 block px-3 py-1 text-[13.5px] text-muted-foreground"
+                >
+                  I&apos;ll tell you myself
+                </button>
+              )}
             </div>
           </>
         );
