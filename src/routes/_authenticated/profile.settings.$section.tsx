@@ -2,11 +2,13 @@ import { useState } from "react";
 import { Link, createFileRoute, notFound, useNavigate } from "@tanstack/react-router";
 
 import { Card, Chip, Screen, Toggle } from "@/components/ciatta/screen";
+import { SourceCard } from "@/components/ciatta/source-card";
 import { deleteAllData, exportAllData } from "@/lib/ciatta-store";
 import { forgetEverything } from "@/lib/engine.functions";
+import { SOURCES } from "@/lib/health-sources";
 import { endSession } from "@/lib/session";
-import { useAppleHealth } from "@/lib/use-apple-health";
-import { CONNECTED_APPS, useSettings } from "@/lib/profile-store";
+import { useSources } from "@/lib/use-sources";
+import { useSettings } from "@/lib/profile-store";
 import { useAppearance } from "@/lib/use-appearance";
 
 const TITLES: Record<string, { title: string; subtitle: string }> = {
@@ -18,9 +20,14 @@ const TITLES: Record<string, { title: string; subtitle: string }> = {
     title: "Appearance",
     subtitle: "How Ciatta looks on this device.",
   },
+  sources: {
+    title: "Connected sources",
+    subtitle: "Each source you connect gives Ciatta another angle on the same body.",
+  },
+  // Kept so older links still land somewhere sensible.
   apps: {
-    title: "Connected apps",
-    subtitle: "Each app you connect gives Ciatta another angle on the same body.",
+    title: "Connected sources",
+    subtitle: "Each source you connect gives Ciatta another angle on the same body.",
   },
   privacy: {
     title: "Privacy",
@@ -57,7 +64,7 @@ function SettingsSection() {
     <Screen title={meta.title} subtitle={meta.subtitle}>
       {section === "notifications" && <Notifications />}
       {section === "appearance" && <Appearance />}
-      {section === "apps" && <Apps />}
+      {(section === "sources" || section === "apps") && <ConnectedSources />}
       {section === "privacy" && <Privacy />}
       {section === "help" && <Help />}
       {section === "about" && <About />}
@@ -140,65 +147,45 @@ function Appearance() {
   );
 }
 
-function Apps() {
-  const { settings, save } = useSettings();
-  const [busy, setBusy] = useState<string | null>(null);
-  const health = useAppleHealth();
-
-  const toggle = async (id: string) => {
-    const on = settings.apps.includes(id);
-
-    // Apple Health is real: consent is asked for and recorded, not simulated.
-    if (id === "apple-health") {
-      setBusy(id);
-      try {
-        if (on || health.connected) {
-          await health.disconnect();
-          save({ apps: settings.apps.filter((a) => a !== id) });
-        } else if (await health.connect()) {
-          save({ apps: [...settings.apps, id] });
-        }
-      } finally {
-        setBusy(null);
-      }
-      return;
-    }
-
-    setBusy(id);
-    setTimeout(() => {
-      save({ apps: on ? settings.apps.filter((a) => a !== id) : [...settings.apps, id] });
-      setBusy(null);
-    }, 400);
-  };
+function ConnectedSources() {
+  const { sources, loading, busy, message, connect, disconnect, resync, nativeAvailable, nativeReady } =
+    useSources();
 
   return (
     <Card>
-      {CONNECTED_APPS.map((a) => {
-        const isHealth = a.id === "apple-health";
-        const on = isHealth ? health.connected : settings.apps.includes(a.id);
+      {SOURCES.map((descriptor) => {
+        const state =
+          sources.find((s) => s.id === descriptor.id) ??
+          ({
+            id: descriptor.id,
+            status: "not_connected",
+            lastSyncAt: null,
+            connectedAt: null,
+            error: null,
+            unavailableReason: null,
+          } as const);
+
+        // A native source can only be authorized where its permission sheet exists.
+        const nativeBlocked =
+          descriptor.auth === "native" && nativeReady && !nativeAvailable
+            ? "Apple Health is available in the iPhone app."
+            : null;
+
         return (
-          <div key={a.id} className="flex items-start justify-between gap-4 px-4 py-3.5">
-            <span className="min-w-0">
-              <span className="block text-[15px]">{a.name}</span>
-              <span className="mt-0.5 block text-[13px] leading-relaxed text-muted-foreground">
-                {isHealth && health.error ? health.error : a.body}
-              </span>
-            </span>
-            <button
-              type="button"
-              onClick={() => void toggle(a.id)}
-              disabled={busy === a.id || (isHealth && health.busy)}
-              className={`shrink-0 rounded-full border px-3.5 py-2 text-[13px] transition-colors disabled:opacity-60 ${
-                on ? "border-border text-muted-foreground" : "border-accent text-accent"
-              }`}
-            >
-              {busy === a.id || (isHealth && health.busy)
-                ? "\u2026"
-                : on
-                  ? "Disconnect"
-                  : "Connect"}
-            </button>
-          </div>
+          <SourceCard
+            key={descriptor.id}
+            descriptor={descriptor}
+            state={{ ...state, unavailableReason: nativeBlocked ?? state.unavailableReason }}
+            busy={busy === descriptor.id || loading}
+            note={message?.id === descriptor.id ? message.text : null}
+            onConnect={() => void connect(descriptor.id)}
+            onDisconnect={() => void disconnect(descriptor.id)}
+            onRetry={() =>
+              void (state.status === "sync_error" && state.connectedAt
+                ? resync(descriptor.id)
+                : connect(descriptor.id))
+            }
+          />
         );
       })}
     </Card>

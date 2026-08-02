@@ -566,7 +566,7 @@ function ProfilePage() {
         <div className="mt-2 divide-y divide-border/70">
           <SettingsLink section="notifications" label="Notifications" />
           <SettingsLink section="appearance" label="Appearance" />
-          <SettingsLink section="apps" label="Connected apps" />
+          <SettingsLink section="sources" label="Connected sources" />
         </div>
       </section>
 

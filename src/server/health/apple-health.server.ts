@@ -66,6 +66,9 @@ export async function grantConnection(
       subject_id: subjectId,
       provider: PROVIDER,
       metrics: granted,
+      scopes: granted,
+      status: "connected",
+      last_error: null,
       connected_at: now,
       disconnected_at: null,
     },
@@ -79,16 +82,23 @@ export async function grantConnection(
 export async function revokeConnection(subjectId: string): Promise<void> {
   const { error } = await supabaseAdmin
     .from("health_connections")
-    .update({ disconnected_at: new Date().toISOString(), metrics: [] })
+    .update({
+      disconnected_at: new Date().toISOString(),
+      metrics: [],
+      scopes: [],
+      status: "not_connected",
+      last_error: null,
+    })
     .eq("subject_id", subjectId)
     .eq("provider", PROVIDER);
   if (error) throw error;
 }
 
 export async function markImported(subjectId: string): Promise<void> {
+  const now = new Date().toISOString();
   await supabaseAdmin
     .from("health_connections")
-    .update({ last_import_at: new Date().toISOString() })
+    .update({ last_import_at: now, last_sync_at: now, status: "connected" })
     .eq("subject_id", subjectId)
     .eq("provider", PROVIDER);
 }
