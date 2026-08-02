@@ -9,43 +9,32 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TermsRouteImport } from './routes/terms'
-import { Route as ResetPasswordRouteImport } from './routes/reset-password'
-import { Route as PrivacyRouteImport } from './routes/privacy'
-import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
-import { Route as ApiTranscribeRouteImport } from './routes/api/transcribe'
-import { Route as AuthenticatedTeachRouteImport } from './routes/_authenticated/teach'
-import { Route as AuthenticatedTalkRouteImport } from './routes/_authenticated/talk'
-import { Route as AuthenticatedQuickAddRouteImport } from './routes/_authenticated/quick-add'
-import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
-import { Route as AuthenticatedJourneyRouteImport } from './routes/_authenticated/journey'
-import { Route as AuthenticatedFirstObservationRouteImport } from './routes/_authenticated/first-observation'
-import { Route as AuthenticatedEngineTraceRouteImport } from './routes/_authenticated/engine-trace'
-import { Route as AuthenticatedCaptureRouteImport } from './routes/_authenticated/capture'
 import { Route as AuthenticatedAttachRouteImport } from './routes/_authenticated/attach'
+import { Route as AuthenticatedCaptureRouteImport } from './routes/_authenticated/capture'
+import { Route as AuthenticatedEngineTraceRouteImport } from './routes/_authenticated/engine-trace'
+import { Route as AuthenticatedFirstObservationRouteImport } from './routes/_authenticated/first-observation'
+import { Route as AuthenticatedJourneyRouteImport } from './routes/_authenticated/journey'
+import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
+import { Route as AuthenticatedQuickAddRouteImport } from './routes/_authenticated/quick-add'
+import { Route as AuthenticatedTalkRouteImport } from './routes/_authenticated/talk'
+import { Route as AuthenticatedTeachRouteImport } from './routes/_authenticated/teach'
+import { Route as ApiTranscribeRouteImport } from './routes/api/transcribe'
 import { Route as AuthenticatedProfileIndexRouteImport } from './routes/_authenticated/profile.index'
 import { Route as AuthenticatedProfileEditRouteImport } from './routes/_authenticated/profile.edit'
-import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
-import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
-import { Route as ApiPublicHealthSyncRouteImport } from './routes/api/public/health/sync'
-import { Route as AuthenticatedProfileSettingsSectionRouteImport } from './routes/_authenticated/profile.settings.$section'
 import { Route as AuthenticatedConnectionsProviderCallbackRouteImport } from './routes/_authenticated/connections.$provider.callback'
+import { Route as AuthenticatedProfileSettingsSectionRouteImport } from './routes/_authenticated/profile.settings.$section'
+import { Route as ApiPublicHealthSyncRouteImport } from './routes/api/public/health/sync'
+import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
+import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 
-const TermsRoute = TermsRouteImport.update({
-  id: '/terms',
-  path: '/terms',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ResetPasswordRoute = ResetPasswordRouteImport.update({
-  id: '/reset-password',
-  path: '/reset-password',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PrivacyRoute = PrivacyRouteImport.update({
-  id: '/privacy',
-  path: '/privacy',
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -53,8 +42,19 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
-  id: '/_authenticated',
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
@@ -62,24 +62,31 @@ const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const ApiTranscribeRoute = ApiTranscribeRouteImport.update({
-  id: '/api/transcribe',
-  path: '/api/transcribe',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthenticatedTeachRoute = AuthenticatedTeachRouteImport.update({
-  id: '/teach',
-  path: '/teach',
+const AuthenticatedAttachRoute = AuthenticatedAttachRouteImport.update({
+  id: '/attach',
+  path: '/attach',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedTalkRoute = AuthenticatedTalkRouteImport.update({
-  id: '/talk',
-  path: '/talk',
+const AuthenticatedCaptureRoute = AuthenticatedCaptureRouteImport.update({
+  id: '/capture',
+  path: '/capture',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedQuickAddRoute = AuthenticatedQuickAddRouteImport.update({
-  id: '/quick-add',
-  path: '/quick-add',
+const AuthenticatedEngineTraceRoute =
+  AuthenticatedEngineTraceRouteImport.update({
+    id: '/engine-trace',
+    path: '/engine-trace',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedFirstObservationRoute =
+  AuthenticatedFirstObservationRouteImport.update({
+    id: '/first-observation',
+    path: '/first-observation',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedJourneyRoute = AuthenticatedJourneyRouteImport.update({
+  id: '/journey',
+  path: '/journey',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
@@ -87,32 +94,25 @@ const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
   path: '/onboarding',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedJourneyRoute = AuthenticatedJourneyRouteImport.update({
-  id: '/journey',
-  path: '/journey',
+const AuthenticatedQuickAddRoute = AuthenticatedQuickAddRouteImport.update({
+  id: '/quick-add',
+  path: '/quick-add',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedFirstObservationRoute =
-  AuthenticatedFirstObservationRouteImport.update({
-    id: '/first-observation',
-    path: '/first-observation',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedEngineTraceRoute =
-  AuthenticatedEngineTraceRouteImport.update({
-    id: '/engine-trace',
-    path: '/engine-trace',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedCaptureRoute = AuthenticatedCaptureRouteImport.update({
-  id: '/capture',
-  path: '/capture',
+const AuthenticatedTalkRoute = AuthenticatedTalkRouteImport.update({
+  id: '/talk',
+  path: '/talk',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedAttachRoute = AuthenticatedAttachRouteImport.update({
-  id: '/attach',
-  path: '/attach',
+const AuthenticatedTeachRoute = AuthenticatedTeachRouteImport.update({
+  id: '/teach',
+  path: '/teach',
   getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const ApiTranscribeRoute = ApiTranscribeRouteImport.update({
+  id: '/api/transcribe',
+  path: '/api/transcribe',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedProfileIndexRoute =
   AuthenticatedProfileIndexRouteImport.update({
@@ -126,9 +126,21 @@ const AuthenticatedProfileEditRoute =
     path: '/profile/edit',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const LovableEmailAuthWebhookRoute = LovableEmailAuthWebhookRouteImport.update({
-  id: '/lovable/email/auth/webhook',
-  path: '/lovable/email/auth/webhook',
+const AuthenticatedConnectionsProviderCallbackRoute =
+  AuthenticatedConnectionsProviderCallbackRouteImport.update({
+    id: '/connections/$provider/callback',
+    path: '/connections/$provider/callback',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedProfileSettingsSectionRoute =
+  AuthenticatedProfileSettingsSectionRouteImport.update({
+    id: '/profile/settings/$section',
+    path: '/profile/settings/$section',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const ApiPublicHealthSyncRoute = ApiPublicHealthSyncRouteImport.update({
+  id: '/api/public/health/sync',
+  path: '/api/public/health/sync',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
@@ -136,23 +148,11 @@ const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
   path: '/lovable/email/auth/preview',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiPublicHealthSyncRoute = ApiPublicHealthSyncRouteImport.update({
-  id: '/api/public/health/sync',
-  path: '/api/public/health/sync',
+const LovableEmailAuthWebhookRoute = LovableEmailAuthWebhookRouteImport.update({
+  id: '/lovable/email/auth/webhook',
+  path: '/lovable/email/auth/webhook',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedProfileSettingsSectionRoute =
-  AuthenticatedProfileSettingsSectionRouteImport.update({
-    id: '/profile/settings/$section',
-    path: '/profile/settings/$section',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedConnectionsProviderCallbackRoute =
-  AuthenticatedConnectionsProviderCallbackRouteImport.update({
-    id: '/connections/$provider/callback',
-    path: '/connections/$provider/callback',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
@@ -318,25 +318,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/terms': {
-      id: '/terms'
-      path: '/terms'
-      fullPath: '/terms'
-      preLoaderRoute: typeof TermsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/reset-password': {
-      id: '/reset-password'
-      path: '/reset-password'
-      fullPath: '/reset-password'
-      preLoaderRoute: typeof ResetPasswordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/privacy': {
-      id: '/privacy'
-      path: '/privacy'
-      fullPath: '/privacy'
-      preLoaderRoute: typeof PrivacyRouteImport
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -346,11 +332,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated': {
-      id: '/_authenticated'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/': {
@@ -360,60 +360,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/api/transcribe': {
-      id: '/api/transcribe'
-      path: '/api/transcribe'
-      fullPath: '/api/transcribe'
-      preLoaderRoute: typeof ApiTranscribeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/teach': {
-      id: '/_authenticated/teach'
-      path: '/teach'
-      fullPath: '/teach'
-      preLoaderRoute: typeof AuthenticatedTeachRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/talk': {
-      id: '/_authenticated/talk'
-      path: '/talk'
-      fullPath: '/talk'
-      preLoaderRoute: typeof AuthenticatedTalkRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/quick-add': {
-      id: '/_authenticated/quick-add'
-      path: '/quick-add'
-      fullPath: '/quick-add'
-      preLoaderRoute: typeof AuthenticatedQuickAddRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/onboarding': {
-      id: '/_authenticated/onboarding'
-      path: '/onboarding'
-      fullPath: '/onboarding'
-      preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/journey': {
-      id: '/_authenticated/journey'
-      path: '/journey'
-      fullPath: '/journey'
-      preLoaderRoute: typeof AuthenticatedJourneyRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/first-observation': {
-      id: '/_authenticated/first-observation'
-      path: '/first-observation'
-      fullPath: '/first-observation'
-      preLoaderRoute: typeof AuthenticatedFirstObservationRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/engine-trace': {
-      id: '/_authenticated/engine-trace'
-      path: '/engine-trace'
-      fullPath: '/engine-trace'
-      preLoaderRoute: typeof AuthenticatedEngineTraceRouteImport
+    '/_authenticated/attach': {
+      id: '/_authenticated/attach'
+      path: '/attach'
+      fullPath: '/attach'
+      preLoaderRoute: typeof AuthenticatedAttachRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/capture': {
@@ -423,12 +374,61 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCaptureRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/attach': {
-      id: '/_authenticated/attach'
-      path: '/attach'
-      fullPath: '/attach'
-      preLoaderRoute: typeof AuthenticatedAttachRouteImport
+    '/_authenticated/engine-trace': {
+      id: '/_authenticated/engine-trace'
+      path: '/engine-trace'
+      fullPath: '/engine-trace'
+      preLoaderRoute: typeof AuthenticatedEngineTraceRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/first-observation': {
+      id: '/_authenticated/first-observation'
+      path: '/first-observation'
+      fullPath: '/first-observation'
+      preLoaderRoute: typeof AuthenticatedFirstObservationRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/journey': {
+      id: '/_authenticated/journey'
+      path: '/journey'
+      fullPath: '/journey'
+      preLoaderRoute: typeof AuthenticatedJourneyRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/onboarding': {
+      id: '/_authenticated/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/quick-add': {
+      id: '/_authenticated/quick-add'
+      path: '/quick-add'
+      fullPath: '/quick-add'
+      preLoaderRoute: typeof AuthenticatedQuickAddRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/talk': {
+      id: '/_authenticated/talk'
+      path: '/talk'
+      fullPath: '/talk'
+      preLoaderRoute: typeof AuthenticatedTalkRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/teach': {
+      id: '/_authenticated/teach'
+      path: '/teach'
+      fullPath: '/teach'
+      preLoaderRoute: typeof AuthenticatedTeachRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/api/transcribe': {
+      id: '/api/transcribe'
+      path: '/api/transcribe'
+      fullPath: '/api/transcribe'
+      preLoaderRoute: typeof ApiTranscribeRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/profile/': {
       id: '/_authenticated/profile/'
@@ -444,11 +444,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProfileEditRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/lovable/email/auth/webhook': {
-      id: '/lovable/email/auth/webhook'
-      path: '/lovable/email/auth/webhook'
-      fullPath: '/lovable/email/auth/webhook'
-      preLoaderRoute: typeof LovableEmailAuthWebhookRouteImport
+    '/_authenticated/connections/$provider/callback': {
+      id: '/_authenticated/connections/$provider/callback'
+      path: '/connections/$provider/callback'
+      fullPath: '/connections/$provider/callback'
+      preLoaderRoute: typeof AuthenticatedConnectionsProviderCallbackRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/profile/settings/$section': {
+      id: '/_authenticated/profile/settings/$section'
+      path: '/profile/settings/$section'
+      fullPath: '/profile/settings/$section'
+      preLoaderRoute: typeof AuthenticatedProfileSettingsSectionRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/api/public/health/sync': {
+      id: '/api/public/health/sync'
+      path: '/api/public/health/sync'
+      fullPath: '/api/public/health/sync'
+      preLoaderRoute: typeof ApiPublicHealthSyncRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/lovable/email/auth/preview': {
@@ -458,26 +472,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailAuthPreviewRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/health/sync': {
-      id: '/api/public/health/sync'
-      path: '/api/public/health/sync'
-      fullPath: '/api/public/health/sync'
-      preLoaderRoute: typeof ApiPublicHealthSyncRouteImport
+    '/lovable/email/auth/webhook': {
+      id: '/lovable/email/auth/webhook'
+      path: '/lovable/email/auth/webhook'
+      fullPath: '/lovable/email/auth/webhook'
+      preLoaderRoute: typeof LovableEmailAuthWebhookRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/profile/settings/$section': {
-      id: '/_authenticated/profile/settings/$section'
-      path: '/profile/settings/$section'
-      fullPath: '/profile/settings/$section'
-      preLoaderRoute: typeof AuthenticatedProfileSettingsSectionRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/connections/$provider/callback': {
-      id: '/_authenticated/connections/$provider/callback'
-      path: '/connections/$provider/callback'
-      fullPath: '/connections/$provider/callback'
-      preLoaderRoute: typeof AuthenticatedConnectionsProviderCallbackRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
     }
   }
 }
