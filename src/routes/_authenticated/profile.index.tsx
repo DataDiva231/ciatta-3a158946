@@ -590,7 +590,26 @@ function ProfilePage() {
   );
 }
 
+/** Replays the quiet introduction to the four core surfaces. */
+function ShowTourRow() {
+  const navigate = useNavigate();
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        requestTour();
+        navigate({ to: "/" });
+      }}
+      className={`flex w-full items-center justify-between gap-4 py-3.5 text-left text-[16px] ${pressable}`}
+    >
+      Show product tour
+      <Chevron />
+    </button>
+  );
+}
+
 function SignOutRow() {
+
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   return (
