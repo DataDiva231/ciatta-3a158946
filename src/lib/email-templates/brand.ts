@@ -89,11 +89,10 @@ export const button = {
   fontFamily: SANS,
   fontSize: '17px',
   fontWeight: 500 as const,
-  lineHeight: '58px',
-  height: '58px',
+  lineHeight: '20px',
   minWidth: '260px',
   borderRadius: '999px',
-  padding: '0 36px',
+  padding: '19px 36px',
   textAlign: 'center' as const,
   textDecoration: 'none',
 }
@@ -124,7 +123,8 @@ export const note = {
   fontSize: '15px',
   lineHeight: '1.6',
   color: MUTED,
-  margin: '0',
+  margin: '38px 0 0',
+  maxWidth: '520px',
 }
 
 export const footerSection = {
@@ -164,7 +164,7 @@ export const disclaimer = {
   fontSize: '11px',
   lineHeight: '1.7',
   color: MUTED,
-  margin: '0 0 48px',
+  margin: '0 auto 48px',
   textAlign: 'center' as const,
   maxWidth: '480px',
 }
