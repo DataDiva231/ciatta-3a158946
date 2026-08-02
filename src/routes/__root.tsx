@@ -12,6 +12,8 @@ import { useEffect, type ReactNode } from "react";
 import "../styles.css";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { TabBar } from "../components/ciatta/tab-bar";
+import { ProductTour } from "../components/ciatta/product-tour";
+
 import { useAppearance } from "../lib/use-appearance";
 import { supabase } from "@/integrations/supabase/client";
 
