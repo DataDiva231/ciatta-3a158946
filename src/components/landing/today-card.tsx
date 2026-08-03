@@ -1,4 +1,4 @@
-import understandingAsset from "@/assets/understanding-orb.png.asset.json";
+import { BodyMark } from "@/components/ciatta/understanding";
 
 /**
  * The Today card, exactly as it appears in the product: an editorial page,
@@ -29,14 +29,11 @@ export function TodayCard({
       </p>
       <p className="text-ink-faint mt-2 text-[12px] tracking-[0.02em]">{today}</p>
 
-      <img
-        src={understandingAsset.url}
-        alt=""
-        aria-hidden="true"
-        className={`animate-breathe mx-auto object-contain ${compact ? "mt-8 h-24 w-24" : "mt-10 h-32 w-32 sm:h-40 sm:w-40"}`}
-        loading="lazy"
-        decoding="async"
-      />
+      <div
+        className={`animate-breathe mx-auto flex items-center justify-center ${compact ? "mt-8 h-24" : "mt-10 h-32 sm:h-40"}`}
+      >
+        <BodyMark size={compact ? 88 : 128} />
+      </div>
 
       <h3
         className={`font-serif text-ink mx-auto mt-9 max-w-[17ch] ${
