@@ -296,6 +296,59 @@ function DiagnosticsPage() {
         </div>
       </div>
 
+      <div className="mt-10">
+        <SectionTitle>Evidence</SectionTitle>
+        <div className="mt-2 divide-y divide-border/70">
+          <Row label="Evidence" value={evidence.evidenceCount.toString()} />
+          <Row label="Active types" value={latestEvidence.length.toString()} />
+          <Row label="Passes" value={evidence.passCount.toString()} />
+          <Row
+            label="Rate"
+            value={evidence.fusionRate === null ? "—" : `${evidence.fusionRate} / min`}
+          />
+          <Row
+            label="Latency"
+            value={
+              evidence.lastLatencyMs === null
+                ? "—"
+                : `${evidence.lastLatencyMs} ms · avg ${evidence.averageLatencyMs} ms`
+            }
+          />
+          <Row
+            label="Avg confidence"
+            value={
+              evidence.averageConfidence === null
+                ? "—"
+                : `${Math.round(evidence.averageConfidence * 100)}%`
+            }
+          />
+          <Row
+            label="Support"
+            value={`${evidence.lastSupport.features} feat · ${evidence.lastSupport.observations} obs`}
+          />
+          <Row label="Last fusion" value={clock(evidence.lastFusedAt)} />
+          <Row label="Version" value={evidence.processingVersion} />
+        </div>
+      </div>
+
+      <div className="mt-10">
+        <SectionTitle>Active evidence</SectionTitle>
+        <div className="mt-2 divide-y divide-border/70">
+          {latestEvidence.length ? (
+            latestEvidence.map((item) => (
+              <Row
+                key={item.id}
+                label={EVIDENCE_LABELS[item.evidenceType]}
+                value={`${item.value} ${item.unit} · c${Math.round(item.confidence * 100)} · f${
+                  item.supportingFeatureIds.length
+                } o${item.supportingObservationIds.length}`}
+              />
+            ))
+          ) : (
+            <Row label="No evidence yet" value="—" />
+          )}
+        </div>
+      </div>
 
 
       {ble.error ? (
