@@ -1,4 +1,4 @@
-import understandingAsset from "@/assets/understanding-orb.png.asset.json";
+import { BodyMark } from "@/components/ciatta/understanding";
 
 /**
  * The Today card, exactly as it appears in the product: an editorial page,
