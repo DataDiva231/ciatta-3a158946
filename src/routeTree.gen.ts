@@ -17,6 +17,7 @@ import { Route as TermsRouteImport } from './routes/terms'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedAttachRouteImport } from './routes/_authenticated/attach'
 import { Route as AuthenticatedCaptureRouteImport } from './routes/_authenticated/capture'
+import { Route as AuthenticatedDiagnosticsRouteImport } from './routes/_authenticated/diagnostics'
 import { Route as AuthenticatedEngineTraceRouteImport } from './routes/_authenticated/engine-trace'
 import { Route as AuthenticatedFirstObservationRouteImport } from './routes/_authenticated/first-observation'
 import { Route as AuthenticatedJourneyRouteImport } from './routes/_authenticated/journey'
@@ -72,6 +73,12 @@ const AuthenticatedCaptureRoute = AuthenticatedCaptureRouteImport.update({
   path: '/capture',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedDiagnosticsRoute =
+  AuthenticatedDiagnosticsRouteImport.update({
+    id: '/diagnostics',
+    path: '/diagnostics',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedEngineTraceRoute =
   AuthenticatedEngineTraceRouteImport.update({
     id: '/engine-trace',
@@ -162,6 +169,7 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/attach': typeof AuthenticatedAttachRoute
   '/capture': typeof AuthenticatedCaptureRoute
+  '/diagnostics': typeof AuthenticatedDiagnosticsRoute
   '/engine-trace': typeof AuthenticatedEngineTraceRoute
   '/first-observation': typeof AuthenticatedFirstObservationRoute
   '/journey': typeof AuthenticatedJourneyRoute
@@ -185,6 +193,7 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/attach': typeof AuthenticatedAttachRoute
   '/capture': typeof AuthenticatedCaptureRoute
+  '/diagnostics': typeof AuthenticatedDiagnosticsRoute
   '/engine-trace': typeof AuthenticatedEngineTraceRoute
   '/first-observation': typeof AuthenticatedFirstObservationRoute
   '/journey': typeof AuthenticatedJourneyRoute
@@ -211,6 +220,7 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/_authenticated/attach': typeof AuthenticatedAttachRoute
   '/_authenticated/capture': typeof AuthenticatedCaptureRoute
+  '/_authenticated/diagnostics': typeof AuthenticatedDiagnosticsRoute
   '/_authenticated/engine-trace': typeof AuthenticatedEngineTraceRoute
   '/_authenticated/first-observation': typeof AuthenticatedFirstObservationRoute
   '/_authenticated/journey': typeof AuthenticatedJourneyRoute
@@ -238,6 +248,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/attach'
     | '/capture'
+    | '/diagnostics'
     | '/engine-trace'
     | '/first-observation'
     | '/journey'
@@ -261,6 +272,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/attach'
     | '/capture'
+    | '/diagnostics'
     | '/engine-trace'
     | '/first-observation'
     | '/journey'
@@ -286,6 +298,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/_authenticated/attach'
     | '/_authenticated/capture'
+    | '/_authenticated/diagnostics'
     | '/_authenticated/engine-trace'
     | '/_authenticated/first-observation'
     | '/_authenticated/journey'
@@ -372,6 +385,13 @@ declare module '@tanstack/react-router' {
       path: '/capture'
       fullPath: '/capture'
       preLoaderRoute: typeof AuthenticatedCaptureRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/diagnostics': {
+      id: '/_authenticated/diagnostics'
+      path: '/diagnostics'
+      fullPath: '/diagnostics'
+      preLoaderRoute: typeof AuthenticatedDiagnosticsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/engine-trace': {
@@ -485,6 +505,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAttachRoute: typeof AuthenticatedAttachRoute
   AuthenticatedCaptureRoute: typeof AuthenticatedCaptureRoute
+  AuthenticatedDiagnosticsRoute: typeof AuthenticatedDiagnosticsRoute
   AuthenticatedEngineTraceRoute: typeof AuthenticatedEngineTraceRoute
   AuthenticatedFirstObservationRoute: typeof AuthenticatedFirstObservationRoute
   AuthenticatedJourneyRoute: typeof AuthenticatedJourneyRoute
@@ -502,6 +523,7 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAttachRoute: AuthenticatedAttachRoute,
   AuthenticatedCaptureRoute: AuthenticatedCaptureRoute,
+  AuthenticatedDiagnosticsRoute: AuthenticatedDiagnosticsRoute,
   AuthenticatedEngineTraceRoute: AuthenticatedEngineTraceRoute,
   AuthenticatedFirstObservationRoute: AuthenticatedFirstObservationRoute,
   AuthenticatedJourneyRoute: AuthenticatedJourneyRoute,
