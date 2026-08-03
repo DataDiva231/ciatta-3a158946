@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 import { Reveal } from "./atoms";
 import { TodayCard } from "./today-card";
 
@@ -6,7 +8,8 @@ import { TodayCard } from "./today-card";
  * section is the sentence underneath them, not the grid.
  */
 
-type Signal = { label: string; path: JSX.Element };
+type Signal = { label: string; path: ReactNode };
+
 
 const stroke = {
   fill: "none",
