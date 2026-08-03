@@ -22,65 +22,71 @@ export const TODAY_MIN_CONFIDENCE = 0.35;
 
 /** What Today has to work with right now. */
 export type TodayState =
+  | "initializing"
   | "not_connected"
   | "learning"
   | "no_recent_observations"
   | "low_confidence"
+  | "error"
   | "ready";
+
+/** Where the subscription to the Intelligence Store currently stands. */
+export type TodayPhase = "initializing" | "live" | "failed";
 
 /** How strongly each domain deserves to lead the screen. */
 const DOMAIN_PRIORITY: Record<IntelligenceDomain, number> = {
-  recovery: 1,
-  sleep: 0.94,
-  cardiovascular: 0.88,
-  thermal: 0.78,
-  activity: 0.7,
-  device_health: 0.35,
+  recovery: 6,
+  sleep: 5,
+  cardiovascular: 4,
+  thermal: 3,
+  activity: 2,
+  device_health: 1,
 };
 
-/** Settled understanding outranks a first impression at equal confidence. */
+/** Settled understanding outranks a first impression. */
 const STATUS_PRIORITY: Record<IntelligenceStatus, number> = {
-  changing: 1,
-  established: 0.95,
-  emerging: 0.8,
-  learning: 0.55,
+  established: 4,
+  changing: 3,
+  emerging: 2,
+  learning: 1,
 };
 
-export type TodayIntelligence = {
-  state: TodayState;
-  /** The single highest-priority understanding, when there is one to show. */
-  primary: Intelligence | null;
-  /** Everything currently active, highest priority first. */
-  ranked: Intelligence[];
-  /** Editorial copy for the current state — never technical. */
-  headline: string;
-  summary: string;
-  /** Human confidence state, e.g. "Emerging · 62% confident". */
-  confidenceLabel: string;
-  /** 0–1, for the Understanding orb. */
-  confidence: number;
-  /** "Updated 2 minutes ago", or null when nothing has been understood. */
-  updatedLabel: string | null;
-  updatedAt: number | null;
-  /** Quiet supporting rows: one per other active domain. */
-  noticing: { label: string; text: string }[];
-};
+/**
+ * Ranking is lexicographic and quantised, never a blended score: the same set
+ * of intelligence always produces the same primary, and a hair of drift in
+ * confidence or a passing second can't reorder the screen.
+ *
+ * Order: confidence (5% bands) → learning state → recency (whole minutes) →
+ * domain priority → id. The final id comparison makes the order total, so
+ * there is no dependence on array order or sort stability.
+ */
+const CONFIDENCE_BAND = 0.05;
+const RECENCY_BAND_MS = 60_000;
 
-export function rankIntelligenceScore(item: Intelligence, now = Date.now()): number {
-  const age = Math.max(0, now - item.timestamp);
-  const recency = Math.max(0.15, 1 - age / TODAY_FRESHNESS_MS);
+function confidenceBand(item: Intelligence): number {
+  return Math.round(item.confidence / CONFIDENCE_BAND);
+}
+
+function recencyBand(item: Intelligence): number {
+  return Math.floor(item.timestamp / RECENCY_BAND_MS);
+}
+
+/** Negative when `a` should lead the screen ahead of `b`. */
+export function compareIntelligence(a: Intelligence, b: Intelligence): number {
   return (
-    DOMAIN_PRIORITY[item.domain] *
-    STATUS_PRIORITY[item.status] *
-    (0.35 + 0.65 * item.confidence) *
-    recency
+    confidenceBand(b) - confidenceBand(a) ||
+    STATUS_PRIORITY[b.status] - STATUS_PRIORITY[a.status] ||
+    recencyBand(b) - recencyBand(a) ||
+    DOMAIN_PRIORITY[b.domain] - DOMAIN_PRIORITY[a.domain] ||
+    (a.id < b.id ? -1 : a.id > b.id ? 1 : 0)
   );
 }
 
-/** Highest priority first. */
-export function rankIntelligence(items: Intelligence[], now = Date.now()): Intelligence[] {
-  return [...items].sort((a, b) => rankIntelligenceScore(b, now) - rankIntelligenceScore(a, now));
+/** Highest priority first. Deterministic for any input order. */
+export function rankIntelligence(items: Intelligence[]): Intelligence[] {
+  return [...items].sort(compareIntelligence);
 }
+
 
 function relativeTime(timestamp: number, now: number): string {
   const minutes = Math.round((now - timestamp) / 60_000);
