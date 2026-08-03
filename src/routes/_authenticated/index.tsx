@@ -69,19 +69,25 @@ function TodayPage() {
   const { identity } = useIdentity();
   const firstName = identity.name.trim().split(" ")[0];
 
-  // Today is one view into the single understanding. Nothing stands in for it:
-  // if the engine has nothing to say, the screen says so honestly.
+  // Biological understanding comes from the Intelligence Store alone — the
+  // screen never touches evidence, features, observations or Bluetooth.
+  const today = useTodayIntelligence();
+
+  // What the user has taught in words still speaks through the engine views.
   const { views } = useEngine();
   const view = views?.today;
-  const headline = view?.headline
-    ? splitAccent(view.headline, view.accent)
-    : [{ text: "I'm just beginning to understand you.", accent: false }];
-  const standing =
-    view?.standing ??
-    "We don't know enough yet, but every observation helps us build a clearer picture.";
-  const evidence = view?.evidence ?? [];
+
+  const headline =
+    today.state === "ready"
+      ? [{ text: today.headline, accent: false }]
+      : view?.headline
+        ? splitAccent(view.headline, view.accent)
+        : [{ text: today.headline, accent: false }];
+  const standing = today.state === "ready" ? today.summary : (view?.standing ?? today.summary);
+  const evidence = today.noticing.length ? today.noticing : (view?.evidence ?? []);
   const focus = view?.focus ?? null;
-  const depth = view?.depth ?? 0;
+  const depth = today.state === "ready" ? today.confidence : (view?.depth ?? today.confidence);
+
 
   // Set by Quick Add so the insight visibly re-forms when the user lands back here.
   const [justTaught, setJustTaught] = useState(false);
