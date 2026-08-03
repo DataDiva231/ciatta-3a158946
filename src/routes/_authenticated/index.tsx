@@ -7,7 +7,9 @@ import { Understanding } from "@/components/ciatta/understanding";
 import { formatLongDate } from "@/lib/dates";
 import { useIdentity } from "@/lib/profile-store";
 import { ONBOARDING_KEY } from "@/lib/onboarding-store";
+import { useTodayIntelligence } from "@/lib/intelligence/use-today-intelligence";
 import { useEngine } from "@/lib/use-engine";
+
 
 export const Route = createFileRoute("/_authenticated/")({
   head: () => ({
