@@ -99,6 +99,10 @@ function DiagnosticsPage() {
   const today = useTodayIntelligence();
   const sessions = useSessions();
 
+  const latestFeatures = Object.values(features.latest).sort((a, b) => b.timestamp - a.timestamp);
+  const latestEvidence = Object.values(evidence.latest).sort((a, b) => b.timestamp - a.timestamp);
+
+
   const latestIntelligence = Object.values(intelligence.latest).sort(
     (a, b) => b.timestamp - a.timestamp,
   );
