@@ -166,48 +166,75 @@ const EMPTY_COPY: Record<
 };
 
 /**
+ * Signature of what the screen is showing. Two selections with the same
+ * signature are visually identical, so the view can hold its previous object
+ * and re-render nothing.
+ */
+function signatureOf(state: TodayState, primary: Intelligence | null, noticingCount: number, updatedLabel: string | null): string {
+  return [state, primary?.id ?? "none", primary?.status ?? "-", primary ? Math.round(primary.confidence * 100) : 0, noticingCount, updatedLabel ?? "-"].join("|");
+}
+
+/**
  * The one pure function Today depends on: active intelligence in, one
- * understanding and one state out.
+ * understanding and one state out. Pure and deterministic — the same inputs
+ * always produce the same primary and the same copy.
  */
 export function selectTodayIntelligence(
   active: Intelligence[],
-  options: { hasSession: boolean; now?: number },
+  options: { hasSession: boolean; phase?: TodayPhase; now?: number },
 ): TodayIntelligence {
   const now = options.now ?? Date.now();
-  const ranked = rankIntelligence(active, now);
+  const phase = options.phase ?? "live";
+  const ranked = rankIntelligence(active);
   const primary = ranked[0] ?? null;
   const newest = ranked.reduce<number | null>(
     (latest, item) => (latest === null || item.timestamp > latest ? item.timestamp : latest),
     null,
   );
 
-  const state: TodayState = !options.hasSession
-    ? "not_connected"
-    : !primary
-      ? "learning"
-      : newest !== null && now - newest > TODAY_FRESHNESS_MS
-        ? "no_recent_observations"
-        : primary.confidence < TODAY_MIN_CONFIDENCE
-          ? "low_confidence"
-          : "ready";
+  const state: TodayState =
+    phase === "failed"
+      ? "error"
+      : phase === "initializing"
+        ? "initializing"
+        : !options.hasSession
+          ? "not_connected"
+          : !primary
+            ? "learning"
+            : newest !== null && now - newest > TODAY_FRESHNESS_MS
+              ? "no_recent_observations"
+              : primary.confidence < TODAY_MIN_CONFIDENCE
+                ? "low_confidence"
+                : "ready";
 
   if (state !== "ready") {
     const copy = EMPTY_COPY[state];
+    const shown =
+      state === "low_confidence" || state === "no_recent_observations" ? primary : null;
+    const updatedLabel =
+      state === "initializing" || state === "error" || newest === null
+        ? null
+        : relativeTime(newest, now);
     return {
       state,
-      primary: state === "low_confidence" || state === "no_recent_observations" ? primary : null,
+      primary: shown,
       ranked,
       headline: copy.headline,
       summary: copy.summary,
       confidenceLabel: copy.confidenceLabel,
       confidence: state === "low_confidence" && primary ? primary.confidence : 0,
-      updatedLabel: newest === null ? null : relativeTime(newest, now),
-      updatedAt: newest,
+      updatedLabel,
+      updatedAt: state === "initializing" || state === "error" ? null : newest,
       noticing: [],
+      signature: signatureOf(state, shown, 0, updatedLabel),
     };
   }
 
   const leading = primary!;
+  const noticing = ranked
+    .slice(1, 4)
+    .map((item) => ({ label: INTELLIGENCE_DOMAIN_LABELS[item.domain], text: item.summary }));
+  const updatedLabel = relativeTime(leading.timestamp, now);
   return {
     state,
     primary: leading,
@@ -216,10 +243,10 @@ export function selectTodayIntelligence(
     summary: leading.summary,
     confidenceLabel: confidenceLabel(leading),
     confidence: leading.confidence,
-    updatedLabel: relativeTime(leading.timestamp, now),
+    updatedLabel,
     updatedAt: leading.timestamp,
-    noticing: ranked
-      .slice(1, 4)
-      .map((item) => ({ label: INTELLIGENCE_DOMAIN_LABELS[item.domain], text: item.summary })),
+    noticing,
+    signature: signatureOf(state, leading, noticing.length, updatedLabel),
   };
 }
+
