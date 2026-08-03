@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import heroAsset from "@/assets/ciatta-hero.png.asset.json";
-import { Reveal, Wordmark, useReducedMotion } from "./atoms";
+import { Wordmark, useReducedMotion } from "./atoms";
 import { TodayCard } from "./today-card";
 import { WaitlistForm } from "./waitlist-form";
 
