@@ -227,6 +227,64 @@ function DiagnosticsPage() {
         </div>
       </div>
 
+      <div className="mt-10">
+        <SectionTitle>Features</SectionTitle>
+        <div className="mt-2 divide-y divide-border/70">
+          <Row label="Extracted" value={features.featureCount.toString()} />
+          <Row label="Passes" value={features.passCount.toString()} />
+          <Row
+            label="Rate"
+            value={features.extractionRate === null ? "—" : `${features.extractionRate} / min`}
+          />
+          <Row
+            label="Latency"
+            value={
+              features.lastLatencyMs === null
+                ? "—"
+                : `${features.lastLatencyMs} ms · avg ${features.averageLatencyMs} ms`
+            }
+          />
+          <Row
+            label="Avg quality"
+            value={
+              features.averageQuality === null
+                ? "—"
+                : `${Math.round(features.averageQuality * 100)}%`
+            }
+          />
+          <Row
+            label="Avg confidence"
+            value={
+              features.averageConfidence === null
+                ? "—"
+                : `${Math.round(features.averageConfidence * 100)}%`
+            }
+          />
+          <Row label="Last pass" value={clock(features.lastExtractedAt)} />
+          <Row label="Version" value={features.processingVersion} />
+        </div>
+      </div>
+
+      <div className="mt-10">
+        <SectionTitle>Latest features</SectionTitle>
+        <div className="mt-2 divide-y divide-border/70">
+          {latestFeatures.length ? (
+            latestFeatures.map((feature) => (
+              <Row
+                key={feature.id}
+                label={FEATURE_LABELS[feature.featureType]}
+                value={`${feature.value} ${feature.unit} · q${Math.round(
+                  feature.quality * 100,
+                )} c${Math.round(feature.confidence * 100)} · n${feature.sourceObservationIds.length}`}
+              />
+            ))
+          ) : (
+            <Row label="No features yet" value="—" />
+          )}
+        </div>
+      </div>
+
+
 
       {ble.error ? (
         <div className="mt-10 rounded-2xl px-4 py-4 shadow-[inset_0_0_0_1px_hsl(var(--border))]">
