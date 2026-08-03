@@ -92,6 +92,8 @@ function DiagnosticsPage() {
   const features = useFeatures();
   const evidence = useEvidence();
   const intelligence = useIntelligence();
+  const today = useTodayIntelligence();
+
   const latestFeatures = Object.values(features.latest).sort((a, b) => b.timestamp - a.timestamp);
   const latestEvidence = Object.values(evidence.latest).sort((a, b) => b.timestamp - a.timestamp);
   const latestIntelligence = Object.values(intelligence.latest).sort(
