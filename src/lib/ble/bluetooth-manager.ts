@@ -167,6 +167,30 @@ class BluetoothManager {
     };
   };
 
+  /** Raw packet feed. The observation pipeline listens here; screens don't. */
+  subscribePackets = (listener: (packet: BlePacket) => void): (() => void) => {
+    this.packetListeners.add(listener);
+    return () => {
+      this.packetListeners.delete(listener);
+    };
+  };
+
+  private emitPacket(view: DataView) {
+    if (!this.packetListeners.size) return;
+    const bytes = new Uint8Array(view.byteLength);
+    for (let i = 0; i < view.byteLength; i += 1) bytes[i] = view.getUint8(i);
+    const packet: BlePacket = {
+      bytes,
+      receivedAt: Date.now(),
+      deviceId: this.snapshot.device?.id ?? null,
+      deviceName: this.snapshot.device?.name ?? null,
+      rssi: this.snapshot.rssi,
+      batteryLevel: this.snapshot.batteryLevel,
+      connected: this.snapshot.state === "connected",
+    };
+    for (const listener of this.packetListeners) listener(packet);
+  }
+
   private patch(next: Partial<BleSnapshot>) {
     this.snapshot = { ...this.snapshot, ...next };
     for (const listener of this.listeners) listener(this.snapshot);
