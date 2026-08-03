@@ -780,6 +780,22 @@ function DiagnosticsPage() {
         >
           Clear intelligence
         </button>
+        <button
+          type="button"
+          onClick={() => sessionService.endSession("manual")}
+          disabled={!sessions.active}
+          className="rounded-full px-5 py-3 text-[15px] shadow-[inset_0_0_0_1px_hsl(var(--border))] disabled:opacity-40"
+        >
+          End session
+        </button>
+        <button
+          type="button"
+          onClick={() => sessionService.reset()}
+          className="rounded-full px-5 py-3 text-[15px] shadow-[inset_0_0_0_1px_hsl(var(--border))]"
+        >
+          Clear sessions
+        </button>
+
 
 
       </div>
