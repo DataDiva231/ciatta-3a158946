@@ -367,6 +367,13 @@ function DiagnosticsPage() {
         >
           Clear observations
         </button>
+        <button
+          type="button"
+          onClick={() => featureService.reset()}
+          className="rounded-full px-5 py-3 text-[15px] shadow-[inset_0_0_0_1px_hsl(var(--border))]"
+        >
+          Clear features
+        </button>
       </div>
     </main>
   );
