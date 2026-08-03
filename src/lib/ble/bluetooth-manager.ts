@@ -46,6 +46,18 @@ export type BleError = { kind: BleErrorKind; message: string; at: number };
 
 export type KnownDevice = { id: string; name: string };
 
+/** A raw notification, exactly as it arrived. Consumers own interpretation. */
+export type BlePacket = {
+  /** Raw bytes, copied so nothing downstream can be surprised by reuse. */
+  bytes: Uint8Array;
+  receivedAt: number;
+  deviceId: string | null;
+  deviceName: string | null;
+  rssi: number | null;
+  batteryLevel: number | null;
+  connected: boolean;
+};
+
 export type BleSnapshot = {
   state: ConnectionState;
   device: { id: string; name: string } | null;
@@ -139,6 +151,7 @@ class BluetoothManager {
   };
 
   private listeners = new Set<(snapshot: BleSnapshot) => void>();
+  private packetListeners = new Set<(packet: BlePacket) => void>();
   private current: BleDevice | null = null;
   private sensor: BleCharacteristic | null = null;
   private advertisements: AbortController | null = null;
