@@ -22,29 +22,70 @@ export const TODAY_MIN_CONFIDENCE = 0.35;
 
 /** What Today has to work with right now. */
 export type TodayState =
+  | "initializing"
   | "not_connected"
   | "learning"
   | "no_recent_observations"
   | "low_confidence"
+  | "error"
   | "ready";
+
+/** Where the subscription to the Intelligence Store currently stands. */
+export type TodayPhase = "initializing" | "live" | "failed";
 
 /** How strongly each domain deserves to lead the screen. */
 const DOMAIN_PRIORITY: Record<IntelligenceDomain, number> = {
-  recovery: 1,
-  sleep: 0.94,
-  cardiovascular: 0.88,
-  thermal: 0.78,
-  activity: 0.7,
-  device_health: 0.35,
+  recovery: 6,
+  sleep: 5,
+  cardiovascular: 4,
+  thermal: 3,
+  activity: 2,
+  device_health: 1,
 };
 
-/** Settled understanding outranks a first impression at equal confidence. */
+/** Settled understanding outranks a first impression. */
 const STATUS_PRIORITY: Record<IntelligenceStatus, number> = {
-  changing: 1,
-  established: 0.95,
-  emerging: 0.8,
-  learning: 0.55,
+  established: 4,
+  changing: 3,
+  emerging: 2,
+  learning: 1,
 };
+
+/**
+ * Ranking is lexicographic and quantised, never a blended score: the same set
+ * of intelligence always produces the same primary, and a hair of drift in
+ * confidence or a passing second can't reorder the screen.
+ *
+ * Order: confidence (5% bands) → learning state → recency (whole minutes) →
+ * domain priority → id. The final id comparison makes the order total, so
+ * there is no dependence on array order or sort stability.
+ */
+const CONFIDENCE_BAND = 0.05;
+const RECENCY_BAND_MS = 60_000;
+
+function confidenceBand(item: Intelligence): number {
+  return Math.round(item.confidence / CONFIDENCE_BAND);
+}
+
+function recencyBand(item: Intelligence): number {
+  return Math.floor(item.timestamp / RECENCY_BAND_MS);
+}
+
+/** Negative when `a` should lead the screen ahead of `b`. */
+export function compareIntelligence(a: Intelligence, b: Intelligence): number {
+  return (
+    confidenceBand(b) - confidenceBand(a) ||
+    STATUS_PRIORITY[b.status] - STATUS_PRIORITY[a.status] ||
+    recencyBand(b) - recencyBand(a) ||
+    DOMAIN_PRIORITY[b.domain] - DOMAIN_PRIORITY[a.domain] ||
+    (a.id < b.id ? -1 : a.id > b.id ? 1 : 0)
+  );
+}
+
+/** Highest priority first. Deterministic for any input order. */
+export function rankIntelligence(items: Intelligence[]): Intelligence[] {
+  return [...items].sort(compareIntelligence);
+}
 
 export type TodayIntelligence = {
   state: TodayState;
@@ -64,23 +105,10 @@ export type TodayIntelligence = {
   updatedAt: number | null;
   /** Quiet supporting rows: one per other active domain. */
   noticing: { label: string; text: string }[];
+  /** Identity of what is on screen — equal signatures mean nothing changed. */
+  signature: string;
 };
 
-export function rankIntelligenceScore(item: Intelligence, now = Date.now()): number {
-  const age = Math.max(0, now - item.timestamp);
-  const recency = Math.max(0.15, 1 - age / TODAY_FRESHNESS_MS);
-  return (
-    DOMAIN_PRIORITY[item.domain] *
-    STATUS_PRIORITY[item.status] *
-    (0.35 + 0.65 * item.confidence) *
-    recency
-  );
-}
-
-/** Highest priority first. */
-export function rankIntelligence(items: Intelligence[], now = Date.now()): Intelligence[] {
-  return [...items].sort((a, b) => rankIntelligenceScore(b, now) - rankIntelligenceScore(a, now));
-}
 
 function relativeTime(timestamp: number, now: number): string {
   const minutes = Math.round((now - timestamp) / 60_000);
@@ -99,7 +127,19 @@ const EMPTY_COPY: Record<
   Exclude<TodayState, "ready">,
   { headline: string; summary: string; confidenceLabel: string }
 > = {
+  initializing: {
+    headline: "One moment.",
+    summary: "I'm gathering what I already understand about you.",
+    confidenceLabel: "Getting ready",
+  },
+  error: {
+    headline: "I can't reach what I know right now.",
+    summary:
+      "Something got in the way of my understanding. Nothing you've taught me is lost — try again in a moment.",
+    confidenceLabel: "Unavailable",
+  },
   not_connected: {
+
     headline: "I haven't met your body yet.",
     summary:
       "Once your Arc is with you, I'll start listening quietly in the background and share what I begin to understand.",
@@ -126,48 +166,75 @@ const EMPTY_COPY: Record<
 };
 
 /**
+ * Signature of what the screen is showing. Two selections with the same
+ * signature are visually identical, so the view can hold its previous object
+ * and re-render nothing.
+ */
+function signatureOf(state: TodayState, primary: Intelligence | null, noticingCount: number, updatedLabel: string | null): string {
+  return [state, primary?.id ?? "none", primary?.status ?? "-", primary ? Math.round(primary.confidence * 100) : 0, noticingCount, updatedLabel ?? "-"].join("|");
+}
+
+/**
  * The one pure function Today depends on: active intelligence in, one
- * understanding and one state out.
+ * understanding and one state out. Pure and deterministic — the same inputs
+ * always produce the same primary and the same copy.
  */
 export function selectTodayIntelligence(
   active: Intelligence[],
-  options: { hasSession: boolean; now?: number },
+  options: { hasSession: boolean; phase?: TodayPhase; now?: number },
 ): TodayIntelligence {
   const now = options.now ?? Date.now();
-  const ranked = rankIntelligence(active, now);
+  const phase = options.phase ?? "live";
+  const ranked = rankIntelligence(active);
   const primary = ranked[0] ?? null;
   const newest = ranked.reduce<number | null>(
     (latest, item) => (latest === null || item.timestamp > latest ? item.timestamp : latest),
     null,
   );
 
-  const state: TodayState = !options.hasSession
-    ? "not_connected"
-    : !primary
-      ? "learning"
-      : newest !== null && now - newest > TODAY_FRESHNESS_MS
-        ? "no_recent_observations"
-        : primary.confidence < TODAY_MIN_CONFIDENCE
-          ? "low_confidence"
-          : "ready";
+  const state: TodayState =
+    phase === "failed"
+      ? "error"
+      : phase === "initializing"
+        ? "initializing"
+        : !options.hasSession
+          ? "not_connected"
+          : !primary
+            ? "learning"
+            : newest !== null && now - newest > TODAY_FRESHNESS_MS
+              ? "no_recent_observations"
+              : primary.confidence < TODAY_MIN_CONFIDENCE
+                ? "low_confidence"
+                : "ready";
 
   if (state !== "ready") {
     const copy = EMPTY_COPY[state];
+    const shown =
+      state === "low_confidence" || state === "no_recent_observations" ? primary : null;
+    const updatedLabel =
+      state === "initializing" || state === "error" || newest === null
+        ? null
+        : relativeTime(newest, now);
     return {
       state,
-      primary: state === "low_confidence" || state === "no_recent_observations" ? primary : null,
+      primary: shown,
       ranked,
       headline: copy.headline,
       summary: copy.summary,
       confidenceLabel: copy.confidenceLabel,
       confidence: state === "low_confidence" && primary ? primary.confidence : 0,
-      updatedLabel: newest === null ? null : relativeTime(newest, now),
-      updatedAt: newest,
+      updatedLabel,
+      updatedAt: state === "initializing" || state === "error" ? null : newest,
       noticing: [],
+      signature: signatureOf(state, shown, 0, updatedLabel),
     };
   }
 
   const leading = primary!;
+  const noticing = ranked
+    .slice(1, 4)
+    .map((item) => ({ label: INTELLIGENCE_DOMAIN_LABELS[item.domain], text: item.summary }));
+  const updatedLabel = relativeTime(leading.timestamp, now);
   return {
     state,
     primary: leading,
@@ -176,10 +243,10 @@ export function selectTodayIntelligence(
     summary: leading.summary,
     confidenceLabel: confidenceLabel(leading),
     confidence: leading.confidence,
-    updatedLabel: relativeTime(leading.timestamp, now),
+    updatedLabel,
     updatedAt: leading.timestamp,
-    noticing: ranked
-      .slice(1, 4)
-      .map((item) => ({ label: INTELLIGENCE_DOMAIN_LABELS[item.domain], text: item.summary })),
+    noticing,
+    signature: signatureOf(state, leading, noticing.length, updatedLabel),
   };
 }
+

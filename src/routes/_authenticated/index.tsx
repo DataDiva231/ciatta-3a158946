@@ -77,16 +77,30 @@ function TodayPage() {
   const { views } = useEngine();
   const view = views?.today;
 
+  // While the store is starting up, or if understanding is unreachable, the
+  // intelligence copy leads — no taught-text fallback, no technical detail.
+  const engineSilenced = today.state === "initializing" || today.state === "error";
+
   const headline =
-    today.state === "ready"
+    today.state === "ready" || engineSilenced
       ? [{ text: today.headline, accent: false }]
       : view?.headline
         ? splitAccent(view.headline, view.accent)
         : [{ text: today.headline, accent: false }];
-  const standing = today.state === "ready" ? today.summary : (view?.standing ?? today.summary);
-  const evidence = today.noticing.length ? today.noticing : (view?.evidence ?? []);
-  const focus = view?.focus ?? null;
-  const depth = today.state === "ready" ? today.confidence : (view?.depth ?? today.confidence);
+  const standing =
+    today.state === "ready" || engineSilenced ? today.summary : (view?.standing ?? today.summary);
+  const evidence: { label: string; text: string }[] = engineSilenced
+    ? []
+    : today.noticing.length
+      ? today.noticing
+      : (view?.evidence ?? []);
+  const focus = engineSilenced ? null : (view?.focus ?? null);
+  const depth =
+    today.state === "ready" || engineSilenced
+      ? today.confidence
+      : (view?.depth ?? today.confidence);
+
+
 
 
   // Set by Quick Add so the insight visibly re-forms when the user lands back here.
