@@ -452,6 +452,34 @@ function DiagnosticsPage() {
         </div>
       ) : null}
 
+      {/* What Today is showing, and the full trace behind it. */}
+      <div className="mt-10">
+        <SectionTitle>Today intelligence</SectionTitle>
+        <div className="mt-2 divide-y divide-border/70">
+          <Row label="State" value={today.state.replace(/_/g, " ")} />
+          <Row
+            label="Primary"
+            value={today.primary ? INTELLIGENCE_DOMAIN_LABELS[today.primary.domain] : "—"}
+          />
+          <Row label="Confidence" value={today.confidenceLabel} />
+          <Row label="Updated" value={today.updatedAt ? clock(today.updatedAt) : "—"} />
+          <Row label="Ranked" value={today.ranked.length.toString()} />
+          {today.primary ? (
+            <Row
+              label="Support"
+              value={`e${today.primary.supportingEvidenceIds.length} f${today.primary.supportingFeatureIds.length} o${today.primary.supportingObservationIds.length}`}
+            />
+          ) : null}
+        </div>
+        {today.primary ? (
+          <p className="mt-3 text-[13px] leading-relaxed text-muted-foreground">
+            {today.primary.reason}
+          </p>
+        ) : null}
+      </div>
+
+
+
 
       {ble.error ? (
         <div className="mt-10 rounded-2xl px-4 py-4 shadow-[inset_0_0_0_1px_hsl(var(--border))]">
