@@ -91,8 +91,15 @@ function DiagnosticsPage() {
   const observations = useObservations();
   const features = useFeatures();
   const evidence = useEvidence();
+  const intelligence = useIntelligence();
   const latestFeatures = Object.values(features.latest).sort((a, b) => b.timestamp - a.timestamp);
   const latestEvidence = Object.values(evidence.latest).sort((a, b) => b.timestamp - a.timestamp);
+  const latestIntelligence = Object.values(intelligence.latest).sort(
+    (a, b) => b.timestamp - a.timestamp,
+  );
+  const activeStates = (Object.keys(INTELLIGENCE_STATUS_LABELS) as IntelligenceStatus[]).filter(
+    (state) => intelligence.states[state] > 0,
+  );
 
   const busy = ble.state === "scanning" || ble.state === "connecting" || ble.state === "reconnecting";
   const live = ble.state === "connected";
