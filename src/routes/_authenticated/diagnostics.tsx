@@ -22,6 +22,7 @@ import {
 } from "@/lib/intelligence/model";
 import { intelligenceService } from "@/lib/intelligence/service";
 import { useIntelligence } from "@/lib/intelligence/use-intelligence";
+import { useTodayIntelligence } from "@/lib/intelligence/use-today-intelligence";
 import { observationService } from "@/lib/observations/service";
 import { useObservations } from "@/lib/observations/use-observations";
 
