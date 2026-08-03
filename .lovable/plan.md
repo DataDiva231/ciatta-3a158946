@@ -1,28 +1,31 @@
-# Publish Ciatta: backend answer + native entry fix
+# Wrap Ciatta as a downloadable Android APK
 
-## The backend question, answered
+No separate backend is needed. The database, auth and all server logic stay on Lovable Cloud + the hosted TanStack server runtime (`src/lib/*.functions.ts` → `src/server/**`). The Android app is a native shell that loads your published site, so it uses the same backend as the web app.
 
-You do **not** need a separate backend to publish Ciatta natively.
+## Step by step (on your own machine, from the GitHub export)
 
-- The database and auth are Lovable Cloud (Supabase under the hood). Schema lives in `supabase/migrations/`.
-- All server logic runs as TanStack Start server functions on Lovable's hosted server runtime — declared in `src/lib/*.functions.ts`, implemented in `src/server/**` (engine, evidence, guidance, health, security). There are no edge functions.
-- The native app is a shell that loads the published site, so it uses the exact same backend as the web app. A separate Supabase project would also mean re-hosting the server runtime — not worth it for launch.
+1. Install prerequisites: Node/Bun, Android Studio (with the Android SDK and a JDK).
+2. In the exported repo, add Capacitor:
+   `bun add @capacitor/core @capacitor/cli @capacitor/android`
+3. Initialise it: `bunx cap init Ciatta io.ciatta.app`
+4. In `capacitor.config.ts`, point the shell at the live app instead of bundled files:
+   `server: { url: "https://ciatta.io/today", cleartext: false }`
+   This matters because Ciatta uses server-side rendering and server functions — there is no static folder to ship inside the APK.
+5. Add the platform: `bunx cap add android`
+6. Sync and open: `bunx cap sync android` then `bunx cap open android`
+7. In Android Studio: Build → Build Bundle(s)/APK(s) → Build APK(s). The debug APK lands in
+   `android/app/build/outputs/apk/debug/app-debug.apk` — that's the file you can download and sideload.
+8. For a shareable/Play build, create a keystore and run Build → Generate Signed Bundle/APK.
 
-## What to change
+## The one change needed in this project
 
-Only the app's entry point for the native shell. Two small pieces:
+Some wrappers ignore the configured start URL and boot at `/`, which is the waitlist landing page. So:
 
-1. **Native shell detection** — a tiny browser-only helper that reports whether the app is running inside a Capacitor/WebView wrapper (Capacitor global, or a standalone display-mode launch).
-2. **Root route behaviour** — on `/`, when the native shell is detected, redirect once to `/today` (the `_authenticated` gate already bounces unauthenticated users to `/auth`, and `/auth` already resumes onboarding). On a normal browser, `/` keeps rendering the waitlist landing page exactly as it does today. No visual changes anywhere.
+1. **New** `src/lib/native-shell.ts` — `isNativeShell()`: true when running inside a Capacitor/WebView wrapper (Capacitor global, or standalone display-mode launch). SSR-safe, returns false on the server.
+2. **Edit** `src/routes/index.tsx` — a client-side effect (not `beforeLoad`, which would break SSR/SEO of the landing page) that navigates to `/today` with `replace: true` when `isNativeShell()` is true. The `_authenticated` gate already sends unauthenticated users to `/auth`.
 
-Alongside that, set the native wrapper's start URL to `https://ciatta.io/today` so cold starts skip the landing page entirely; the detector then covers deep links and any wrapper that ignores the start URL.
+In a normal browser, `/` renders the waitlist page exactly as it does today. No visual changes anywhere, no changes to auth, migrations, RLS, or components.
 
-## Technical notes
+## Before building the APK
 
-- New file `src/lib/native-shell.ts` — `isNativeShell()`, guarded for SSR (returns false on the server) so the landing page still server-renders and stays crawlable.
-- `src/routes/index.tsx` — add a client-side effect (not `beforeLoad`, which is isomorphic and would break SSR/SEO of the landing page) that navigates to `/today` with `replace: true` when `isNativeShell()` is true.
-- No changes to `_authenticated/route.tsx`, `src/start.ts`, migrations, RLS, or any component styling.
-
-## After the change
-
-Publish to `ciatta.io`, then verify in the published app: sign-in, email verification return, and one engine sync call (Today loads its understanding), and confirm the native shell opens straight into the app rather than the waitlist.
+Publish the web app first (the shell loads the published URL), then confirm in the published app: sign-in, email verification return, and Today loading its understanding.
