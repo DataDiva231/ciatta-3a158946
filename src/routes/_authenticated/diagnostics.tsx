@@ -15,6 +15,13 @@ import { useEvidence } from "@/lib/evidence/use-evidence";
 import { FEATURE_LABELS } from "@/lib/features/model";
 import { featureService } from "@/lib/features/service";
 import { useFeatures } from "@/lib/features/use-features";
+import {
+  INTELLIGENCE_DOMAIN_LABELS,
+  INTELLIGENCE_STATUS_LABELS,
+  type IntelligenceStatus,
+} from "@/lib/intelligence/model";
+import { intelligenceService } from "@/lib/intelligence/service";
+import { useIntelligence } from "@/lib/intelligence/use-intelligence";
 import { observationService } from "@/lib/observations/service";
 import { useObservations } from "@/lib/observations/use-observations";
 
