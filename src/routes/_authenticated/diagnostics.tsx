@@ -543,6 +543,14 @@ function DiagnosticsPage() {
         >
           Clear evidence
         </button>
+        <button
+          type="button"
+          onClick={() => intelligenceService.reset()}
+          className="rounded-full px-5 py-3 text-[15px] shadow-[inset_0_0_0_1px_hsl(var(--border))]"
+        >
+          Clear intelligence
+        </button>
+
 
       </div>
     </main>
