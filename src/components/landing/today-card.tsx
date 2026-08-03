@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+
 import { BodyMark } from "@/components/ciatta/understanding";
 
 /**
@@ -12,7 +14,15 @@ export function TodayCard({
   compact?: boolean;
   className?: string;
 }) {
-  const today = new Date().toLocaleDateString("en-US", { month: "long", day: "numeric" });
+  // Computed client-side only: "today" can differ between the server's clock
+  // (Cloudflare Worker, UTC-ish) and the visitor's local clock, especially
+  // near midnight — rendering it during SSR risks a hydration text mismatch.
+  // Empty on first client render (matching the SSR'd empty string) sidesteps
+  // that entirely; it fills in right after mount.
+  const [today, setToday] = useState("");
+  useEffect(() => {
+    setToday(new Date().toLocaleDateString("en-US", { month: "long", day: "numeric" }));
+  }, []);
 
   return (
     <article

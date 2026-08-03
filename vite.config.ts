@@ -18,4 +18,9 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  vite: {
+    // Local-only: lets a cloudflared quick tunnel (random *.trycloudflare.com
+    // hostname) reach the dev server for on-device Capacitor testing.
+    server: { allowedHosts: [".trycloudflare.com"] },
+  },
 });

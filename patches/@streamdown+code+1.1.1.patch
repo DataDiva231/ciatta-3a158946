@@ -1,0 +1,154 @@
+diff --git a/node_modules/@streamdown/code/dist/index.js b/node_modules/@streamdown/code/dist/index.js
+index 1fcb536..9d06bb6 100644
+--- a/node_modules/@streamdown/code/dist/index.js
++++ b/node_modules/@streamdown/code/dist/index.js
+@@ -1 +1,147 @@
+-import {bundledLanguagesInfo,bundledLanguages,createHighlighter}from'shiki';import {createJavaScriptRegexEngine}from'shiki/engine/javascript';var S=createJavaScriptRegexEngine({forgiving:true}),C=Object.fromEntries(bundledLanguagesInfo.flatMap(e=>{var n;return ((n=e.aliases)!=null?n:[]).map(t=>[t,e.id])})),r=new Set(Object.keys(bundledLanguages)),B=e=>{let t=e.trim().toLowerCase(),g=C[t];return g||(r.has(t),t)},c=new Map,p=new Map,s=new Map,o=e=>{var n;return typeof e=="string"?e:(n=e.name)!=null?n:"custom"},v=(e,n)=>`${e}-${o(n[0])}-${o(n[1])}`,x=(e,n,t)=>{let g=e.slice(0,100),u=e.length>100?e.slice(-100):"";return `${n}:${t[0]}:${t[1]}:${e.length}:${g}:${u}`},P=(e,n)=>{let t=v(e,n);if(c.has(t))return c.get(t);let g=createHighlighter({themes:n,langs:[e],engine:S});return c.set(t,g),g};function $(e={}){var t;let n=(t=e.themes)!=null?t:["github-light","github-dark"];return {name:"shiki",type:"code-highlighter",supportsLanguage(g){let u=B(g);return r.has(u)},getSupportedLanguages(){return Array.from(r)},getThemes(){return n},highlight({code:g,language:u,themes:h},m){let i=B(u),d=[o(h[0]),o(h[1])],a=x(g,i,d);if(p.has(a))return p.get(a);m&&(s.has(a)||s.set(a,new Set),s.get(a).add(m));let f=r.has(i)?i:"text";return P(f,h).then(l=>{let y=l.getLoadedLanguages().includes(i)?i:"text",L=l.codeToTokens(g,{lang:y,themes:{light:d[0],dark:d[1]}});p.set(a,L);let T=s.get(a);if(T){for(let H of T)H(L);s.delete(a);}}).catch(l=>{console.error("[Streamdown Code] Failed to highlight code:",l),s.delete(a);}),null}}}var G=$();export{G as code,$ as createCodePlugin};
+\ No newline at end of file
++import { createHighlighterCore } from '@shikijs/core';
++import { createJavaScriptRegexEngine } from 'shiki/engine/javascript';
++
++// PATCHED (see /patches/@streamdown+code+*.patch): the stock implementation
++// statically imports shiki's *entire* ~200-language registry just to build a
++// name->id lookup table, even though only one language is ever loaded at a
++// time. That's fine in a browser (each language is its own lazily-fetched
++// chunk), but a single-file deploy target (e.g. Cloudflare Workers) has to
++// inline every statically-discoverable dynamic import(), so the whole
++// registry — ~8MB — ends up in the bundle regardless of what's actually
++// used. This version uses shiki's fine-grained/core bundle API with a
++// curated language list instead. Unsupported languages fall back to plain
++// text, same as upstream. Extend LANG_IMPORTS if another language is needed.
++const LANG_IMPORTS = {
++  javascript: () => import('shiki/langs/javascript.mjs'),
++  typescript: () => import('shiki/langs/typescript.mjs'),
++  jsx: () => import('shiki/langs/jsx.mjs'),
++  tsx: () => import('shiki/langs/tsx.mjs'),
++  json: () => import('shiki/langs/json.mjs'),
++  jsonc: () => import('shiki/langs/jsonc.mjs'),
++  shellscript: () => import('shiki/langs/shellscript.mjs'),
++  python: () => import('shiki/langs/python.mjs'),
++  markdown: () => import('shiki/langs/markdown.mjs'),
++  sql: () => import('shiki/langs/sql.mjs'),
++  yaml: () => import('shiki/langs/yaml.mjs'),
++  html: () => import('shiki/langs/html.mjs'),
++  css: () => import('shiki/langs/css.mjs'),
++};
++
++const LANG_ALIASES = {
++  js: 'javascript',
++  cjs: 'javascript',
++  mjs: 'javascript',
++  ts: 'typescript',
++  cts: 'typescript',
++  mts: 'typescript',
++  bash: 'shellscript',
++  sh: 'shellscript',
++  shell: 'shellscript',
++  zsh: 'shellscript',
++  py: 'python',
++  md: 'markdown',
++  yml: 'yaml',
++};
++
++// Only the two themes @streamdown/code defaults to are pre-wired; a custom
++// ThemeInput (non-string) passed via options.themes is passed through as-is.
++const THEME_IMPORTS = {
++  'github-light': () => import('@shikijs/themes/github-light'),
++  'github-dark': () => import('@shikijs/themes/github-dark'),
++};
++
++const SUPPORTED = new Set(Object.keys(LANG_IMPORTS));
++const engine = createJavaScriptRegexEngine({ forgiving: true });
++
++const highlighterCache = new Map();
++const resultCache = new Map();
++const pendingCallbacks = new Map();
++
++function themeName(t) {
++  return typeof t === 'string' ? t : (t?.name ?? 'custom');
++}
++
++function normalizeLanguage(language) {
++  const lang = String(language ?? '').trim().toLowerCase();
++  return LANG_ALIASES[lang] ?? lang;
++}
++
++function highlighterKey(lang, themes) {
++  return `${lang}-${themeName(themes[0])}-${themeName(themes[1])}`;
++}
++
++function resultKey(code, lang, themes) {
++  const head = code.slice(0, 100);
++  const tail = code.length > 100 ? code.slice(-100) : '';
++  return `${lang}:${themeName(themes[0])}:${themeName(themes[1])}:${code.length}:${head}:${tail}`;
++}
++
++function resolveTheme(t) {
++  if (typeof t !== 'string') return t;
++  const loader = THEME_IMPORTS[t];
++  return loader ? loader() : t;
++}
++
++function getHighlighter(lang, themes) {
++  const key = highlighterKey(lang, themes);
++  if (highlighterCache.has(key)) return highlighterCache.get(key);
++  const highlighter = createHighlighterCore({
++    themes: themes.map(resolveTheme),
++    langs: SUPPORTED.has(lang) ? [LANG_IMPORTS[lang]()] : [],
++    engine,
++  });
++  highlighterCache.set(key, highlighter);
++  return highlighter;
++}
++
++function createCodePlugin(options = {}) {
++  const themes = options.themes ?? ['github-light', 'github-dark'];
++  return {
++    name: 'shiki',
++    type: 'code-highlighter',
++    supportsLanguage(language) {
++      return SUPPORTED.has(normalizeLanguage(language));
++    },
++    getSupportedLanguages() {
++      return Array.from(SUPPORTED);
++    },
++    getThemes() {
++      return themes;
++    },
++    highlight({ code, language, themes: reqThemes }, callback) {
++      const lang = normalizeLanguage(language);
++      const key = resultKey(code, lang, reqThemes);
++      if (resultCache.has(key)) return resultCache.get(key);
++      if (callback) {
++        if (!pendingCallbacks.has(key)) pendingCallbacks.set(key, new Set());
++        pendingCallbacks.get(key).add(callback);
++      }
++      const effectiveLang = SUPPORTED.has(lang) ? lang : 'text';
++      getHighlighter(effectiveLang, reqThemes)
++        .then((highlighter) => {
++          const loadedLang = highlighter.getLoadedLanguages().includes(effectiveLang)
++            ? effectiveLang
++            : 'text';
++          const tokens = highlighter.codeToTokens(code, {
++            lang: loadedLang,
++            themes: { light: themeName(reqThemes[0]), dark: themeName(reqThemes[1]) },
++          });
++          resultCache.set(key, tokens);
++          const callbacks = pendingCallbacks.get(key);
++          if (callbacks) {
++            for (const cb of callbacks) cb(tokens);
++            pendingCallbacks.delete(key);
++          }
++        })
++        .catch((err) => {
++          console.error('[Streamdown Code] Failed to highlight code:', err);
++          pendingCallbacks.delete(key);
++        });
++      return null;
++    },
++  };
++}
++
++const code = createCodePlugin();
++
++export { code, createCodePlugin };
