@@ -160,7 +160,7 @@ export function Manifesto() {
             ))}
           </ul>
 
-          <div className="relative min-h-[440px] sm:min-h-[420px]">
+          <div className="relative min-h-[560px] sm:min-h-[480px]">
             {SLIDES.map((slide, index) => (
               <div
                 key={slide.index}
@@ -169,7 +169,12 @@ export function Manifesto() {
                 style={{
                   opacity: index === active ? 1 : 0,
                   pointerEvents: index === active ? "auto" : "none",
-                  transition: "opacity 1200ms cubic-bezier(0.22,0.61,0.36,1)",
+                  // Outgoing leaves first, incoming arrives after: never two
+                  // slides speaking at once.
+                  transition:
+                    index === active
+                      ? "opacity 900ms cubic-bezier(0.22,0.61,0.36,1) 700ms"
+                      : "opacity 700ms cubic-bezier(0.22,0.61,0.36,1)",
                 }}
               >
                 <Slide slide={slide} variant={index} />
