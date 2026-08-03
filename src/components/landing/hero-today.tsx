@@ -117,7 +117,7 @@ export function HeroToday() {
   const copyOpacity = lerp(0, 1, (progress - 0.78) / 0.18);
 
   return (
-    <div ref={wrapper} className="relative h-[320vh]">
+    <div ref={wrapper} className="relative h-[260vh]">
       <div className="sticky top-0 h-[100svh] overflow-hidden">
         <div
           className="absolute inset-0 flex flex-col px-6 pt-8 sm:px-10"
@@ -139,7 +139,7 @@ export function HeroToday() {
         </div>
 
         <div
-          className="pointer-events-none absolute inset-x-0 top-0 flex h-[100svh] items-start justify-center px-4 pt-[6svh]"
+          className="pointer-events-none absolute inset-x-0 top-0 flex h-[100svh] items-center justify-center px-4"
           style={{
             transform: `translate3d(0, ${cardShift}svh, 0)`,
             willChange: "transform",
