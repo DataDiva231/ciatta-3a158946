@@ -163,12 +163,22 @@
   --destructive: oklch(0.574 0.117 29.2);
   --destructive-foreground: oklch(0.993 0.004 56.4);
 
+
+  /* Landing page palette */
+  --morning: oklch(0.9793 0.005 78.3); /* #FAF8F5 */
+  --page: oklch(0.9899 0.0032 60); /* #FFFCFA */
+  --hairline: oklch(0.9235 0.008 72.7);
+  --ink: oklch(0.245 0.008 60); /* #1A1917 */
+  --ink-soft: oklch(0.49 0.009 61.3);
+  --ink-faint: oklch(0.685 0.011 67.7);
+
   --chart-1: oklch(0.652 0.143 30.8);
   --chart-2: oklch(0.657 0.043 150.7);
   --chart-3: oklch(0.659 0.04 238.4);
   --chart-4: oklch(0.73 0.101 81.1);
   --chart-5: oklch(0.77 0.011 67.7);
 }
+
 
 /* Night reading: same warmth, lowered. */
 .dark {
