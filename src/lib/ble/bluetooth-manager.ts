@@ -397,6 +397,7 @@ class BluetoothManager {
   private onPacket = (event: Event) => {
     const value = (event.target as { value?: DataView | null } | null)?.value;
     if (!value) return;
+    this.emitPacket(value);
     try {
       const sample = parseSensorPacket(value);
       this.patch({
