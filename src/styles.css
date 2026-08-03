@@ -106,6 +106,14 @@
   --color-wheat: var(--wheat);
   --color-brick: var(--brick);
   --color-stone-blue: var(--stone-blue);
+  /* Landing surfaces: the same warmth, one shade lighter and more editorial. */
+  --color-morning: var(--morning);
+  --color-page: var(--page);
+  --color-hairline: var(--hairline);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-ink-faint: var(--ink-faint);
+
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
