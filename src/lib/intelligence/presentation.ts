@@ -127,7 +127,19 @@ const EMPTY_COPY: Record<
   Exclude<TodayState, "ready">,
   { headline: string; summary: string; confidenceLabel: string }
 > = {
+  initializing: {
+    headline: "One moment.",
+    summary: "I'm gathering what I already understand about you.",
+    confidenceLabel: "Getting ready",
+  },
+  error: {
+    headline: "I can't reach what I know right now.",
+    summary:
+      "Something got in the way of my understanding. Nothing you've taught me is lost — try again in a moment.",
+    confidenceLabel: "Unavailable",
+  },
   not_connected: {
+
     headline: "I haven't met your body yet.",
     summary:
       "Once your Arc is with you, I'll start listening quietly in the background and share what I begin to understand.",
