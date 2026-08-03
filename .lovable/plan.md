@@ -1,26 +1,35 @@
-## What I found
+# Nothing-inspired data layer for Ciatta
 
-I checked the email setup for `notify.ciatta.io`:
+Nothing's aesthetic is cold, monochrome and industrial — the opposite of Ciatta's warm, intimate voice. So rather than adopting its look, Ciatta adopts the one thing it does better than anyone: making technical data read as honest instrumentation.
 
-- **Sending domain: verified.** The root domain `ciatta.io` and the delegated subdomain `notify.ciatta.io` both check out.
-- **DNS records: fully propagated.** The verification TXT record and both NS delegation records (`ns3.lovable.cloud`, `ns4.lovable.cloud`) are live — that's why the domain flipped to Verified.
-- **Still pending: the send-path activation step only.** Status reads exactly: "Send path not ready — Timed out waiting for email delivery path verification."
+Ciatta keeps its warm canvas (#F8F6F3), Instrument Serif editorial voice, Living Clay accent and soft radii. Nothing's contribution is a single new visual register used only for machine-generated metadata.
 
-So this is **not** a DNS configuration issue on your side. Nothing to add or change at your registrar.
+## What gets built
 
-The send-path check is the last step of provisioning: the platform calls the app's email webhook route on the **published** app to confirm mail can actually be dispatched. Your webhook route exists in the codebase at the correct path, but that route only becomes reachable when the app is published with it. If the published deployment predates the email routes, the check has nothing to answer it and times out — which matches what we're seeing.
+**A mono metadata register**
 
-## Plan
+One new type treatment for data that came from the system rather than from the user: timestamps, confidence values, source tags, learning state, session identifiers, sample counts. Monospace, small, tracked-out, uppercase, muted — quiet enough to sit under editorial copy without competing with it.
 
-1. **Confirm the email routes are complete and unblocked** — re-verify the auth webhook route, the email templates registry, and that `/lovable/*` requests bypass the app's middleware and route guards (an early redirect on that path would also make the send-path probe time out).
-2. **Publish the app** so the email webhook route goes live at your production domain. This is the step that lets the send-path check succeed.
-3. **Rerun email setup** from Cloud → Emails so the platform re-probes the delivery path instead of waiting for the timed-out attempt to retry.
-4. **Re-check status** once, to confirm the send path flips to ready. No repeated polling.
-5. **Test send end-to-end** — trigger a real signup verification email, then read the delivery logs to confirm a `sent` event for the recipient and that the branded Ciatta template rendered. If the log shows a rejection or suppression instead, report the exact reason.
-6. **Raise the auth email rate limit** once sending is active (the default hourly cap is very low and will throttle real signups).
+**Where it appears**
+
+- Today: the confidence and source line under the primary insight, and the metadata line on evidence rows.
+- Engine trace: step labels, confidence deltas, and object identifiers.
+- Diagnostics: all numeric readouts, session timings, and quality figures.
+
+**Hairline discipline**
+
+Replace the remaining soft separators in these data areas with true hairline rules, so grouped metadata reads as a technical table rather than as a card stack.
+
+## What deliberately does not change
+
+- No grey canvas, no black-and-red palette, no 0px corners.
+- Headlines stay Instrument Serif — no monospace or dot-matrix display type.
+- No changes to user-authored content (Teach entries, Journey narrative, Profile prose), which stay fully editorial.
+- No layout restructuring, no new routes, no engine or data-model changes.
 
 ## Technical notes
 
-- Verification blocker is platform-side provisioning, not DNS; no registrar changes needed.
-- The send-path probe hits `src/routes/lovable/email/auth/webhook.ts`, which delegates to `createAuthEmailHandler`. It will be left as-is apart from confirming `/lovable/*` passthrough in `src/start.ts` and root-route `beforeLoad`.
-- No SQL migrations, email tables, or queues are involved — delivery state lives platform-side. Please proceed with the proposed plan. Publish the latest build containing the email webhook routes, rerun the email delivery setup, verify that the send-path activation completes successfully, and perform an end-to-end signup test. Confirm the final result with delivery logs showing a successful verification email sent from `noreply@ciatta.io`
+- Add a monospace font family plus a `--font-mono` token in `src/styles.css`, loaded via a `<link>` in `src/routes/__root.tsx` (never `@import` in CSS on this stack).
+- Add a `data-label` utility next to the existing `label-caps` utility: mono family, ~0.6875rem, uppercase, ~0.08em tracking, muted foreground token.
+- Apply `data-label` in `src/routes/_authenticated/index.tsx` (confidence/source and evidence metadata), `src/routes/engine-trace.tsx`, and `src/routes/diagnostics.tsx`.
+- Hairlines use existing border tokens at 1px — no new colour values, no hardcoded colour utilities.
