@@ -25,6 +25,9 @@ import { useIntelligence } from "@/lib/intelligence/use-intelligence";
 import { useTodayIntelligence } from "@/lib/intelligence/use-today-intelligence";
 import { observationService } from "@/lib/observations/service";
 import { useObservations } from "@/lib/observations/use-observations";
+import { SESSION_LIFECYCLE_LABELS } from "@/lib/sessions/model";
+import { sessionService } from "@/lib/sessions/service";
+import { useSessions } from "@/lib/sessions/use-sessions";
 
 
 export const Route = createFileRoute("/_authenticated/diagnostics")({
