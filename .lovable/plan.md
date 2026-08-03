@@ -1,35 +1,31 @@
-# Nothing-inspired data layer for Ciatta
+# Wrap Ciatta as a downloadable Android APK
 
-Nothing's aesthetic is cold, monochrome and industrial — the opposite of Ciatta's warm, intimate voice. So rather than adopting its look, Ciatta adopts the one thing it does better than anyone: making technical data read as honest instrumentation.
+No separate backend is needed. The database, auth and all server logic stay on Lovable Cloud + the hosted TanStack server runtime (`src/lib/*.functions.ts` → `src/server/**`). The Android app is a native shell that loads your published site, so it uses the same backend as the web app.
 
-Ciatta keeps its warm canvas (#F8F6F3), Instrument Serif editorial voice, Living Clay accent and soft radii. Nothing's contribution is a single new visual register used only for machine-generated metadata.
+## Step by step (on your own machine, from the GitHub export)
 
-## What gets built
+1. Install prerequisites: Node/Bun, Android Studio (with the Android SDK and a JDK).
+2. In the exported repo, add Capacitor:
+   `bun add @capacitor/core @capacitor/cli @capacitor/android`
+3. Initialise it: `bunx cap init Ciatta io.ciatta.app`
+4. In `capacitor.config.ts`, point the shell at the live app instead of bundled files:
+   `server: { url: "https://ciatta.io/today", cleartext: false }`
+   This matters because Ciatta uses server-side rendering and server functions — there is no static folder to ship inside the APK.
+5. Add the platform: `bunx cap add android`
+6. Sync and open: `bunx cap sync android` then `bunx cap open android`
+7. In Android Studio: Build → Build Bundle(s)/APK(s) → Build APK(s). The debug APK lands in
+   `android/app/build/outputs/apk/debug/app-debug.apk` — that's the file you can download and sideload.
+8. For a shareable/Play build, create a keystore and run Build → Generate Signed Bundle/APK.
 
-**A mono metadata register**
+## The one change needed in this project
 
-One new type treatment for data that came from the system rather than from the user: timestamps, confidence values, source tags, learning state, session identifiers, sample counts. Monospace, small, tracked-out, uppercase, muted — quiet enough to sit under editorial copy without competing with it.
+Some wrappers ignore the configured start URL and boot at `/`, which is the waitlist landing page. So:
 
-**Where it appears**
+1. **New** `src/lib/native-shell.ts` — `isNativeShell()`: true when running inside a Capacitor/WebView wrapper (Capacitor global, or standalone display-mode launch). SSR-safe, returns false on the server.
+2. **Edit** `src/routes/index.tsx` — a client-side effect (not `beforeLoad`, which would break SSR/SEO of the landing page) that navigates to `/today` with `replace: true` when `isNativeShell()` is true. The `_authenticated` gate already sends unauthenticated users to `/auth`.
 
-- Today: the confidence and source line under the primary insight, and the metadata line on evidence rows.
-- Engine trace: step labels, confidence deltas, and object identifiers.
-- Diagnostics: all numeric readouts, session timings, and quality figures.
+In a normal browser, `/` renders the waitlist page exactly as it does today. No visual changes anywhere, no changes to auth, migrations, RLS, or components.
 
-**Hairline discipline**
+## Before building the APK
 
-Replace the remaining soft separators in these data areas with true hairline rules, so grouped metadata reads as a technical table rather than as a card stack.
-
-## What deliberately does not change
-
-- No grey canvas, no black-and-red palette, no 0px corners.
-- Headlines stay Instrument Serif — no monospace or dot-matrix display type.
-- No changes to user-authored content (Teach entries, Journey narrative, Profile prose), which stay fully editorial.
-- No layout restructuring, no new routes, no engine or data-model changes.
-
-## Technical notes
-
-- Add a monospace font family plus a `--font-mono` token in `src/styles.css`, loaded via a `<link>` in `src/routes/__root.tsx` (never `@import` in CSS on this stack).
-- Add a `data-label` utility next to the existing `label-caps` utility: mono family, ~0.6875rem, uppercase, ~0.08em tracking, muted foreground token.
-- Apply `data-label` in `src/routes/_authenticated/index.tsx` (confidence/source and evidence metadata), `src/routes/engine-trace.tsx`, and `src/routes/diagnostics.tsx`.
-- Hairlines use existing border tokens at 1px — no new colour values, no hardcoded colour utilities.
+Publish the web app first (the shell loads the published URL), then confirm in the published app: sign-in, email verification return, and Today loading its understanding.
