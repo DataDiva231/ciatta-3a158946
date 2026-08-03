@@ -487,7 +487,200 @@ function DiagnosticsPage() {
         ) : null}
       </div>
 
+      {/* Session Intelligence: lifecycle, quality, summary and history. */}
+      <div className="mt-10">
+        <SectionTitle>Active session</SectionTitle>
+        <div className="mt-2 divide-y divide-border/70">
+          <Row label="Session" value={sessions.active?.id.slice(0, 16) ?? "—"} />
+          <Row
+            label="Lifecycle"
+            value={
+              sessions.active ? SESSION_LIFECYCLE_LABELS[sessions.active.lifecycle] : "no session"
+            }
+          />
+          <Row label="Device" value={sessions.active?.deviceName ?? "—"} />
+          <Row label="Started" value={clock(sessions.active?.startedAt ?? null)} />
+          <Row
+            label="Duration"
+            value={sessions.active ? duration(sessions.active.startedAt, now) : "—"}
+          />
+          <Row
+            label="Last data"
+            value={clock(sessions.active?.lastObservationAt ?? null)}
+          />
+          <Row
+            label="Paused for"
+            value={
+              sessions.active ? `${Math.round(sessions.active.pausedMs / 1000)}s` : "—"
+            }
+          />
+          <Row
+            label="Sensors active"
+            value={
+              sessions.active?.sensorsActive.length
+                ? sessions.active.sensorsActive.map((s) => s.replace(/_/g, " ")).join(" · ")
+                : "—"
+            }
+          />
+          <Row
+            label="Obs / feat / evid / intel"
+            value={
+              sessions.active
+                ? `${sessions.active.counts.observations} / ${sessions.active.counts.features} / ${sessions.active.counts.evidence} / ${sessions.active.counts.intelligence}`
+                : "—"
+            }
+          />
+        </div>
+      </div>
 
+      <div className="mt-10">
+        <SectionTitle>Session quality</SectionTitle>
+        <div className="mt-2 divide-y divide-border/70">
+          <Row
+            label="Overall"
+            value={
+              sessions.active ? `${Math.round(sessions.active.quality.score * 100)}%` : "—"
+            }
+          />
+          <Row
+            label="Signal"
+            value={
+              sessions.active ? `${Math.round(sessions.active.quality.signal * 100)}%` : "—"
+            }
+          />
+          <Row
+            label="Completeness"
+            value={
+              sessions.active
+                ? `${Math.round(sessions.active.quality.completeness * 100)}%`
+                : "—"
+            }
+          />
+          <Row
+            label="Confidence"
+            value={
+              sessions.active ? `${Math.round(sessions.active.quality.confidence * 100)}%` : "—"
+            }
+          />
+          <Row label="Rejected" value={sessions.active?.rejectedCount.toString() ?? "—"} />
+          <Row label="Version" value={sessions.processingVersion} />
+        </div>
+      </div>
+
+      <div className="mt-10">
+        <SectionTitle>Last session summary</SectionTitle>
+        <div className="mt-2 divide-y divide-border/70">
+          <Row label="Session" value={sessions.lastCompleted?.id.slice(0, 16) ?? "—"} />
+          <Row
+            label="End reason"
+            value={sessions.lastCompleted?.endReason?.replace(/_/g, " ") ?? "—"}
+          />
+          <Row
+            label="Duration"
+            value={
+              sessions.lastCompleted?.summary
+                ? `${Math.round(sessions.lastCompleted.summary.durationMs / 1000)}s`
+                : "—"
+            }
+          />
+          <Row
+            label="Sensors"
+            value={
+              sessions.lastCompleted?.summary?.sensorsActive.length
+                ? sessions.lastCompleted.summary.sensorsActive
+                    .map((s) => s.replace(/_/g, " "))
+                    .join(" · ")
+                : "—"
+            }
+          />
+          <Row
+            label="Data quality"
+            value={
+              sessions.lastCompleted?.summary
+                ? `${Math.round(sessions.lastCompleted.summary.quality.score * 100)}%`
+                : "—"
+            }
+          />
+          <Row
+            label="Confidence"
+            value={
+              sessions.lastCompleted?.summary
+                ? `${Math.round(sessions.lastCompleted.summary.confidence * 100)}%`
+                : "—"
+            }
+          />
+          <Row
+            label="Processing"
+            value={
+              sessions.lastCompleted?.summary
+                ? `${sessions.lastCompleted.summary.processingMs} ms`
+                : "—"
+            }
+          />
+          <Row
+            label="Key intelligence"
+            value={sessions.lastCompleted?.summary?.keyIntelligence.length.toString() ?? "—"}
+          />
+        </div>
+        {sessions.lastCompleted?.summary?.keyIntelligence.length ? (
+          <div className="mt-3 space-y-3">
+            {sessions.lastCompleted.summary.keyIntelligence.map((item) => (
+              <div key={item.intelligenceId}>
+                <p className="text-[13px] uppercase tracking-[0.14em] text-muted-foreground">
+                  {item.domain.replace(/_/g, " ")} · {item.status} · c
+                  {Math.round(item.confidence * 100)}
+                </p>
+                <p className="mt-1 text-[15px] leading-relaxed">{item.summary}</p>
+              </div>
+            ))}
+          </div>
+        ) : null}
+      </div>
+
+      <div className="mt-10">
+        <SectionTitle>Session timeline</SectionTitle>
+        <div className="mt-2 space-y-5">
+          {sessionService.timeline().length ? (
+            sessionService.timeline().map((day) => (
+              <div key={day.date}>
+                <p className="text-[13px] uppercase tracking-[0.14em] text-muted-foreground">
+                  {day.date}
+                </p>
+                <div className="mt-1 divide-y divide-border/70">
+                  {day.sessions.map((session) => (
+                    <Row
+                      key={session.id}
+                      label={`${SESSION_LIFECYCLE_LABELS[session.lifecycle]} · ${clock(
+                        session.startedAt,
+                      )}`}
+                      value={`${Math.round(session.durationMs / 1000)}s · q${Math.round(
+                        session.quality.score * 100,
+                      )} · o${session.counts.observations} f${session.counts.features} e${
+                        session.counts.evidence
+                      } i${session.counts.intelligence}`}
+                    />
+                  ))}
+                </div>
+              </div>
+            ))
+          ) : (
+            <Row label="No sessions yet" value="—" />
+          )}
+        </div>
+      </div>
+
+      <div className="mt-10">
+        <SectionTitle>Session history</SectionTitle>
+        <div className="mt-2 divide-y divide-border/70">
+          <Row label="Stored" value={sessions.history.length.toString()} />
+          <Row label="Started this run" value={sessions.startedCount.toString()} />
+          <Row label="Completed this run" value={sessions.completedCount.toString()} />
+          <Row
+            label="Summarised"
+            value={sessions.history.filter((session) => session.summary).length.toString()}
+          />
+        </div>
+      </div>
 
 
       {ble.error ? (
