@@ -4,6 +4,8 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
+
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
@@ -160,6 +162,10 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const router = useRouter();
   useAppearance();
+  // The waitlist page is a full-width marketing surface: no phone frame, no tab bar.
+  const isLanding = useRouterState({
+    select: (s) => s.location.pathname.startsWith("/waitlist"),
+  });
 
   // One listener for the whole app: when identity changes, everything Ciatta
   // is showing is re-derived for the person now signed in.
@@ -177,7 +183,14 @@ function RootComponent() {
     return () => data.subscription.unsubscribe();
   }, [router, queryClient]);
 
-
+  if (isLanding) {
+    return (
+      <QueryClientProvider client={queryClient}>
+        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+        <Outlet />
+      </QueryClientProvider>
+    );
+  }
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -195,3 +208,4 @@ function RootComponent() {
     </QueryClientProvider>
   );
 }
+

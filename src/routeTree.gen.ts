@@ -14,6 +14,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as TermsRouteImport } from './routes/terms'
+import { Route as WaitlistRouteImport } from './routes/waitlist'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedAttachRouteImport } from './routes/_authenticated/attach'
 import { Route as AuthenticatedCaptureRouteImport } from './routes/_authenticated/capture'
@@ -56,6 +57,11 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
   path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WaitlistRoute = WaitlistRouteImport.update({
+  id: '/waitlist',
+  path: '/waitlist',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
@@ -167,6 +173,7 @@ export interface FileRoutesByFullPath {
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/terms': typeof TermsRoute
+  '/waitlist': typeof WaitlistRoute
   '/attach': typeof AuthenticatedAttachRoute
   '/capture': typeof AuthenticatedCaptureRoute
   '/diagnostics': typeof AuthenticatedDiagnosticsRoute
@@ -191,6 +198,7 @@ export interface FileRoutesByTo {
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/terms': typeof TermsRoute
+  '/waitlist': typeof WaitlistRoute
   '/attach': typeof AuthenticatedAttachRoute
   '/capture': typeof AuthenticatedCaptureRoute
   '/diagnostics': typeof AuthenticatedDiagnosticsRoute
@@ -218,6 +226,7 @@ export interface FileRoutesById {
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/terms': typeof TermsRoute
+  '/waitlist': typeof WaitlistRoute
   '/_authenticated/attach': typeof AuthenticatedAttachRoute
   '/_authenticated/capture': typeof AuthenticatedCaptureRoute
   '/_authenticated/diagnostics': typeof AuthenticatedDiagnosticsRoute
@@ -246,6 +255,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/reset-password'
     | '/terms'
+    | '/waitlist'
     | '/attach'
     | '/capture'
     | '/diagnostics'
@@ -270,6 +280,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/reset-password'
     | '/terms'
+    | '/waitlist'
     | '/attach'
     | '/capture'
     | '/diagnostics'
@@ -296,6 +307,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/reset-password'
     | '/terms'
+    | '/waitlist'
     | '/_authenticated/attach'
     | '/_authenticated/capture'
     | '/_authenticated/diagnostics'
@@ -323,6 +335,7 @@ export interface RootRouteChildren {
   PrivacyRoute: typeof PrivacyRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   TermsRoute: typeof TermsRoute
+  WaitlistRoute: typeof WaitlistRoute
   ApiTranscribeRoute: typeof ApiTranscribeRoute
   ApiPublicHealthSyncRoute: typeof ApiPublicHealthSyncRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
@@ -364,6 +377,13 @@ declare module '@tanstack/react-router' {
       path: '/terms'
       fullPath: '/terms'
       preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/waitlist': {
+      id: '/waitlist'
+      path: '/waitlist'
+      fullPath: '/waitlist'
+      preLoaderRoute: typeof WaitlistRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/': {
@@ -549,6 +569,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   TermsRoute: TermsRoute,
+  WaitlistRoute: WaitlistRoute,
   ApiTranscribeRoute: ApiTranscribeRoute,
   ApiPublicHealthSyncRoute: ApiPublicHealthSyncRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
@@ -557,13 +578,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
