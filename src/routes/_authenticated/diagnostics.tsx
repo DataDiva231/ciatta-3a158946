@@ -6,8 +6,10 @@
  * and nothing here generates understanding.
  */
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 
 import { useBluetooth } from "@/lib/ble/use-bluetooth";
+import { useObservations } from "@/lib/observations/use-observations";
 
 export const Route = createFileRoute("/_authenticated/diagnostics")({
   head: () => ({
