@@ -115,6 +115,10 @@ class ObservationService {
           ) / 100
         : null,
     });
+
+    if (stored.length) {
+      for (const listener of this.observationListeners) listener(stored);
+    }
   };
 
   /** A session is one continuous stream from one device. */
