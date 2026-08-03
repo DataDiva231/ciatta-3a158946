@@ -78,6 +78,8 @@ function duration(from: number | null, now: number): string {
 function DiagnosticsPage() {
   const ble = useBluetooth();
   const observations = useObservations();
+  const features = useFeatures();
+  const latestFeatures = Object.values(features.latest).sort((a, b) => b.timestamp - a.timestamp);
   const busy = ble.state === "scanning" || ble.state === "connecting" || ble.state === "reconnecting";
   const live = ble.state === "connected";
   const [now, setNow] = useState(() => Date.now());
