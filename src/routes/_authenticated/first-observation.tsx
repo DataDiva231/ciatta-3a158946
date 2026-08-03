@@ -71,7 +71,7 @@ function FirstObservationPage() {
 
   const done = () => {
     save({ firstObservationDone: true });
-    navigate({ to: "/" });
+    navigate({ to: "/today" });
   };
 
   const shared = () => {

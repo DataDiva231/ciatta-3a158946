@@ -342,7 +342,7 @@ function OnboardingPage() {
     if (data.lifeStage && data.lifeStage !== "I'm not sure")
       saveIdentity({ lifeStage: data.lifeStage });
     // Before the app opens, we learn one real thing together.
-    navigate({ to: data.firstObservationDone ? "/" : "/first-observation" });
+    navigate({ to: data.firstObservationDone ? "/today" : "/first-observation" });
   };
 
   const ratio = total ? (index + 1) / total : 0;

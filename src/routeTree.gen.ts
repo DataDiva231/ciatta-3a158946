@@ -9,13 +9,13 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as WaitlistRouteImport } from './routes/waitlist'
-import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedAttachRouteImport } from './routes/_authenticated/attach'
 import { Route as AuthenticatedCaptureRouteImport } from './routes/_authenticated/capture'
 import { Route as AuthenticatedDiagnosticsRouteImport } from './routes/_authenticated/diagnostics'
@@ -26,6 +26,7 @@ import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authentic
 import { Route as AuthenticatedQuickAddRouteImport } from './routes/_authenticated/quick-add'
 import { Route as AuthenticatedTalkRouteImport } from './routes/_authenticated/talk'
 import { Route as AuthenticatedTeachRouteImport } from './routes/_authenticated/teach'
+import { Route as AuthenticatedTodayRouteImport } from './routes/_authenticated/today'
 import { Route as ApiTranscribeRouteImport } from './routes/api/transcribe'
 import { Route as AuthenticatedProfileIndexRouteImport } from './routes/_authenticated/profile.index'
 import { Route as AuthenticatedProfileEditRouteImport } from './routes/_authenticated/profile.edit'
@@ -35,6 +36,11 @@ import { Route as ApiPublicHealthSyncRouteImport } from './routes/api/public/hea
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
@@ -63,11 +69,6 @@ const WaitlistRoute = WaitlistRouteImport.update({
   id: '/waitlist',
   path: '/waitlist',
   getParentRoute: () => rootRouteImport,
-} as any)
-const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedAttachRoute = AuthenticatedAttachRouteImport.update({
   id: '/attach',
@@ -122,6 +123,11 @@ const AuthenticatedTeachRoute = AuthenticatedTeachRouteImport.update({
   path: '/teach',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedTodayRoute = AuthenticatedTodayRouteImport.update({
+  id: '/today',
+  path: '/today',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const ApiTranscribeRoute = ApiTranscribeRouteImport.update({
   id: '/api/transcribe',
   path: '/api/transcribe',
@@ -168,7 +174,7 @@ const LovableEmailAuthWebhookRoute = LovableEmailAuthWebhookRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof AuthenticatedIndexRoute
+  '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -184,6 +190,7 @@ export interface FileRoutesByFullPath {
   '/quick-add': typeof AuthenticatedQuickAddRoute
   '/talk': typeof AuthenticatedTalkRoute
   '/teach': typeof AuthenticatedTeachRoute
+  '/today': typeof AuthenticatedTodayRoute
   '/api/transcribe': typeof ApiTranscribeRoute
   '/profile/edit': typeof AuthenticatedProfileEditRoute
   '/profile/': typeof AuthenticatedProfileIndexRoute
@@ -194,6 +201,7 @@ export interface FileRoutesByFullPath {
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
 }
 export interface FileRoutesByTo {
+  '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -209,8 +217,8 @@ export interface FileRoutesByTo {
   '/quick-add': typeof AuthenticatedQuickAddRoute
   '/talk': typeof AuthenticatedTalkRoute
   '/teach': typeof AuthenticatedTeachRoute
+  '/today': typeof AuthenticatedTodayRoute
   '/api/transcribe': typeof ApiTranscribeRoute
-  '/': typeof AuthenticatedIndexRoute
   '/profile/edit': typeof AuthenticatedProfileEditRoute
   '/profile': typeof AuthenticatedProfileIndexRoute
   '/connections/$provider/callback': typeof AuthenticatedConnectionsProviderCallbackRoute
@@ -221,6 +229,7 @@ export interface FileRoutesByTo {
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/privacy': typeof PrivacyRoute
@@ -237,8 +246,8 @@ export interface FileRoutesById {
   '/_authenticated/quick-add': typeof AuthenticatedQuickAddRoute
   '/_authenticated/talk': typeof AuthenticatedTalkRoute
   '/_authenticated/teach': typeof AuthenticatedTeachRoute
+  '/_authenticated/today': typeof AuthenticatedTodayRoute
   '/api/transcribe': typeof ApiTranscribeRoute
-  '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/profile/edit': typeof AuthenticatedProfileEditRoute
   '/_authenticated/profile/': typeof AuthenticatedProfileIndexRoute
   '/_authenticated/connections/$provider/callback': typeof AuthenticatedConnectionsProviderCallbackRoute
@@ -266,6 +275,7 @@ export interface FileRouteTypes {
     | '/quick-add'
     | '/talk'
     | '/teach'
+    | '/today'
     | '/api/transcribe'
     | '/profile/edit'
     | '/profile/'
@@ -276,6 +286,7 @@ export interface FileRouteTypes {
     | '/lovable/email/auth/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/'
     | '/auth'
     | '/privacy'
     | '/reset-password'
@@ -291,8 +302,8 @@ export interface FileRouteTypes {
     | '/quick-add'
     | '/talk'
     | '/teach'
+    | '/today'
     | '/api/transcribe'
-    | '/'
     | '/profile/edit'
     | '/profile'
     | '/connections/$provider/callback'
@@ -302,6 +313,7 @@ export interface FileRouteTypes {
     | '/lovable/email/auth/webhook'
   id:
     | '__root__'
+    | '/'
     | '/_authenticated'
     | '/auth'
     | '/privacy'
@@ -318,8 +330,8 @@ export interface FileRouteTypes {
     | '/_authenticated/quick-add'
     | '/_authenticated/talk'
     | '/_authenticated/teach'
+    | '/_authenticated/today'
     | '/api/transcribe'
-    | '/_authenticated/'
     | '/_authenticated/profile/edit'
     | '/_authenticated/profile/'
     | '/_authenticated/connections/$provider/callback'
@@ -330,6 +342,7 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -344,6 +357,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated': {
       id: '/_authenticated'
       path: ''
@@ -385,13 +405,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/waitlist'
       preLoaderRoute: typeof WaitlistRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/': {
-      id: '/_authenticated/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof AuthenticatedIndexRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/attach': {
       id: '/_authenticated/attach'
@@ -461,6 +474,13 @@ declare module '@tanstack/react-router' {
       path: '/teach'
       fullPath: '/teach'
       preLoaderRoute: typeof AuthenticatedTeachRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/today': {
+      id: '/_authenticated/today'
+      path: '/today'
+      fullPath: '/today'
+      preLoaderRoute: typeof AuthenticatedTodayRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/api/transcribe': {
@@ -533,7 +553,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedQuickAddRoute: typeof AuthenticatedQuickAddRoute
   AuthenticatedTalkRoute: typeof AuthenticatedTalkRoute
   AuthenticatedTeachRoute: typeof AuthenticatedTeachRoute
-  AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+  AuthenticatedTodayRoute: typeof AuthenticatedTodayRoute
   AuthenticatedProfileEditRoute: typeof AuthenticatedProfileEditRoute
   AuthenticatedProfileIndexRoute: typeof AuthenticatedProfileIndexRoute
   AuthenticatedConnectionsProviderCallbackRoute: typeof AuthenticatedConnectionsProviderCallbackRoute
@@ -551,7 +571,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedQuickAddRoute: AuthenticatedQuickAddRoute,
   AuthenticatedTalkRoute: AuthenticatedTalkRoute,
   AuthenticatedTeachRoute: AuthenticatedTeachRoute,
-  AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+  AuthenticatedTodayRoute: AuthenticatedTodayRoute,
   AuthenticatedProfileEditRoute: AuthenticatedProfileEditRoute,
   AuthenticatedProfileIndexRoute: AuthenticatedProfileIndexRoute,
   AuthenticatedConnectionsProviderCallbackRoute:
@@ -564,6 +584,7 @@ const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   PrivacyRoute: PrivacyRoute,

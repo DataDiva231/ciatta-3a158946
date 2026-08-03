@@ -85,7 +85,7 @@ export function TeachUpload({
     });
 
     setSaved(true);
-    window.setTimeout(() => router.navigate({ to: "/" }), 1100);
+    window.setTimeout(() => router.navigate({ to: "/today" }), 1100);
   };
 
   if (saved) {

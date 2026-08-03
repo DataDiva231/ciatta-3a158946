@@ -11,7 +11,7 @@ import { useTodayIntelligence } from "@/lib/intelligence/use-today-intelligence"
 import { useEngine } from "@/lib/use-engine";
 
 
-export const Route = createFileRoute("/_authenticated/")({
+export const Route = createFileRoute("/_authenticated/today")({
   head: () => ({
     meta: [
       { title: "Today — Ciatta" },

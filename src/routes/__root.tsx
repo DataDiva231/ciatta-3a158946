@@ -164,7 +164,7 @@ function RootComponent() {
   useAppearance();
   // The waitlist page is a full-width marketing surface: no phone frame, no tab bar.
   const isLanding = useRouterState({
-    select: (s) => s.location.pathname.startsWith("/waitlist"),
+    select: (s) => s.location.pathname === "/" || s.location.pathname.startsWith("/waitlist"),
   });
 
   // One listener for the whole app: when identity changes, everything Ciatta

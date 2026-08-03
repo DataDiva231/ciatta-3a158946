@@ -79,7 +79,7 @@ function replyTo(input: string): string {
 }
 
 function TalkPage() {
-  const { goBack } = useBack("/");
+  const { goBack } = useBack("/today");
   const { facts, addFact, removeFact } = useLearnedFacts();
   const [messages, setMessages] = useState<ChatMessage[]>([OPENING]);
   const [pending, setPending] = useState(false);
