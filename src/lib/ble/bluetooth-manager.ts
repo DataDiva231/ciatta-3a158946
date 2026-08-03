@@ -48,8 +48,8 @@ export type KnownDevice = { id: string; name: string };
 
 export type BleSnapshot = {
   state: ConnectionState;
-  device: { id: string; name: string } | null
-  /** Only available where advertisement watching is supported. */;
+  device: { id: string; name: string } | null;
+  /** Only available where advertisement watching is supported. */
   rssi: number | null;
   batteryLevel: number | null;
   known: KnownDevice[];
