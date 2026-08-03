@@ -284,7 +284,7 @@ function QuickAddPage() {
     } catch {
       /* storage unavailable — the refresh cue is optional */
     }
-    const t = setTimeout(() => navigate({ to: "/" }), 950);
+    const t = setTimeout(() => navigate({ to: "/today" }), 950);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [done]);

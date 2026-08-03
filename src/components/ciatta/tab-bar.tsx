@@ -62,7 +62,7 @@ export function ProfileIcon({ active }: IconProps) {
 }
 
 const tabs = [
-  { to: "/", label: "Today", Icon: SunriseIcon, tour: "today" },
+  { to: "/today", label: "Today", Icon: SunriseIcon, tour: "today" },
   { to: "/teach", label: "Teach", Icon: TeachIcon, tour: "teach" },
   { to: "/journey", label: "Journey", Icon: JourneyIcon, tour: "journey" },
 ] as const;
@@ -95,7 +95,7 @@ export function TabBar() {
             <Link
               to={to}
               data-tour={tour}
-              activeOptions={{ exact: to === "/" }}
+              activeOptions={{ exact: to === "/today" }}
               className="relative flex flex-col items-center gap-1 rounded-full py-1 text-[11px] text-muted-foreground transition-colors duration-300"
               activeProps={{ className: "text-foreground" }}
             >

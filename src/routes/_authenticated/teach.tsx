@@ -69,7 +69,7 @@ function TeachPage() {
       metadata: { Note: text },
     });
     setSaved(true);
-    window.setTimeout(() => router.navigate({ to: "/" }), 1400);
+    window.setTimeout(() => router.navigate({ to: "/today" }), 1400);
   };
 
   /** A Quick Add is just another answer: confirm it, then move the conversation on. */

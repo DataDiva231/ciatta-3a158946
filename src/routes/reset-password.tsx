@@ -44,7 +44,7 @@ function ResetPasswordPage() {
       setError("That didn't save. Try once more.");
       return;
     }
-    navigate({ to: "/", replace: true });
+    navigate({ to: "/today", replace: true });
   };
 
   return (

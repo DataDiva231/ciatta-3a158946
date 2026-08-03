@@ -337,7 +337,7 @@ function AuthPage() {
       setReturning(isReturning);
       setPhase("greeting");
       window.setTimeout(() => {
-        navigate({ to: isReturning ? "/" : "/onboarding", replace: true }).catch((e: unknown) =>
+        navigate({ to: isReturning ? "/today" : "/onboarding", replace: true }).catch((e: unknown) =>
           console.error("[auth] navigation failed", e),
         );
       }, 2300);

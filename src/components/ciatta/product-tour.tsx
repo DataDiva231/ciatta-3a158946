@@ -24,7 +24,7 @@ export function ProductTour() {
   const { tour, save, hydrated } = useTour();
 
   const eligible =
-    pathname === "/" &&
+    pathname === "/today" &&
     obHydrated &&
     hydrated &&
     onboarding.completed &&

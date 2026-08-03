@@ -598,7 +598,7 @@ function ShowTourRow() {
       type="button"
       onClick={() => {
         requestTour();
-        navigate({ to: "/" });
+        navigate({ to: "/today" });
       }}
       className={`flex w-full items-center justify-between gap-4 py-3.5 text-left text-[16px] ${pressable}`}
     >
