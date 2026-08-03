@@ -9,11 +9,15 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
 import { useBluetooth } from "@/lib/ble/use-bluetooth";
+import { EVIDENCE_LABELS } from "@/lib/evidence/model";
+import { evidenceService } from "@/lib/evidence/service";
+import { useEvidence } from "@/lib/evidence/use-evidence";
 import { FEATURE_LABELS } from "@/lib/features/model";
 import { featureService } from "@/lib/features/service";
 import { useFeatures } from "@/lib/features/use-features";
 import { observationService } from "@/lib/observations/service";
 import { useObservations } from "@/lib/observations/use-observations";
+
 
 export const Route = createFileRoute("/_authenticated/diagnostics")({
   head: () => ({
