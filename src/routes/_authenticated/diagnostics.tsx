@@ -15,6 +15,13 @@ import { useEvidence } from "@/lib/evidence/use-evidence";
 import { FEATURE_LABELS } from "@/lib/features/model";
 import { featureService } from "@/lib/features/service";
 import { useFeatures } from "@/lib/features/use-features";
+import {
+  INTELLIGENCE_DOMAIN_LABELS,
+  INTELLIGENCE_STATUS_LABELS,
+  type IntelligenceStatus,
+} from "@/lib/intelligence/model";
+import { intelligenceService } from "@/lib/intelligence/service";
+import { useIntelligence } from "@/lib/intelligence/use-intelligence";
 import { observationService } from "@/lib/observations/service";
 import { useObservations } from "@/lib/observations/use-observations";
 
@@ -84,8 +91,15 @@ function DiagnosticsPage() {
   const observations = useObservations();
   const features = useFeatures();
   const evidence = useEvidence();
+  const intelligence = useIntelligence();
   const latestFeatures = Object.values(features.latest).sort((a, b) => b.timestamp - a.timestamp);
   const latestEvidence = Object.values(evidence.latest).sort((a, b) => b.timestamp - a.timestamp);
+  const latestIntelligence = Object.values(intelligence.latest).sort(
+    (a, b) => b.timestamp - a.timestamp,
+  );
+  const activeStates = (Object.keys(INTELLIGENCE_STATUS_LABELS) as IntelligenceStatus[]).filter(
+    (state) => intelligence.states[state] > 0,
+  );
 
   const busy = ble.state === "scanning" || ble.state === "connecting" || ble.state === "reconnecting";
   const live = ble.state === "connected";
@@ -350,6 +364,94 @@ function DiagnosticsPage() {
         </div>
       </div>
 
+      <div className="mt-10">
+        <SectionTitle>Intelligence</SectionTitle>
+        <div className="mt-2 divide-y divide-border/70">
+          <Row label="Intelligence" value={intelligence.intelligenceCount.toString()} />
+          <Row label="Active domains" value={latestIntelligence.length.toString()} />
+          <Row label="Passes" value={intelligence.passCount.toString()} />
+          <Row
+            label="Rate"
+            value={
+              intelligence.generationRate === null ? "—" : `${intelligence.generationRate} / min`
+            }
+          />
+          <Row
+            label="Latency"
+            value={
+              intelligence.lastLatencyMs === null
+                ? "—"
+                : `${intelligence.lastLatencyMs} ms · avg ${intelligence.averageLatencyMs} ms`
+            }
+          />
+          <Row
+            label="Avg confidence"
+            value={
+              intelligence.averageConfidence === null
+                ? "—"
+                : `${Math.round(intelligence.averageConfidence * 100)}%`
+            }
+          />
+          <Row
+            label="States"
+            value={
+              activeStates.length
+                ? activeStates
+                    .map(
+                      (state) =>
+                        `${INTELLIGENCE_STATUS_LABELS[state]} ${intelligence.states[state]}`,
+                    )
+                    .join(" · ")
+                : "—"
+            }
+          />
+          <Row
+            label="Support"
+            value={`${intelligence.lastSupport.evidence} evid · ${intelligence.lastSupport.features} feat · ${intelligence.lastSupport.observations} obs`}
+          />
+          <Row label="Last pass" value={clock(intelligence.lastGeneratedAt)} />
+          <Row label="Version" value={intelligence.processingVersion} />
+        </div>
+      </div>
+
+      <div className="mt-10">
+        <SectionTitle>Active intelligence</SectionTitle>
+        <div className="mt-2 divide-y divide-border/70">
+          {latestIntelligence.length ? (
+            latestIntelligence.map((item) => (
+              <Row
+                key={item.id}
+                label={INTELLIGENCE_DOMAIN_LABELS[item.domain]}
+                value={`${INTELLIGENCE_STATUS_LABELS[item.status]} · c${Math.round(
+                  item.confidence * 100,
+                )} · e${item.supportingEvidenceIds.length} f${
+                  item.supportingFeatureIds.length
+                } o${item.supportingObservationIds.length}`}
+              />
+            ))
+          ) : (
+            <Row label="No intelligence yet" value="—" />
+          )}
+        </div>
+      </div>
+
+      {latestIntelligence.length ? (
+        <div className="mt-10">
+          <SectionTitle>Why these exist</SectionTitle>
+          <div className="mt-2 space-y-4">
+            {latestIntelligence.map((item) => (
+              <div key={`why-${item.id}`}>
+                <p className="text-[13px] uppercase tracking-[0.14em] text-muted-foreground">
+                  {INTELLIGENCE_DOMAIN_LABELS[item.domain]} · {clock(item.timestamp)}
+                </p>
+                <p className="mt-1 text-[15px] leading-relaxed">{item.summary}</p>
+                <p className="mt-1 text-[13px] text-muted-foreground">{item.reason}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : null}
+
 
       {ble.error ? (
         <div className="mt-10 rounded-2xl px-4 py-4 shadow-[inset_0_0_0_1px_hsl(var(--border))]">
@@ -441,6 +543,14 @@ function DiagnosticsPage() {
         >
           Clear evidence
         </button>
+        <button
+          type="button"
+          onClick={() => intelligenceService.reset()}
+          className="rounded-full px-5 py-3 text-[15px] shadow-[inset_0_0_0_1px_hsl(var(--border))]"
+        >
+          Clear intelligence
+        </button>
+
 
       </div>
     </main>
