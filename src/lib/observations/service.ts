@@ -42,6 +42,7 @@ const EMPTY: ObservationSnapshot = {
 class ObservationService {
   private snapshot: ObservationSnapshot = EMPTY;
   private listeners = new Set<(snapshot: ObservationSnapshot) => void>();
+  private observationListeners = new Set<(observations: BiologicalObservation[]) => void>();
   private state: PipelineState | null = null;
   private unsubscribeBle: (() => void) | null = null;
   private recentQuality: number[] = [];
@@ -52,6 +53,19 @@ class ObservationService {
     this.listeners.add(listener);
     return () => {
       this.listeners.delete(listener);
+    };
+  };
+
+  /**
+   * Stage: publish. Every batch of newly stored observations is handed to
+   * downstream consumers (the Feature Extraction Layer) exactly once.
+   */
+  subscribeObservations = (
+    listener: (observations: BiologicalObservation[]) => void,
+  ): (() => void) => {
+    this.observationListeners.add(listener);
+    return () => {
+      this.observationListeners.delete(listener);
     };
   };
 
