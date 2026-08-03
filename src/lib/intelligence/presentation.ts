@@ -87,6 +87,28 @@ export function rankIntelligence(items: Intelligence[]): Intelligence[] {
   return [...items].sort(compareIntelligence);
 }
 
+export type TodayIntelligence = {
+  state: TodayState;
+  /** The single highest-priority understanding, when there is one to show. */
+  primary: Intelligence | null;
+  /** Everything currently active, highest priority first. */
+  ranked: Intelligence[];
+  /** Editorial copy for the current state — never technical. */
+  headline: string;
+  summary: string;
+  /** Human confidence state, e.g. "Emerging · 62% confident". */
+  confidenceLabel: string;
+  /** 0–1, for the Understanding orb. */
+  confidence: number;
+  /** "Updated 2 minutes ago", or null when nothing has been understood. */
+  updatedLabel: string | null;
+  updatedAt: number | null;
+  /** Quiet supporting rows: one per other active domain. */
+  noticing: { label: string; text: string }[];
+  /** Identity of what is on screen — equal signatures mean nothing changed. */
+  signature: string;
+};
+
 
 function relativeTime(timestamp: number, now: number): string {
   const minutes = Math.round((now - timestamp) / 60_000);
