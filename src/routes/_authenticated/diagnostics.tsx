@@ -22,6 +22,7 @@ import {
 } from "@/lib/intelligence/model";
 import { intelligenceService } from "@/lib/intelligence/service";
 import { useIntelligence } from "@/lib/intelligence/use-intelligence";
+import { useTodayIntelligence } from "@/lib/intelligence/use-today-intelligence";
 import { observationService } from "@/lib/observations/service";
 import { useObservations } from "@/lib/observations/use-observations";
 
@@ -92,6 +93,8 @@ function DiagnosticsPage() {
   const features = useFeatures();
   const evidence = useEvidence();
   const intelligence = useIntelligence();
+  const today = useTodayIntelligence();
+
   const latestFeatures = Object.values(features.latest).sort((a, b) => b.timestamp - a.timestamp);
   const latestEvidence = Object.values(evidence.latest).sort((a, b) => b.timestamp - a.timestamp);
   const latestIntelligence = Object.values(intelligence.latest).sort(
@@ -451,6 +454,34 @@ function DiagnosticsPage() {
           </div>
         </div>
       ) : null}
+
+      {/* What Today is showing, and the full trace behind it. */}
+      <div className="mt-10">
+        <SectionTitle>Today intelligence</SectionTitle>
+        <div className="mt-2 divide-y divide-border/70">
+          <Row label="State" value={today.state.replace(/_/g, " ")} />
+          <Row
+            label="Primary"
+            value={today.primary ? INTELLIGENCE_DOMAIN_LABELS[today.primary.domain] : "—"}
+          />
+          <Row label="Confidence" value={today.confidenceLabel} />
+          <Row label="Updated" value={today.updatedAt ? clock(today.updatedAt) : "—"} />
+          <Row label="Ranked" value={today.ranked.length.toString()} />
+          {today.primary ? (
+            <Row
+              label="Support"
+              value={`e${today.primary.supportingEvidenceIds.length} f${today.primary.supportingFeatureIds.length} o${today.primary.supportingObservationIds.length}`}
+            />
+          ) : null}
+        </div>
+        {today.primary ? (
+          <p className="mt-3 text-[13px] leading-relaxed text-muted-foreground">
+            {today.primary.reason}
+          </p>
+        ) : null}
+      </div>
+
+
 
 
       {ble.error ? (
