@@ -153,10 +153,17 @@ function TodayPage() {
 
         <p
           key={standing}
-          className="animate-in fade-in mt-4 text-[11px] leading-none text-muted-foreground/70 duration-500"
+          className="animate-in fade-in mt-4 text-[13px] leading-[1.55] text-muted-foreground duration-500"
         >
           {standing}
         </p>
+
+        {/* Confidence state and freshness — plain language, never technical. */}
+        <p className="animate-in fade-in mt-3 text-[11px] leading-none text-muted-foreground/70 duration-500">
+          {today.confidenceLabel}
+          {today.updatedLabel ? ` · ${today.updatedLabel}` : ""}
+        </p>
+
 
         {/* Why Ciatta thinks that. Quiet, non-tappable evidence. */}
         {evidence.length > 0 && (
