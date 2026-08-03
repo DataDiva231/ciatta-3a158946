@@ -83,7 +83,10 @@ function DiagnosticsPage() {
   const ble = useBluetooth();
   const observations = useObservations();
   const features = useFeatures();
+  const evidence = useEvidence();
   const latestFeatures = Object.values(features.latest).sort((a, b) => b.timestamp - a.timestamp);
+  const latestEvidence = Object.values(evidence.latest).sort((a, b) => b.timestamp - a.timestamp);
+
   const busy = ble.state === "scanning" || ble.state === "connecting" || ble.state === "reconnecting";
   const live = ble.state === "connected";
   const [now, setNow] = useState(() => Date.now());
