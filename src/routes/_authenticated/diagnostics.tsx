@@ -9,11 +9,15 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
 import { useBluetooth } from "@/lib/ble/use-bluetooth";
+import { EVIDENCE_LABELS } from "@/lib/evidence/model";
+import { evidenceService } from "@/lib/evidence/service";
+import { useEvidence } from "@/lib/evidence/use-evidence";
 import { FEATURE_LABELS } from "@/lib/features/model";
 import { featureService } from "@/lib/features/service";
 import { useFeatures } from "@/lib/features/use-features";
 import { observationService } from "@/lib/observations/service";
 import { useObservations } from "@/lib/observations/use-observations";
+
 
 export const Route = createFileRoute("/_authenticated/diagnostics")({
   head: () => ({
@@ -79,7 +83,10 @@ function DiagnosticsPage() {
   const ble = useBluetooth();
   const observations = useObservations();
   const features = useFeatures();
+  const evidence = useEvidence();
   const latestFeatures = Object.values(features.latest).sort((a, b) => b.timestamp - a.timestamp);
+  const latestEvidence = Object.values(evidence.latest).sort((a, b) => b.timestamp - a.timestamp);
+
   const busy = ble.state === "scanning" || ble.state === "connecting" || ble.state === "reconnecting";
   const live = ble.state === "connected";
   const [now, setNow] = useState(() => Date.now());
@@ -289,6 +296,59 @@ function DiagnosticsPage() {
         </div>
       </div>
 
+      <div className="mt-10">
+        <SectionTitle>Evidence</SectionTitle>
+        <div className="mt-2 divide-y divide-border/70">
+          <Row label="Evidence" value={evidence.evidenceCount.toString()} />
+          <Row label="Active types" value={latestEvidence.length.toString()} />
+          <Row label="Passes" value={evidence.passCount.toString()} />
+          <Row
+            label="Rate"
+            value={evidence.fusionRate === null ? "—" : `${evidence.fusionRate} / min`}
+          />
+          <Row
+            label="Latency"
+            value={
+              evidence.lastLatencyMs === null
+                ? "—"
+                : `${evidence.lastLatencyMs} ms · avg ${evidence.averageLatencyMs} ms`
+            }
+          />
+          <Row
+            label="Avg confidence"
+            value={
+              evidence.averageConfidence === null
+                ? "—"
+                : `${Math.round(evidence.averageConfidence * 100)}%`
+            }
+          />
+          <Row
+            label="Support"
+            value={`${evidence.lastSupport.features} feat · ${evidence.lastSupport.observations} obs`}
+          />
+          <Row label="Last fusion" value={clock(evidence.lastFusedAt)} />
+          <Row label="Version" value={evidence.processingVersion} />
+        </div>
+      </div>
+
+      <div className="mt-10">
+        <SectionTitle>Active evidence</SectionTitle>
+        <div className="mt-2 divide-y divide-border/70">
+          {latestEvidence.length ? (
+            latestEvidence.map((item) => (
+              <Row
+                key={item.id}
+                label={EVIDENCE_LABELS[item.evidenceType]}
+                value={`${item.value} ${item.unit} · c${Math.round(item.confidence * 100)} · f${
+                  item.supportingFeatureIds.length
+                } o${item.supportingObservationIds.length}`}
+              />
+            ))
+          ) : (
+            <Row label="No evidence yet" value="—" />
+          )}
+        </div>
+      </div>
 
 
       {ble.error ? (
@@ -374,6 +434,14 @@ function DiagnosticsPage() {
         >
           Clear features
         </button>
+        <button
+          type="button"
+          onClick={() => evidenceService.reset()}
+          className="rounded-full px-5 py-3 text-[15px] shadow-[inset_0_0_0_1px_hsl(var(--border))]"
+        >
+          Clear evidence
+        </button>
+
       </div>
     </main>
   );
