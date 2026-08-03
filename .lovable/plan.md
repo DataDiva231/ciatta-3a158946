@@ -1,31 +1,27 @@
-# Native app opens the waitlist instead of Ciatta
+# Confirm the test account
 
-## What's happening
+The test account exists in the backend but has never been verified:
 
-Nothing is broken in the app. It's a routing consequence of the earlier change: `/` is now the waitlist landing page, and the app itself lives at `/today` behind the sign-in gate. A native wrapper (WebView / Capacitor) always boots at `/`, so it lands on the marketing page and never reaches the app.
+- `test.ciatta.net.1785784764447@mailinator.com`
+- Created 3 Aug 2026, 19:19 UTC
+- Verification email sent at 19:19 UTC
+- Email confirmed: never
 
-Also worth knowing: this project is a server-rendered TanStack Start app, so a native shell must load it from a URL (the published site), not from a folder of bundled static files. A "bundle the build output into Xcode" approach will show a blank or broken page regardless of routing.
+So sign-in is blocked by the verification gate (unverified users are bounced back to the auth screen).
 
-## The fix
+## Recommended: mark this one account as verified
 
-Make the entry point aware of who's asking:
+Verifying a single existing account is a one-time backend action, not a code change. I'll flip the confirmation timestamp on that account only, then you can sign in with it immediately. Nothing else in the project changes and no other user is touched.
 
-1. Add a small native-context detector (Capacitor bridge present, `standalone` display-mode, or a `?app=1` / custom user-agent marker set by the shell).
-2. In the root route, when the context is native, redirect `/` to the app instead of rendering the landing page:
-   - signed in and onboarded -> `/today`
-   - signed in, onboarding incomplete -> resume onboarding
-   - not signed in -> `/auth`
-3. Keep the website behaviour identical: on a normal browser, `/` still renders the waitlist page exactly as it does today. Nothing about the landing design, the app screens, or the auth flow changes.
-4. Keep `/waitlist` working as-is so existing links don't break.
+## Alternative if you want the real flow instead
 
-## Wrapper configuration (your side)
+The verification email went to a Mailinator inbox, so you can open the public inbox for `test.ciatta.net.1785784764447` at mailinator.com and click the link. If the email never arrived, I'll check the delivery log and sender-domain health first and fix the cause rather than bypassing verification.
 
-- Point the native WebView / Capacitor `server.url` at `https://ciatta.io` (or `https://ciatta.io/today`, which the redirect step also handles).
-- Do not ship a static copy of the build output.
-- Allow the Supabase domain and Google sign-in domains in the shell's allowed-navigation list, or OAuth will dead-end inside the WebView.
+## Not recommended
+
+Turning on auto-confirm project-wide would make every future signup skip verification. I'd only do that if you explicitly want it for the whole testing phase.
 
 ## Technical notes
 
-- New helper `src/lib/native-shell.ts`: `isNativeShell()` checking `window.Capacitor?.isNativePlatform?.()`, `window.ciattaHealth` (already used for the HealthKit bridge), `navigator.standalone`, `display-mode: standalone`, and a `?app=1` query flag persisted to `localStorage`.
-- `src/routes/index.tsx`: keep the current component and `head()`; add a client-only effect/`beforeLoad` guard that navigates to `/today` or `/auth` when `isNativeShell()` is true. Guarded so SSR and prerender still render the landing HTML (no session exists at build time).
-- Session/onboarding state is read with the existing `supabase.auth.getSession()` + onboarding store, matching what `/_authenticated` already does.
+- Confirming the account sets `email_confirmed_at` for that single user id (`fdb9f10c-…`).
+- The gate lives in `src/routes/_authenticated/route.tsx`, which redirects to `/auth` when `email_confirmed_at` is null. No change needed there.
