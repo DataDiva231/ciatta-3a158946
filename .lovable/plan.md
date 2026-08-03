@@ -1,35 +1,31 @@
-# Nothing-inspired data layer for Ciatta
+# Native app opens the waitlist instead of Ciatta
 
-Nothing's aesthetic is cold, monochrome and industrial — the opposite of Ciatta's warm, intimate voice. So rather than adopting its look, Ciatta adopts the one thing it does better than anyone: making technical data read as honest instrumentation.
+## What's happening
 
-Ciatta keeps its warm canvas (#F8F6F3), Instrument Serif editorial voice, Living Clay accent and soft radii. Nothing's contribution is a single new visual register used only for machine-generated metadata.
+Nothing is broken in the app. It's a routing consequence of the earlier change: `/` is now the waitlist landing page, and the app itself lives at `/today` behind the sign-in gate. A native wrapper (WebView / Capacitor) always boots at `/`, so it lands on the marketing page and never reaches the app.
 
-## What gets built
+Also worth knowing: this project is a server-rendered TanStack Start app, so a native shell must load it from a URL (the published site), not from a folder of bundled static files. A "bundle the build output into Xcode" approach will show a blank or broken page regardless of routing.
 
-**A mono metadata register**
+## The fix
 
-One new type treatment for data that came from the system rather than from the user: timestamps, confidence values, source tags, learning state, session identifiers, sample counts. Monospace, small, tracked-out, uppercase, muted — quiet enough to sit under editorial copy without competing with it.
+Make the entry point aware of who's asking:
 
-**Where it appears**
+1. Add a small native-context detector (Capacitor bridge present, `standalone` display-mode, or a `?app=1` / custom user-agent marker set by the shell).
+2. In the root route, when the context is native, redirect `/` to the app instead of rendering the landing page:
+   - signed in and onboarded -> `/today`
+   - signed in, onboarding incomplete -> resume onboarding
+   - not signed in -> `/auth`
+3. Keep the website behaviour identical: on a normal browser, `/` still renders the waitlist page exactly as it does today. Nothing about the landing design, the app screens, or the auth flow changes.
+4. Keep `/waitlist` working as-is so existing links don't break.
 
-- Today: the confidence and source line under the primary insight, and the metadata line on evidence rows.
-- Engine trace: step labels, confidence deltas, and object identifiers.
-- Diagnostics: all numeric readouts, session timings, and quality figures.
+## Wrapper configuration (your side)
 
-**Hairline discipline**
-
-Replace the remaining soft separators in these data areas with true hairline rules, so grouped metadata reads as a technical table rather than as a card stack.
-
-## What deliberately does not change
-
-- No grey canvas, no black-and-red palette, no 0px corners.
-- Headlines stay Instrument Serif — no monospace or dot-matrix display type.
-- No changes to user-authored content (Teach entries, Journey narrative, Profile prose), which stay fully editorial.
-- No layout restructuring, no new routes, no engine or data-model changes.
+- Point the native WebView / Capacitor `server.url` at `https://ciatta.io` (or `https://ciatta.io/today`, which the redirect step also handles).
+- Do not ship a static copy of the build output.
+- Allow the Supabase domain and Google sign-in domains in the shell's allowed-navigation list, or OAuth will dead-end inside the WebView.
 
 ## Technical notes
 
-- Add a monospace font family plus a `--font-mono` token in `src/styles.css`, loaded via a `<link>` in `src/routes/__root.tsx` (never `@import` in CSS on this stack).
-- Add a `data-label` utility next to the existing `label-caps` utility: mono family, ~0.6875rem, uppercase, ~0.08em tracking, muted foreground token.
-- Apply `data-label` in `src/routes/_authenticated/index.tsx` (confidence/source and evidence metadata), `src/routes/engine-trace.tsx`, and `src/routes/diagnostics.tsx`.
-- Hairlines use existing border tokens at 1px — no new colour values, no hardcoded colour utilities.
+- New helper `src/lib/native-shell.ts`: `isNativeShell()` checking `window.Capacitor?.isNativePlatform?.()`, `window.ciattaHealth` (already used for the HealthKit bridge), `navigator.standalone`, `display-mode: standalone`, and a `?app=1` query flag persisted to `localStorage`.
+- `src/routes/index.tsx`: keep the current component and `head()`; add a client-only effect/`beforeLoad` guard that navigates to `/today` or `/auth` when `isNativeShell()` is true. Guarded so SSR and prerender still render the landing HTML (no session exists at build time).
+- Session/onboarding state is read with the existing `supabase.auth.getSession()` + onboarding store, matching what `/_authenticated` already does.
