@@ -64,10 +64,25 @@ function clock(at: number | null): string {
   return new Date(at).toLocaleTimeString(undefined, { hour12: false }) + `.${String(at % 1000).padStart(3, "0")}`;
 }
 
+function duration(from: number | null, now: number): string {
+  if (!from) return "—";
+  const seconds = Math.max(0, Math.floor((now - from) / 1000));
+  const minutes = Math.floor(seconds / 60);
+  return `${String(minutes).padStart(2, "0")}:${String(seconds % 60).padStart(2, "0")}`;
+}
+
 function DiagnosticsPage() {
   const ble = useBluetooth();
+  const observations = useObservations();
   const busy = ble.state === "scanning" || ble.state === "connecting" || ble.state === "reconnecting";
   const live = ble.state === "connected";
+  const [now, setNow] = useState(() => Date.now());
+
+  useEffect(() => {
+    const timer = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(timer);
+  }, []);
+
 
   return (
     <main className="mx-auto w-full max-w-md px-6 pb-32 pt-14">
