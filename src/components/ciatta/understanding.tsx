@@ -1,11 +1,10 @@
-import understandingAsset from "@/assets/understanding-orb.png.asset.json";
-
 /**
- * The Understanding — Ciatta's single brand asset.
+ * The Understanding — Ciatta's brand mark.
  *
- * Treated exactly like a logo: one master image, never recreated, restyled or
- * recolored. It only breathes (2–3% over 7s) and carries a very slow shimmer in
- * its own glow, so the material, iridescence and composition stay untouched.
+ * Oura has the ring. Lumia has the ear. Ciatta has the body: a minimal,
+ * monochrome outlined profile that anchors every insight. It is never filled
+ * with colour and never recolored — coral stays an accent used elsewhere.
+ * It only breathes (2–3% over 7s).
  */
 
 const SIZES = { sm: 44, md: 88, lg: 140, hero: 232 } as const;
@@ -13,7 +12,7 @@ const SIZES = { sm: 44, md: 88, lg: 140, hero: 232 } as const;
 export type UnderstandingSize = keyof typeof SIZES;
 
 type Props = {
-  /** 0–100. Kept for API compatibility; the asset itself is never altered. */
+  /** 0–100. Kept for API compatibility; the mark itself is never altered. */
   confidence?: number;
   size?: UnderstandingSize | number;
   /** Extra emphasis while Ciatta is actively taking something in. */
@@ -22,7 +21,6 @@ type Props = {
 };
 
 export function Understanding({
-  confidence = 55,
   size = "md",
   active = false,
   className = "",
@@ -36,31 +34,49 @@ export function Understanding({
       style={{ width: px, height: px }}
     >
       <span
-        className="animate-breathe relative block"
+        className="animate-breathe relative grid place-items-center"
         style={{ width: px, height: px, animationDelay: "-1.6s" }}
       >
-        <img
-          src={understandingAsset.url}
-          alt=""
-          width={1241}
-          height={1241}
-          loading={px > 180 ? "eager" : "lazy"}
-          decoding="async"
-          className="h-full w-full object-contain"
+        <BodyMark
+          size={px}
           style={{
-            opacity: active ? 1 : 0.98,
+            opacity: active ? 1 : 0.92,
             transition: "opacity 900ms ease",
-          }}
-        />
-        {/* Very slow shimmer within the asset's own glow only. */}
-        <span
-          className="animate-shimmer absolute inset-0 rounded-full mix-blend-soft-light"
-          style={{
-            background:
-              "radial-gradient(60% 40% at 42% 28%, rgba(255,255,255,0.28) 0%, transparent 62%)",
           }}
         />
       </span>
     </span>
+  );
+}
+
+/** The raw outlined body mark. Monochrome, inherits currentColor. */
+export function BodyMark({
+  size = 88,
+  className = "",
+  style,
+}: {
+  size?: number;
+  className?: string;
+  style?: React.CSSProperties;
+}) {
+  const stroke = Math.max(2, size * 0.062);
+  return (
+    <svg
+      viewBox="0 0 100 100"
+      width={size}
+      height={size}
+      fill="none"
+      aria-hidden="true"
+      className={`text-foreground ${className}`}
+      style={style}
+    >
+      <circle cx="50" cy="27" r={22 - stroke / 2} stroke="currentColor" strokeWidth={stroke} />
+      <path
+        d={`M ${8 + stroke / 2} ${92 - stroke / 2} a ${42 - stroke / 2} ${34 - stroke / 2} 0 0 1 ${84 - stroke} 0 Z`}
+        stroke="currentColor"
+        strokeWidth={stroke}
+        strokeLinejoin="round"
+      />
+    </svg>
   );
 }
