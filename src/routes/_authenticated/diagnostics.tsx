@@ -9,6 +9,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
 import { useBluetooth } from "@/lib/ble/use-bluetooth";
+import { FEATURE_LABELS } from "@/lib/features/model";
+import { featureService } from "@/lib/features/service";
+import { useFeatures } from "@/lib/features/use-features";
 import { observationService } from "@/lib/observations/service";
 import { useObservations } from "@/lib/observations/use-observations";
 
@@ -75,6 +78,8 @@ function duration(from: number | null, now: number): string {
 function DiagnosticsPage() {
   const ble = useBluetooth();
   const observations = useObservations();
+  const features = useFeatures();
+  const latestFeatures = Object.values(features.latest).sort((a, b) => b.timestamp - a.timestamp);
   const busy = ble.state === "scanning" || ble.state === "connecting" || ble.state === "reconnecting";
   const live = ble.state === "connected";
   const [now, setNow] = useState(() => Date.now());
@@ -227,6 +232,64 @@ function DiagnosticsPage() {
         </div>
       </div>
 
+      <div className="mt-10">
+        <SectionTitle>Features</SectionTitle>
+        <div className="mt-2 divide-y divide-border/70">
+          <Row label="Extracted" value={features.featureCount.toString()} />
+          <Row label="Passes" value={features.passCount.toString()} />
+          <Row
+            label="Rate"
+            value={features.extractionRate === null ? "—" : `${features.extractionRate} / min`}
+          />
+          <Row
+            label="Latency"
+            value={
+              features.lastLatencyMs === null
+                ? "—"
+                : `${features.lastLatencyMs} ms · avg ${features.averageLatencyMs} ms`
+            }
+          />
+          <Row
+            label="Avg quality"
+            value={
+              features.averageQuality === null
+                ? "—"
+                : `${Math.round(features.averageQuality * 100)}%`
+            }
+          />
+          <Row
+            label="Avg confidence"
+            value={
+              features.averageConfidence === null
+                ? "—"
+                : `${Math.round(features.averageConfidence * 100)}%`
+            }
+          />
+          <Row label="Last pass" value={clock(features.lastExtractedAt)} />
+          <Row label="Version" value={features.processingVersion} />
+        </div>
+      </div>
+
+      <div className="mt-10">
+        <SectionTitle>Latest features</SectionTitle>
+        <div className="mt-2 divide-y divide-border/70">
+          {latestFeatures.length ? (
+            latestFeatures.map((feature) => (
+              <Row
+                key={feature.id}
+                label={FEATURE_LABELS[feature.featureType]}
+                value={`${feature.value} ${feature.unit} · q${Math.round(
+                  feature.quality * 100,
+                )} c${Math.round(feature.confidence * 100)} · n${feature.sourceObservationIds.length}`}
+              />
+            ))
+          ) : (
+            <Row label="No features yet" value="—" />
+          )}
+        </div>
+      </div>
+
+
 
       {ble.error ? (
         <div className="mt-10 rounded-2xl px-4 py-4 shadow-[inset_0_0_0_1px_hsl(var(--border))]">
@@ -303,6 +366,13 @@ function DiagnosticsPage() {
           className="rounded-full px-5 py-3 text-[15px] shadow-[inset_0_0_0_1px_hsl(var(--border))]"
         >
           Clear observations
+        </button>
+        <button
+          type="button"
+          onClick={() => featureService.reset()}
+          className="rounded-full px-5 py-3 text-[15px] shadow-[inset_0_0_0_1px_hsl(var(--border))]"
+        >
+          Clear features
         </button>
       </div>
     </main>
