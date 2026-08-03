@@ -6,8 +6,11 @@
  * and nothing here generates understanding.
  */
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 
 import { useBluetooth } from "@/lib/ble/use-bluetooth";
+import { observationService } from "@/lib/observations/service";
+import { useObservations } from "@/lib/observations/use-observations";
 
 export const Route = createFileRoute("/_authenticated/diagnostics")({
   head: () => ({
@@ -62,10 +65,25 @@ function clock(at: number | null): string {
   return new Date(at).toLocaleTimeString(undefined, { hour12: false }) + `.${String(at % 1000).padStart(3, "0")}`;
 }
 
+function duration(from: number | null, now: number): string {
+  if (!from) return "—";
+  const seconds = Math.max(0, Math.floor((now - from) / 1000));
+  const minutes = Math.floor(seconds / 60);
+  return `${String(minutes).padStart(2, "0")}:${String(seconds % 60).padStart(2, "0")}`;
+}
+
 function DiagnosticsPage() {
   const ble = useBluetooth();
+  const observations = useObservations();
   const busy = ble.state === "scanning" || ble.state === "connecting" || ble.state === "reconnecting";
   const live = ble.state === "connected";
+  const [now, setNow] = useState(() => Date.now());
+
+  useEffect(() => {
+    const timer = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(timer);
+  }, []);
+
 
   return (
     <main className="mx-auto w-full max-w-md px-6 pb-32 pt-14">
@@ -127,6 +145,88 @@ function DiagnosticsPage() {
           <Row label="Last packet" value={clock(ble.lastPacketAt)} />
         </div>
       </div>
+
+      <div className="mt-10">
+        <SectionTitle>Observations</SectionTitle>
+        <div className="mt-2 divide-y divide-border/70">
+          <Row label="Session" value={observations.session?.id.slice(0, 14) ?? "—"} />
+          <Row
+            label="Session length"
+            value={duration(observations.session?.startedAt ?? null, now)}
+          />
+          <Row
+            label="Packets / stored"
+            value={`${observations.packetsReceived} / ${observations.observationCount}`}
+          />
+          <Row label="Rejected" value={observations.rejectedCount.toString()} />
+          <Row
+            label="Avg quality"
+            value={
+              observations.averageQuality === null
+                ? "—"
+                : `${Math.round(observations.averageQuality * 100)}%`
+            }
+          />
+          <Row
+            label="Validation"
+            value={
+              observations.lastRejection
+                ? `rejected · ${observations.lastRejection.reason.replace(/_/g, " ")}`
+                : observations.latest
+                  ? "valid"
+                  : "—"
+            }
+          />
+        </div>
+      </div>
+
+      <div className="mt-10">
+        <SectionTitle>Latest observation</SectionTitle>
+        <div className="mt-2 divide-y divide-border/70">
+          <Row
+            label="Sensor"
+            value={observations.latest?.sensorType.replace(/_/g, " ") ?? "—"}
+          />
+          <Row
+            label="Value"
+            value={
+              observations.latest
+                ? `${observations.latest.value} ${observations.latest.unit}`
+                : "—"
+            }
+          />
+          <Row label="Timestamp" value={clock(observations.latest?.timestamp ?? null)} />
+          <Row
+            label="Quality"
+            value={
+              observations.latest
+                ? `${Math.round(observations.latest.quality.score * 100)}%`
+                : "—"
+            }
+          />
+          <Row
+            label="Wear / motion"
+            value={
+              observations.latest
+                ? `${Math.round(observations.latest.quality.wear * 100)}% · ${Math.round(
+                    observations.latest.quality.motion * 100,
+                  )}%`
+                : "—"
+            }
+          />
+          <Row
+            label="Signal / continuity"
+            value={
+              observations.latest
+                ? `${Math.round(observations.latest.quality.signalIntegrity * 100)}% · ${Math.round(
+                    observations.latest.quality.packetContinuity * 100,
+                  )}%`
+                : "—"
+            }
+          />
+        </div>
+      </div>
+
 
       {ble.error ? (
         <div className="mt-10 rounded-2xl px-4 py-4 shadow-[inset_0_0_0_1px_hsl(var(--border))]">
@@ -196,6 +296,13 @@ function DiagnosticsPage() {
           className="rounded-full px-5 py-3 text-[15px] shadow-[inset_0_0_0_1px_hsl(var(--border))]"
         >
           Reset counters
+        </button>
+        <button
+          type="button"
+          onClick={() => observationService.reset()}
+          className="rounded-full px-5 py-3 text-[15px] shadow-[inset_0_0_0_1px_hsl(var(--border))]"
+        >
+          Clear observations
         </button>
       </div>
     </main>

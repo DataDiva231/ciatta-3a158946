@@ -46,6 +46,18 @@ export type BleError = { kind: BleErrorKind; message: string; at: number };
 
 export type KnownDevice = { id: string; name: string };
 
+/** A raw notification, exactly as it arrived. Consumers own interpretation. */
+export type BlePacket = {
+  /** Raw bytes, copied so nothing downstream can be surprised by reuse. */
+  bytes: Uint8Array;
+  receivedAt: number;
+  deviceId: string | null;
+  deviceName: string | null;
+  rssi: number | null;
+  batteryLevel: number | null;
+  connected: boolean;
+};
+
 export type BleSnapshot = {
   state: ConnectionState;
   device: { id: string; name: string } | null;
@@ -139,6 +151,7 @@ class BluetoothManager {
   };
 
   private listeners = new Set<(snapshot: BleSnapshot) => void>();
+  private packetListeners = new Set<(packet: BlePacket) => void>();
   private current: BleDevice | null = null;
   private sensor: BleCharacteristic | null = null;
   private advertisements: AbortController | null = null;
@@ -153,6 +166,30 @@ class BluetoothManager {
       this.listeners.delete(listener);
     };
   };
+
+  /** Raw packet feed. The observation pipeline listens here; screens don't. */
+  subscribePackets = (listener: (packet: BlePacket) => void): (() => void) => {
+    this.packetListeners.add(listener);
+    return () => {
+      this.packetListeners.delete(listener);
+    };
+  };
+
+  private emitPacket(view: DataView) {
+    if (!this.packetListeners.size) return;
+    const bytes = new Uint8Array(view.byteLength);
+    for (let i = 0; i < view.byteLength; i += 1) bytes[i] = view.getUint8(i);
+    const packet: BlePacket = {
+      bytes,
+      receivedAt: Date.now(),
+      deviceId: this.snapshot.device?.id ?? null,
+      deviceName: this.snapshot.device?.name ?? null,
+      rssi: this.snapshot.rssi,
+      batteryLevel: this.snapshot.batteryLevel,
+      connected: this.snapshot.state === "connected",
+    };
+    for (const listener of this.packetListeners) listener(packet);
+  }
 
   private patch(next: Partial<BleSnapshot>) {
     this.snapshot = { ...this.snapshot, ...next };
@@ -360,6 +397,7 @@ class BluetoothManager {
   private onPacket = (event: Event) => {
     const value = (event.target as { value?: DataView | null } | null)?.value;
     if (!value) return;
+    this.emitPacket(value);
     try {
       const sample = parseSensorPacket(value);
       this.patch({
