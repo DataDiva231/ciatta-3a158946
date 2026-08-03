@@ -95,7 +95,11 @@ function TodayPage() {
       ? today.noticing
       : (view?.evidence ?? []);
   const focus = engineSilenced ? null : (view?.focus ?? null);
-  const depth = today.state === "ready" ? today.confidence : (view?.depth ?? today.confidence);
+  const depth =
+    today.state === "ready" || engineSilenced
+      ? today.confidence
+      : (view?.depth ?? today.confidence);
+
 
 
 
