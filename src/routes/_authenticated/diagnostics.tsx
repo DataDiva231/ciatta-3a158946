@@ -296,6 +296,13 @@ function DiagnosticsPage() {
         >
           Reset counters
         </button>
+        <button
+          type="button"
+          onClick={() => observationService.reset()}
+          className="rounded-full px-5 py-3 text-[15px] shadow-[inset_0_0_0_1px_hsl(var(--border))]"
+        >
+          Clear observations
+        </button>
       </div>
     </main>
   );
