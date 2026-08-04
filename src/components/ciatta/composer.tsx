@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { ArrowUp, Camera, Mic, Paperclip } from "lucide-react";
 
 import { CameraCapture } from "@/components/ciatta/camera-capture";
+import { fileToDataUrl } from "@/lib/image";
 import { useVoiceMemo } from "@/lib/voice-memo";
 
 /**
@@ -12,18 +13,20 @@ import { useVoiceMemo } from "@/lib/voice-memo";
  * light — one hairline field, one row of small affordances, one warm record
  * button.
  */
+export type ComposerAttachment = { name: string; dataUrl: string | null };
+
 export function Composer({
   onSubmit,
   placeholder = "Tell me anything that might help explain today…",
   label = "Share anything else",
 }: {
-  onSubmit: (text: string) => void;
+  onSubmit: (text: string, attachments?: ComposerAttachment[]) => void;
   placeholder?: string;
   label?: string;
 }) {
   const [text, setText] = useState("");
   const [expanded, setExpanded] = useState(false);
-  const [files, setFiles] = useState<string[]>([]);
+  const [files, setFiles] = useState<ComposerAttachment[]>([]);
   /** True once a transcript lands, so we can invite a quick correction. */
   const [fromVoice, setFromVoice] = useState(false);
   /** The full-screen capture surface, opened straight into Photo mode. */
@@ -50,17 +53,25 @@ export function Composer({
 
   const send = () => {
     if (!hasContent) return;
-    const parts = [text.trim(), ...files.map((n) => `Attached: ${n}`)].filter(Boolean);
+    const parts = [text.trim(), ...files.map((f) => `Attached: ${f.name}`)].filter(Boolean);
+    const attachments = files;
     setText("");
     setFiles([]);
     setExpanded(false);
     setFromVoice(false);
-    onSubmit(parts.join("\n"));
+    onSubmit(parts.join("\n"), attachments);
   };
 
   const pick = (list: FileList | null) => {
     if (!list?.length) return;
-    setFiles((prev) => [...prev, ...Array.from(list).map((f) => f.name)]);
+    const chosen = Array.from(list);
+    setFiles((prev) => [...prev, ...chosen.map((f) => ({ name: f.name, dataUrl: null }))]);
+    chosen.forEach((f) => {
+      void fileToDataUrl(f).then((dataUrl) => {
+        if (!dataUrl) return;
+        setFiles((prev) => prev.map((entry) => (entry.name === f.name ? { ...entry, dataUrl } : entry)));
+      });
+    });
   };
 
   return (
@@ -119,7 +130,7 @@ export function Composer({
 
       {files.length > 0 && (
         <p className="animate-in fade-in mt-2 text-[12.5px] text-muted-foreground duration-300">
-          {files.join(", ")}
+          {files.map((f) => f.name).join(", ")}
         </p>
       )}
 
@@ -185,11 +196,11 @@ export function Composer({
         <CameraCapture
           count={files.length}
           onClose={() => setCamera(false)}
-          onCapture={({ name, mode }) => {
+          onCapture={({ name, mode, dataUrl }) => {
             // Photo and Scan stay open so several can be added in a row;
             // the system picker has already closed itself.
             if (mode === "library") setCamera(false);
-            setFiles((prev) => [...prev, name]);
+            setFiles((prev) => [...prev, { name, dataUrl }]);
           }}
         />
       )}

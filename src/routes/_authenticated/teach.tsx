@@ -61,12 +61,13 @@ function TeachPage() {
   /** The short "✓ Flow: Moderate" line shown beneath the question. */
   const [confirmed, setConfirmed] = useState<string | null>(null);
 
-  const share = (text: string) => {
+  const share = (text: string, attachments?: { name: string; dataUrl: string | null }[]) => {
+    const thumbnail = attachments?.find((a) => a.dataUrl)?.dataUrl;
     addEvent({
       category: "Note",
       value: text,
       timestamp: new Date().toISOString(),
-      metadata: { Note: text },
+      metadata: { Note: text, ...(thumbnail ? { Thumbnail: thumbnail } : {}) },
     });
     setSaved(true);
     window.setTimeout(() => router.navigate({ to: "/today" }), 1400);

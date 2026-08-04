@@ -6,6 +6,7 @@
  * by whichever provider that id maps to.
  */
 import { createServerFn } from "@tanstack/react-start";
+import { getRequest } from "@tanstack/react-start/server";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
@@ -16,6 +17,20 @@ function asSourceId(value: unknown): SourceId {
   const found = SOURCES.find((s) => s.id === id);
   if (!found) throw new Error("unknown_source");
   return found.id;
+}
+
+/**
+ * The redirect URI the client sends is never trusted for the actual OAuth
+ * request — a client-controlled value forwarded straight to a third-party
+ * `authorize`/token endpoint would let an authenticated attacker redirect
+ * another provider's authorization code to a domain they control. The
+ * legitimate client always sends this exact same value, so the server
+ * recomputes it from the request it actually received.
+ */
+function serverRedirectUri(provider: SourceId): string {
+  const request = getRequest();
+  const origin = new URL(request.url).origin;
+  return `${origin}/connections/${provider}/callback`;
 }
 
 export const listSources = createServerFn({ method: "GET" })
@@ -69,9 +84,10 @@ export const beginSourceAuthorization = createServerFn({ method: "POST" })
     }
 
     const state = randomBytes(24).toString("hex");
-    const started = impl.beginAuthorization({ redirectUri: data.redirectUri, state });
+    const started = impl.beginAuthorization({ redirectUri: serverRedirectUri(data.provider), state });
     await saveConnection(subject.id, data.provider, {
       status: "connecting",
+      clearDisconnected: true,
       scopes: started.scopes,
       error: null,
       credentials: { oauthState: state },
@@ -124,7 +140,7 @@ export const completeSourceAuthorization = createServerFn({ method: "POST" })
     try {
       const credentials = await impl.exchangeCode({
         code: data.code,
-        redirectUri: data.redirectUri,
+        redirectUri: serverRedirectUri(data.provider),
       });
       await saveConnection(subject.id, data.provider, {
         status: "connected",

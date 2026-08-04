@@ -126,6 +126,9 @@ type Patch = {
   error?: string | null;
   markSynced?: boolean;
   connected?: boolean;
+  /** Clears disconnected_at without stamping connected_at — for an in-flight
+   * reconnect attempt that hasn't completed yet. */
+  clearDisconnected?: boolean;
 };
 
 export async function saveConnection(
@@ -155,6 +158,8 @@ export async function saveConnection(
   }
   if (patch.connected) {
     row["connected_at"] = now;
+    row["disconnected_at"] = null;
+  } else if (patch.clearDisconnected) {
     row["disconnected_at"] = null;
   }
 

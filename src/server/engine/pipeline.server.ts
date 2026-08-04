@@ -43,7 +43,13 @@ export async function runLearningLoop(
 
   // 2. Observation — immutable, append-only.
   const fresh = await recordObservations(subject.id, incoming, enrichmentFor(context));
-  if (fresh.length) history = [...fresh, ...history];
+  // recordObservations returns `fresh` in insertion order, not occurred_at
+  // order, so the merge must re-sort — downstream code assumes newest-first.
+  if (fresh.length) {
+    history = [...fresh, ...history].sort(
+      (a, b) => new Date(b.occurredAt).getTime() - new Date(a.occurredAt).getTime(),
+    );
+  }
 
   // 3. Memory — what Ciatta remembers, not what was logged.
   if (fresh.length) await updateMemory(subject.id, fresh, history);

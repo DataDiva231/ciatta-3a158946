@@ -3,20 +3,40 @@
  *
  * Walks every live connection and runs it through the same provider interface
  * the app uses, so a scheduled sync and a manual one are the same code path.
+ *
+ * Guarded by HEALTH_SYNC_SECRET, a server-only value never shipped to the
+ * client — unlike the Supabase publishable/anon key, which is embedded in
+ * every browser bundle and therefore cannot gate anything.
  */
+import { timingSafeEqual } from "node:crypto";
+
 import { createFileRoute } from "@tanstack/react-router";
+
+function isAuthorized(request: Request): boolean {
+  const expected = process.env["HEALTH_SYNC_SECRET"];
+  const provided = request.headers.get("x-sync-secret");
+  if (!expected || !provided) return false;
+  const a = Buffer.from(provided);
+  const b = Buffer.from(expected);
+  return a.length === b.length && timingSafeEqual(a, b);
+}
 
 export const Route = createFileRoute("/api/public/health/sync")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const accepted = [
-          process.env["SUPABASE_PUBLISHABLE_KEY"],
-          process.env["SUPABASE_ANON_KEY"],
-        ].filter(Boolean);
-        const provided = request.headers.get("apikey");
-        if (!provided || !accepted.includes(provided)) {
+        if (!isAuthorized(request)) {
           return new Response("Unauthorized", { status: 401 });
+        }
+
+        const { guard, RateLimited } = await import("@/server/security/rate-limit.server");
+        try {
+          await guard("health.scheduled_sync", { request });
+        } catch (error) {
+          if (error instanceof RateLimited) {
+            return new Response("Too many requests", { status: 429 });
+          }
+          throw error;
         }
 
         const { connectedSubjects } = await import("@/server/health/connections.server");

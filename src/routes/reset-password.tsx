@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
 import { supabase } from "@/integrations/supabase/client";
+import { PASSWORD_RULES, passwordMeetsRules } from "@/lib/password-rules";
 
 export const Route = createFileRoute("/reset-password")({
   ssr: false,
@@ -30,11 +31,12 @@ function ResetPasswordPage() {
   const [reveal, setReveal] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const passwordOk = useMemo(() => passwordMeetsRules(password), [password]);
 
   const submit = async () => {
     setError(null);
-    if (password.length < 8) {
-      setError("A little longer, and we're set.");
+    if (!passwordOk) {
+      setError("A slightly stronger password, and we're set.");
       return;
     }
     setBusy(true);
@@ -75,10 +77,30 @@ function ResetPasswordPage() {
           </button>
         </div>
 
+        <ul className="mt-5 space-y-2.5">
+          {PASSWORD_RULES.map((rule) => {
+            const met = rule.test(password);
+            return (
+              <li
+                key={rule.label}
+                className="flex items-center gap-3 text-[13.5px] text-muted-foreground"
+              >
+                <span
+                  aria-hidden="true"
+                  className={`size-[15px] rounded-full border transition-colors duration-300 ${
+                    met ? "border-foreground bg-foreground" : "border-border"
+                  }`}
+                />
+                {rule.label}
+              </li>
+            );
+          })}
+        </ul>
+
         <div className="mt-auto pt-10">
           <button
             type="button"
-            disabled={busy}
+            disabled={busy || !passwordOk}
             onClick={() => void submit()}
             className="w-full rounded-full bg-foreground px-6 py-[15px] text-[15px] font-medium text-background transition-all duration-200 active:scale-[0.99] disabled:opacity-60"
           >

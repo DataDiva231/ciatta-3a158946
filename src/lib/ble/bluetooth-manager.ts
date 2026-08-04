@@ -387,12 +387,19 @@ class BluetoothManager {
     this.advertisements?.abort();
     const controller = new AbortController();
     this.advertisements = controller;
-    device.addEventListener("advertisementreceived", (event) => {
-      const rssi = (event as unknown as { rssi?: number }).rssi;
-      if (typeof rssi === "number") this.patch({ rssi });
-    });
+    // `device` is reused across reconnects, so the listener must be removed
+    // before re-adding it — otherwise every reconnect leaves a permanent
+    // extra listener and each advertisement fires patch({rssi}) once per
+    // past connection attempt.
+    device.removeEventListener("advertisementreceived", this.onAdvertisement);
+    device.addEventListener("advertisementreceived", this.onAdvertisement);
     void device.watchAdvertisements({ signal: controller.signal }).catch(() => undefined);
   }
+
+  private onAdvertisement = (event: Event) => {
+    const rssi = (event as unknown as { rssi?: number }).rssi;
+    if (typeof rssi === "number") this.patch({ rssi });
+  };
 
   private onPacket = (event: Event) => {
     const value = (event.target as { value?: DataView | null } | null)?.value;

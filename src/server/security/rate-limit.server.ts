@@ -19,6 +19,7 @@ export const LIMITS: Record<string, { user: Limit; ip: Limit }> = {
   "account.delete": { user: { windowSeconds: 3600, max: 5 }, ip: { windowSeconds: 3600, max: 20 } },
   "health.connect": { user: { windowSeconds: 3600, max: 30 }, ip: { windowSeconds: 3600, max: 90 } },
   "health.import": { user: { windowSeconds: 60, max: 12 }, ip: { windowSeconds: 60, max: 40 } },
+  "health.scheduled_sync": { user: { windowSeconds: 60, max: 2 }, ip: { windowSeconds: 60, max: 2 } },
   transcription: { user: { windowSeconds: 300, max: 20 }, ip: { windowSeconds: 300, max: 60 } },
 };
 

@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
 
+import { downscaleCanvas, fileToDataUrl } from "@/lib/image";
+
 export type CaptureMode = "photo" | "scan" | "library";
 
 const MODES: { id: CaptureMode; label: string }[] = [
@@ -23,7 +25,7 @@ export function CameraCapture({
   initialMode = "photo",
   count = 0,
 }: {
-  onCapture: (result: { name: string; mode: CaptureMode }) => void;
+  onCapture: (result: { name: string; mode: CaptureMode; dataUrl: string | null }) => void;
   onClose: () => void;
   initialMode?: CaptureMode;
   /** How many attachments are already waiting in the composer. */
@@ -98,6 +100,7 @@ export function CameraCapture({
     onCapture({
       name: mode === "scan" ? `Scanned document ${stamp}` : `Photo ${stamp}`,
       mode,
+      dataUrl: ctx ? downscaleCanvas(canvas) : null,
     });
   };
 
@@ -241,7 +244,9 @@ export function CameraCapture({
             return;
           }
           stop();
-          Array.from(list).forEach((f) => onCapture({ name: f.name, mode: "library" }));
+          Array.from(list).forEach((f) => {
+            void fileToDataUrl(f).then((dataUrl) => onCapture({ name: f.name, mode: "library", dataUrl }));
+          });
         }}
       />
     </div>

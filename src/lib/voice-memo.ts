@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { accessToken } from "./session";
 
 /**
@@ -118,6 +118,10 @@ export function useVoiceMemo(onTranscript: (text: string) => void) {
     processor.connect(audioCtx.destination);
     setState("recording");
   }, []);
+
+  // Release the mic/AudioContext if the owning component unmounts mid-recording
+  // (navigation, closing a sheet) instead of an explicit stop/cancel.
+  useEffect(() => teardown, [teardown]);
 
   const cancel = useCallback(() => {
     teardown();

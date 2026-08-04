@@ -151,12 +151,13 @@ function FirstObservationPage() {
           <Composer
             label="Or tell me in your own words"
             placeholder="Tell me anything about today..."
-            onSubmit={(text) => {
+            onSubmit={(text, attachments) => {
+              const thumbnail = attachments?.find((a) => a.dataUrl)?.dataUrl;
               addEvent({
                 category: "Note",
                 value: text,
                 timestamp: new Date().toISOString(),
-                metadata: { Note: text },
+                metadata: { Note: text, ...(thumbnail ? { Thumbnail: thumbnail } : {}) },
               });
               shared();
             }}

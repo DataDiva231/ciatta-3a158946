@@ -29,10 +29,17 @@ function fromCheckIns(checkIns: CheckIn[]): ObservationInput[] {
   const out: ObservationInput[] = [];
   for (const c of checkIns) {
     const at = c.savedAt || `${c.day}T08:00:00.000Z`;
+    // The engine records observations by externalId and permanently drops
+    // any later input that reuses one (so a source can safely replay its
+    // history). A check-in can be re-saved same-day with different values,
+    // so `savedAt` has to be part of the id — otherwise an edit's new
+    // values are silently discarded because the original day+category id
+    // already exists.
+    const edit = c.savedAt || at;
     const felt =
       ["", "Barely slept", "Restless", "Broken", "Solid", "Deep"][c.sleepFelt] ?? "Solid";
     out.push({
-      externalId: `checkin-${c.day}-sleep`,
+      externalId: `checkin-${c.day}-${edit}-sleep`,
       occurredAt: at,
       source: "check_in",
       category: "Sleep",
@@ -41,7 +48,7 @@ function fromCheckIns(checkIns: CheckIn[]): ObservationInput[] {
     });
     if (c.mood)
       out.push({
-        externalId: `checkin-${c.day}-mood`,
+        externalId: `checkin-${c.day}-${edit}-mood`,
         occurredAt: at,
         source: "check_in",
         category: "Mood",
@@ -49,7 +56,7 @@ function fromCheckIns(checkIns: CheckIn[]): ObservationInput[] {
       });
     for (const symptom of c.symptoms)
       out.push({
-        externalId: `checkin-${c.day}-symptom-${symptom}`,
+        externalId: `checkin-${c.day}-${edit}-symptom-${symptom}`,
         occurredAt: at,
         source: "check_in",
         category: "Symptoms",
@@ -57,7 +64,7 @@ function fromCheckIns(checkIns: CheckIn[]): ObservationInput[] {
       });
     if (c.cycleStarted)
       out.push({
-        externalId: `checkin-${c.day}-cycle`,
+        externalId: `checkin-${c.day}-${edit}-cycle`,
         occurredAt: at,
         source: "check_in",
         category: "Cycle",
@@ -129,14 +136,16 @@ export function useEngine(): { views: EngineViews | null; loading: boolean } {
     };
   }, [events, checkIns, onboarding]);
 
+  // A full content signature, not just count + first item — otherwise an
+  // edit to an existing entry (same count, different values) doesn't change
+  // the key and the engine never resyncs with the new data.
+  const signature = useMemo(
+    () => payload.observations.map((o) => o.externalId).join("|"),
+    [payload.observations],
+  );
+
   const query = useQuery({
-    queryKey: [
-      "engine",
-      userId ?? "anonymous",
-      payload.observations.length,
-      payload.observations[0]?.externalId ?? "none",
-      onboarding.lifeStage,
-    ],
+    queryKey: ["engine", userId ?? "anonymous", signature],
     enabled: ready && typeof window !== "undefined",
     staleTime: 30_000,
     queryFn: () =>
