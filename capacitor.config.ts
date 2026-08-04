@@ -11,7 +11,7 @@ const config: CapacitorConfig = {
     // /auth as the entry point: the installed app should open straight to
     // sign-in, not the marketing/waitlist landing page (that's for web
     // visitors, not people who already installed the app).
-    url: 'https://datadiva231-ciatta-3a158946.ciatta-dev.workers.dev/auth',
+    url: 'https://ciatta.ciatta-jm.workers.dev/auth',
     cleartext: false
   }
 };

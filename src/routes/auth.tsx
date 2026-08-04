@@ -3,8 +3,8 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 
 import mark from "@/assets/ciatta-mark.png.asset.json";
 import wordmark from "@/assets/ciatta-wordmark.png.asset.json";
-import { lovable } from "@/integrations/lovable/index";
 import { supabase } from "@/integrations/supabase/client";
+import { PASSWORD_RULES } from "@/lib/password-rules";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -271,13 +271,7 @@ function GoogleGlyph() {
   );
 }
 
-const RULES = [
-  { label: "8–30 characters", test: (v: string) => v.length >= 8 && v.length <= 30 },
-  { label: "1 uppercase character", test: (v: string) => /[A-Z]/.test(v) },
-  { label: "1 lowercase character", test: (v: string) => /[a-z]/.test(v) },
-  { label: "1 number", test: (v: string) => /\d/.test(v) },
-  { label: "1 special character", test: (v: string) => /[^A-Za-z0-9]/.test(v) },
-];
+const RULES = PASSWORD_RULES;
 
 /* ------------------------------------------------------------------- page */
 
@@ -461,19 +455,22 @@ function AuthPage() {
     setPhase("handoff");
     log("oauth start", provider);
     await new Promise((r) => window.setTimeout(r, 1200));
-    const result = await lovable.auth.signInWithOAuth(provider, {
-      redirect_uri: window.location.origin,
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider,
+      // Must land back on /auth, not the bare origin (the marketing/waitlist
+      // page) — the session-detection listener above is only mounted here.
+      options: { redirectTo: `${window.location.origin}/auth` },
     });
-    if (result.error) {
-      console.error("[auth] oauth failed", result.error);
+    if (error) {
+      console.error("[auth] oauth failed", error);
       setBusy(null);
       setPhase("choose");
       setError("That didn't complete. Try once more.");
       return;
     }
-    if (result.redirected) return; // On its way to the provider.
-    const { data } = await supabase.auth.getUser();
-    if (data.user) settle(data.user);
+    // The whole page is on its way to the provider now — there is no local
+    // success path to handle; the redirect back lands in the effect above
+    // that watches supabase.auth.onAuthStateChange.
   };
 
   const submitEmail = async () => {
