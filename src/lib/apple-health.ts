@@ -9,29 +9,71 @@
  */
 
 export const APPLE_HEALTH_METRICS = [
+  // Reproductive health
+  "menstrual_cycle",
+  "basal_body_temperature",
+  "wrist_temperature",
+  // Sleep
   "sleep",
+  // Cardiovascular
   "heart_rate",
   "resting_heart_rate",
   "hrv",
+  "walking_heart_rate_average",
+  "vo2_max",
+  // Respiratory
+  "respiratory_rate",
+  "blood_oxygen",
+  // Activity
   "steps",
   "walking_distance",
   "active_energy",
   "workouts",
-  "menstrual_cycle",
+  "exercise_minutes",
+  "standing_time",
+  "flights_climbed",
+  // Body measurements
+  "body_weight",
+  "body_fat_percentage",
+  // Nutrition & hydration
+  "water_intake",
+  // Mental wellbeing
+  "mindful_minutes",
+  // Clinical (standard HealthKit quantity types — not Apple's separate,
+  // specially-gated Clinical Health Records/FHIR feature)
+  "blood_pressure_systolic",
+  "blood_pressure_diastolic",
+  "blood_glucose",
 ] as const;
 
 export type AppleHealthMetric = (typeof APPLE_HEALTH_METRICS)[number];
 
 export const APPLE_HEALTH_LABELS: Record<AppleHealthMetric, string> = {
+  menstrual_cycle: "Menstrual cycle",
+  basal_body_temperature: "Basal body temperature",
+  wrist_temperature: "Wrist temperature",
   sleep: "Sleep",
   heart_rate: "Heart rate",
   resting_heart_rate: "Resting heart rate",
   hrv: "Heart rate variability",
+  walking_heart_rate_average: "Walking heart rate average",
+  vo2_max: "VO₂ max",
+  respiratory_rate: "Respiratory rate",
+  blood_oxygen: "Blood oxygen",
   steps: "Steps",
   walking_distance: "Walking distance",
   active_energy: "Active energy",
   workouts: "Workouts",
-  menstrual_cycle: "Menstrual cycle",
+  exercise_minutes: "Exercise minutes",
+  standing_time: "Standing time",
+  flights_climbed: "Flights climbed",
+  body_weight: "Body weight",
+  body_fat_percentage: "Body fat percentage",
+  water_intake: "Water intake",
+  mindful_minutes: "Mindful minutes",
+  blood_pressure_systolic: "Blood pressure (systolic)",
+  blood_pressure_diastolic: "Blood pressure (diastolic)",
+  blood_glucose: "Blood glucose",
 };
 
 /** One HealthKit sample, normalised by the native bridge. */

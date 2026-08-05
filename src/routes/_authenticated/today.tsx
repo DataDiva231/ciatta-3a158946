@@ -81,24 +81,23 @@ function TodayPage() {
   // intelligence copy leads — no taught-text fallback, no technical detail.
   const engineSilenced = today.state === "initializing" || today.state === "error";
 
-  const headline =
-    today.state === "ready" || engineSilenced
-      ? [{ text: today.headline, accent: false }]
-      : view?.headline
-        ? splitAccent(view.headline, view.accent)
-        : [{ text: today.headline, accent: false }];
-  const standing =
-    today.state === "ready" || engineSilenced ? today.summary : (view?.standing ?? today.summary);
+  // Whichever voice actually wins the headline below is the one this screen
+  // is currently speaking with — everything else on the page (the status
+  // line especially) needs to agree with it, or a look here and a look five
+  // minutes later can read like two different things pretending to be one.
+  const usingIntelligence = today.state === "ready" || engineSilenced || !view?.headline;
+
+  const headline = usingIntelligence
+    ? [{ text: today.headline, accent: false }]
+    : splitAccent(view!.headline, view!.accent);
+  const standing = usingIntelligence ? today.summary : (view?.standing ?? today.summary);
   const evidence: { label: string; text: string }[] = engineSilenced
     ? []
     : today.noticing.length
       ? today.noticing
       : (view?.evidence ?? []);
   const focus = engineSilenced ? null : (view?.focus ?? null);
-  const depth =
-    today.state === "ready" || engineSilenced
-      ? today.confidence
-      : (view?.depth ?? today.confidence);
+  const depth = usingIntelligence ? today.confidence : (view?.depth ?? today.confidence);
 
 
 
@@ -172,10 +171,19 @@ function TodayPage() {
           {standing}
         </p>
 
-        {/* Confidence state and freshness — plain language, never technical. */}
+        {/*
+          Confidence state and freshness — plain language, never technical.
+          today.confidenceLabel/updatedLabel describe the sensor pipeline
+          specifically, so they only belong here when it's the one actually
+          speaking above; showing them under an engine-sourced headline would
+          describe a completely different system's state, unrelated to what
+          the person is reading (e.g. a sensor "Paused" label under a
+          headline drawn entirely from a check-in).
+        */}
         <p className="animate-in fade-in mt-3 text-[11px] leading-none text-muted-foreground/70 duration-500">
-          {today.confidenceLabel}
-          {today.updatedLabel ? ` · ${today.updatedLabel}` : ""}
+          {usingIntelligence
+            ? `${today.confidenceLabel}${today.updatedLabel ? ` · ${today.updatedLabel}` : ""}`
+            : "From what you've shared"}
         </p>
 
 

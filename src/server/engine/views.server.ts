@@ -17,8 +17,7 @@ import {
   teachPrompt,
 } from "./narrative.server";
 import { listRelationshipEvents } from "./memory.server";
-import { followUpFor, suggestionsFor } from "./curiosity.server";
-import { generateGuidance } from "@/server/guidance/guidance.server";
+import { followUpFor, generateGuidance, suggestionsFor } from "./adaptation.server";
 import { previousSnapshot, type Understanding } from "./understanding.server";
 
 import type { Observation } from "./observations.server";

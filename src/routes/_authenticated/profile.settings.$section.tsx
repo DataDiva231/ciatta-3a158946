@@ -81,38 +81,44 @@ function Notifications() {
   const set = (k: keyof typeof n, v: boolean) => save({ notifications: { ...n, [k]: v } });
 
   return (
-    <Card>
-      <Toggle
-        label="Today's read"
-        detail="One line each morning about what your body is asking for."
-        checked={n.dailyRead}
-        onChange={(v) => set("dailyRead", v)}
-      />
-      <Toggle
-        label="New understanding"
-        detail="When a pattern becomes confident enough to act on."
-        checked={n.newUnderstanding}
-        onChange={(v) => set("newUnderstanding", v)}
-      />
-      <Toggle
-        label="Cycle shifts"
-        detail="When Ciatta thinks your phase has changed."
-        checked={n.cycleShifts}
-        onChange={(v) => set("cycleShifts", v)}
-      />
-      <Toggle
-        label="Weekly summary"
-        detail="A short Sunday note on what changed."
-        checked={n.weeklySummary}
-        onChange={(v) => set("weeklySummary", v)}
-      />
-      <Toggle
-        label="Quiet hours"
-        detail="Nothing between 10pm and 7am."
-        checked={n.quietHours}
-        onChange={(v) => set("quietHours", v)}
-      />
-    </Card>
+    <>
+      <p className="mb-4 text-[13px] leading-relaxed text-muted-foreground">
+        Notifications aren&rsquo;t sending yet &mdash; this is coming soon. What you choose here is
+        saved now, so it&rsquo;s already set the moment they turn on.
+      </p>
+      <Card>
+        <Toggle
+          label="Today's read"
+          detail="One line each morning about what your body is asking for."
+          checked={n.dailyRead}
+          onChange={(v) => set("dailyRead", v)}
+        />
+        <Toggle
+          label="New understanding"
+          detail="When a pattern becomes confident enough to act on."
+          checked={n.newUnderstanding}
+          onChange={(v) => set("newUnderstanding", v)}
+        />
+        <Toggle
+          label="Cycle shifts"
+          detail="When Ciatta thinks your phase has changed."
+          checked={n.cycleShifts}
+          onChange={(v) => set("cycleShifts", v)}
+        />
+        <Toggle
+          label="Weekly summary"
+          detail="A short Sunday note on what changed."
+          checked={n.weeklySummary}
+          onChange={(v) => set("weeklySummary", v)}
+        />
+        <Toggle
+          label="Quiet hours"
+          detail="Nothing between 10pm and 7am."
+          checked={n.quietHours}
+          onChange={(v) => set("quietHours", v)}
+        />
+      </Card>
+    </>
   );
 }
 
@@ -405,7 +411,7 @@ function About() {
         </div>
         <div className="flex items-center justify-between px-4 py-3.5 text-[15px]">
           <span>Understanding engine</span>
-          <span className="text-[14px] text-muted-foreground">On-device</span>
+          <span className="text-[14px] text-muted-foreground">Ciatta&rsquo;s servers</span>
         </div>
       </Card>
     </>
@@ -413,9 +419,13 @@ function About() {
 }
 
 function Legal() {
+  // Terms and Privacy have full, real pages already \u2014 link straight there
+  // instead of a one-line summary standing in for the actual document.
+  // Health disclaimer and licences don't have dedicated pages yet, so they
+  // stay as an inline expand until they do.
   const docs = [
-    { title: "Terms of use", body: "The agreement between you and Ciatta for using this app." },
-    { title: "Privacy policy", body: "What is collected, why, and how long it is kept." },
+    { title: "Terms of use", href: "/terms" as const },
+    { title: "Privacy policy", href: "/privacy" as const },
     {
       title: "Health disclaimer",
       body: "Ciatta offers understanding, not medical advice or diagnosis.",
@@ -426,37 +436,50 @@ function Legal() {
 
   return (
     <Card>
-      {docs.map((d) => (
-        <div key={d.title}>
-          <button
-            type="button"
-            aria-expanded={open === d.title}
-            onClick={() => setOpen((c) => (c === d.title ? null : d.title))}
+      {docs.map((d) =>
+        d.href ? (
+          <Link
+            key={d.title}
+            to={d.href}
             className="flex w-full items-center justify-between gap-4 px-4 py-3.5 text-left text-[15px] transition-colors hover:bg-secondary/60 active:bg-secondary"
           >
             {d.title}
-            <span
-              aria-hidden="true"
-              className={`text-fog transition-transform duration-300 ${
-                open === d.title ? "-rotate-90" : ""
-              }`}
-            >
+            <span aria-hidden="true" className="text-fog">
               {"\u203A"}
             </span>
-          </button>
-          <div
-            className={`grid transition-[grid-template-rows,opacity] duration-300 ${
-              open === d.title ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
-            }`}
-          >
-            <div className="overflow-hidden">
-              <p className="px-4 pb-4 text-[14px] leading-relaxed text-muted-foreground">
-                {d.body}
-              </p>
+          </Link>
+        ) : (
+          <div key={d.title}>
+            <button
+              type="button"
+              aria-expanded={open === d.title}
+              onClick={() => setOpen((c) => (c === d.title ? null : d.title))}
+              className="flex w-full items-center justify-between gap-4 px-4 py-3.5 text-left text-[15px] transition-colors hover:bg-secondary/60 active:bg-secondary"
+            >
+              {d.title}
+              <span
+                aria-hidden="true"
+                className={`text-fog transition-transform duration-300 ${
+                  open === d.title ? "-rotate-90" : ""
+                }`}
+              >
+                {"\u203A"}
+              </span>
+            </button>
+            <div
+              className={`grid transition-[grid-template-rows,opacity] duration-300 ${
+                open === d.title ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+              }`}
+            >
+              <div className="overflow-hidden">
+                <p className="px-4 pb-4 text-[14px] leading-relaxed text-muted-foreground">
+                  {d.body}
+                </p>
+              </div>
             </div>
           </div>
-        </div>
-      ))}
+        ),
+      )}
     </Card>
   );
 }

@@ -10,78 +10,17 @@
 
 import { useEffect, useMemo, useState } from "react";
 
+import { ProductGlyph } from "@/components/ciatta/product-glyph";
 import { useQuickAddEvents } from "@/lib/ciatta-store";
 import { haptic } from "@/lib/haptics";
 import {
   buildSteps,
+  CATEGORY_ORDER,
   META_LABEL,
   valueKeyFor,
   type Answers,
   type QuickAddOption,
 } from "@/lib/quick-add";
-
-/** Thumb-first ordering: the categories reached for most often come first. */
-const CATEGORY_ORDER = [
-  "Period Product",
-  "Flow",
-  "Symptoms",
-  "Sleep",
-  "Medication",
-  "Nutrition",
-  "Activity",
-  "Something Else",
-];
-
-function ProductGlyph({ icon }: { icon: QuickAddOption["icon"] }) {
-  const s = { stroke: "var(--muted-foreground)", strokeWidth: 1.3, fill: "none" } as const;
-  switch (icon) {
-    case "tampon":
-      return (
-        <svg width="34" height="34" viewBox="0 0 44 44" aria-hidden="true">
-          <rect x="13" y="8" width="18" height="20" rx="9" {...s} />
-          <path d="M22 28v9" {...s} strokeLinecap="round" />
-        </svg>
-      );
-    case "pad":
-      return (
-        <svg width="34" height="34" viewBox="0 0 44 44" aria-hidden="true">
-          <rect x="10" y="12" width="24" height="20" rx="10" {...s} />
-          <path d="M10 18H5m29 0h5M10 26H5m29 0h5" {...s} strokeLinecap="round" />
-        </svg>
-      );
-    case "cup":
-      return (
-        <svg width="34" height="34" viewBox="0 0 44 44" aria-hidden="true">
-          <path d="M13 12h18l-2.5 15a6.5 6.5 0 0 1-13 0L13 12Z" {...s} strokeLinejoin="round" />
-          <path d="M22 33v5" {...s} strokeLinecap="round" />
-        </svg>
-      );
-    case "disc":
-      return (
-        <svg width="34" height="34" viewBox="0 0 44 44" aria-hidden="true">
-          <ellipse cx="22" cy="22" rx="14" ry="7" {...s} />
-          <ellipse cx="22" cy="22" rx="8" ry="3.5" {...s} />
-        </svg>
-      );
-    case "underwear":
-      return (
-        <svg width="34" height="34" viewBox="0 0 44 44" aria-hidden="true">
-          <path
-            d="M8 14h28l-2 8c-4 1-7 4-8 10h-8c-1-6-4-9-8-10l-2-8Z"
-            {...s}
-            strokeLinejoin="round"
-          />
-        </svg>
-      );
-    default:
-      return (
-        <svg width="34" height="34" viewBox="0 0 44 44" aria-hidden="true">
-          <circle cx="22" cy="22" r="12" {...s} />
-          <path d="M13.5 13.5 30.5 30.5" {...s} strokeLinecap="round" />
-        </svg>
-      );
-  }
-}
 
 export type PresetStep = {
   title: string;
@@ -117,6 +56,8 @@ export function QuickAddSheet({
   const [answers, setAnswers] = useState<Answers>({});
   const [index, setIndex] = useState(0);
   const [pending, setPending] = useState<string | null>(null);
+  /** Holds the answers a failed save should retry with; null once it lands. */
+  const [commitFailed, setCommitFailed] = useState<Answers | null>(null);
 
   // Each opening is a fresh answer to the question currently on screen.
   useEffect(() => {
@@ -124,6 +65,7 @@ export function QuickAddSheet({
     setAnswers(presetCategory ? { category: presetCategory } : {});
     setIndex(presetCategory ? 1 : 0);
     setPending(null);
+    setCommitFailed(null);
   }, [open, presetCategory]);
 
   const derived = useMemo(() => buildSteps(answers), [answers]);
@@ -153,12 +95,17 @@ export function QuickAddSheet({
       const a = final[s.key];
       if (a) metadata[META_LABEL[s.key] ?? s.key] = a;
     }
-    addEvent({
+    const { saved: ok } = addEvent({
       category,
       value,
       timestamp: new Date().toISOString(),
       metadata: Object.keys(metadata).length ? metadata : undefined,
     });
+    if (!ok) {
+      setCommitFailed(final);
+      return;
+    }
+    setCommitFailed(null);
     try {
       sessionStorage.setItem("ciatta:just-taught", String(Date.now()));
     } catch {
@@ -212,6 +159,39 @@ export function QuickAddSheet({
   };
 
   if (!open) return null;
+
+  if (commitFailed) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-end justify-center">
+        <button
+          type="button"
+          aria-label="Close Quick Add"
+          onClick={onClose}
+          className="animate-in fade-in absolute inset-0 bg-background duration-500"
+        />
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Quick Add"
+          className="animate-sheet-up relative w-full max-w-[480px] rounded-t-[28px] bg-background px-6 pt-10 pb-[max(2.5rem,env(safe-area-inset-bottom))] text-center"
+        >
+          <h2 className="font-serif text-[23px] leading-[1.15] tracking-[-0.015em]">
+            That didn&apos;t save.
+          </h2>
+          <p className="mx-auto mt-2 max-w-[26ch] text-[12.5px] leading-relaxed text-muted-foreground">
+            Try once more — what you picked is still held here.
+          </p>
+          <button
+            type="button"
+            onClick={() => commit(commitFailed)}
+            className="mx-auto mt-6 w-full max-w-[19rem] rounded-full bg-foreground px-6 py-[15px] text-[15px] font-medium text-background transition-all duration-200 active:scale-[0.99]"
+          >
+            Try again
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const trail = steps
     .slice(0, index)
@@ -316,7 +296,7 @@ export function QuickAddSheet({
                       active ? "bg-secondary ring-1 ring-accent" : "bg-background ring-1 ring-border/60"
                     }`}
                   >
-                    <ProductGlyph icon={o.icon} />
+                    <ProductGlyph icon={o.icon} size={34} />
                     <span
                       className={`text-[11.5px] leading-tight ${active ? "text-accent" : "text-foreground"}`}
                     >

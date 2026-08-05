@@ -40,12 +40,8 @@ export function CheckInForm() {
 
   const save = () => {
     setStatus("saving");
-    try {
-      saveCheckIn({ day: todayKey(), sleepFelt, energy, mood, symptoms, cycleStarted });
-      setStatus("saved");
-    } catch {
-      setStatus("error");
-    }
+    const ok = saveCheckIn({ day: todayKey(), sleepFelt, energy, mood, symptoms, cycleStarted });
+    setStatus(ok ? "saved" : "error");
   };
 
   return (

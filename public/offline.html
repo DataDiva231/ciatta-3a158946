@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>You&rsquo;re offline — Ciatta</title>
+<style>
+  :root { color-scheme: light; }
+  * { box-sizing: border-box; }
+  html, body {
+    height: 100%;
+    margin: 0;
+    background: #F8F6F3;
+    color: #2B2823;
+    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  }
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    text-align: center;
+    min-height: 100svh;
+  }
+  .mark {
+    width: 14px;
+    height: 14px;
+    border-radius: 999px;
+    background: radial-gradient(circle at 30% 30%, #C99A7A, transparent 70%);
+    margin-bottom: 28px;
+    opacity: 0.9;
+  }
+  h1 {
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin: 0 0 10px;
+  }
+  p {
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: #6B665C;
+    max-width: 22rem;
+    margin: 0 0 28px;
+  }
+  button {
+    -webkit-appearance: none;
+    appearance: none;
+    border: none;
+    border-radius: 999px;
+    background: #2B2823;
+    color: #F8F6F3;
+    font-size: 15px;
+    font-weight: 500;
+    padding: 14px 28px;
+    min-width: 12rem;
+  }
+  button:active { opacity: 0.85; }
+</style>
+</head>
+<body>
+  <span class="mark" aria-hidden="true"></span>
+  <h1>You&rsquo;re offline.</h1>
+  <p>Ciatta needs a connection to open. Nothing about you is lost &mdash; try again once you&rsquo;re back online.</p>
+  <button type="button" onclick="retry()">Try again</button>
+  <script>
+    // The permanent production deployment — kept in sync with capacitor.config.ts's server.url by hand,
+    // since this page is a static asset with no build-time env access.
+    var REMOTE_URL = "https://ciatta.ciatta-jm.workers.dev/auth";
+    function retry() {
+      window.location.href = REMOTE_URL;
+    }
+    // Resolves itself the moment connectivity returns, without waiting for a tap.
+    window.addEventListener("online", retry);
+  </script>
+</body>
+</html>

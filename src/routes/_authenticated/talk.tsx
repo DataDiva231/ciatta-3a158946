@@ -18,7 +18,11 @@ import {
 } from "@/components/ai-elements/prompt-input";
 import { Shimmer } from "@/components/ai-elements/shimmer";
 import { useLearnedFacts } from "@/lib/ciatta-store";
+import { useEngine } from "@/lib/use-engine";
 import { useVoiceMemo } from "@/lib/voice-memo";
+
+/** Below this, Ciatta doesn't yet have a real enough basis to reference a pattern in Talk's replies. */
+const ESTABLISHED_DEPTH = 40;
 
 export const Route = createFileRoute("/_authenticated/talk")({
   head: () => ({
@@ -39,7 +43,13 @@ export const Route = createFileRoute("/_authenticated/talk")({
   component: TalkPage,
 });
 
-type ChatMessage = { id: string; role: "user" | "assistant"; text: string };
+type ChatMessage = {
+  id: string;
+  role: "user" | "assistant";
+  text: string;
+  /** Whether this user message was actually remembered as a fact — undefined for assistant messages. */
+  factSaved?: boolean;
+};
 
 const QUICK_PROMPTS = [
   "I get migraines before my period",
@@ -53,34 +63,62 @@ const OPENING: ChatMessage = {
   text: "Tell me something about your body that my sensors can't see. A pattern you've noticed, a medication, a thing that always throws you off. I'll remember it.",
 };
 
-/** Scripted replies — this preview does not call a model. */
-function replyTo(input: string): string {
+/**
+ * Scripted replies — this does not call a model. Every branch used to assert
+ * a specific, already-observed correlation ("I already see your sleep
+ * soften in the two days before you bleed") as present-tense fact, for
+ * every user, regardless of whether they'd ever logged a single thing or
+ * connected a sensor. That's not generic — it's a fabricated claim about
+ * this particular person's body, stated with false confidence.
+ *
+ * `established` reflects the server engine's real understanding depth for
+ * this account (`views.today.depth`, the same signal Today's orb reads —
+ * used here only as a coarse threshold, never surfaced as a number). Below
+ * it, replies are honest about not knowing yet; above it, they can
+ * reference that real understanding exists without inventing a specific
+ * pattern that was never actually computed.
+ */
+function replyTo(input: string, established: boolean): string {
   const t = input.toLowerCase();
 
   if (/migraine|headache/.test(t)) {
-    return "Noted. I already see your sleep soften in the two days before you bleed — I'll start checking whether your migraines land in that same window, and warn you the day before.";
+    return established
+      ? "Noted. I'll check this against what I've already learned about your sleep and cycle, and tell you if it lines up."
+      : "Noted. I don't know your sleep and cycle well enough yet to say if this connects to anything — but I'll start watching for it from here.";
   }
   if (/coffee|caffeine|espresso/.test(t)) {
-    return "That fits. On the nights you fall asleep latest, your temperature is still elevated at 11pm. I'll flag it when your afternoon looks like a late-caffeine day.";
+    return established
+      ? "That fits. I'll hold your late-caffeine days against how you actually slept, not just how the evening felt."
+      : "That's useful to know. I don't have enough of your sleep data yet to check it, but I'll start paying attention to your afternoons.";
   }
   if (/train|run|marathon|gym|lift|workout/.test(t)) {
-    return "Good to know. I'll hold your hard sessions against your recovery, not the calendar — and tell you when your follicular window opens, because that's where your capacity peaks.";
+    return established
+      ? "Good to know. I'll hold your hard sessions against your recovery, not the calendar, using what I already understand about you."
+      : "Good to know. I don't have a real read on your recovery yet, so for now I'll just note the pattern and build from here.";
   }
   if (/pill|medication|iud|meds|prescription/.test(t)) {
     return "Logged. Medication changes shift a lot of what I read, so I'll treat the next few weeks as a new baseline rather than a deviation.";
   }
   if (/stress|work|anxious|anxiety|burnout/.test(t)) {
-    return "I'll watch for it. Stress usually shows up in your data first as a lower heart rate variability with unchanged sleep hours — I'll name it when I see that shape.";
+    return established
+      ? "I'll watch for it against what I already know of your patterns — stress usually shows up first as a shift that doesn't match your sleep."
+      : "I'll watch for it. I don't have enough history with you yet to know what stress looks like on you specifically, but I'm listening for it.";
   }
   if (/pain|cramp|bloat|flare/.test(t)) {
-    return "Thank you for telling me. I'll line this up against your cycle day and your temperature, and let you know if it's tracking with something.";
+    return established
+      ? "Thank you for telling me. I'll line this up against your cycle day and what I already understand about you, and let you know if it's tracking with something."
+      : "Thank you for telling me. I don't have enough of your cycle history yet to line this up against anything real — but this is exactly the kind of thing that builds it.";
   }
-  return "I've saved that. I'll look for it in your signals over the next few cycles and tell you when I find something real, not before.";
+  return established
+    ? "I've saved that, alongside what I already understand about you. I'll look for it in your signals over the next few cycles and tell you when I find something real, not before."
+    : "I've saved that. It's still early between us, so I won't pretend to see a pattern yet — but this is how I start.";
 }
 
 function TalkPage() {
   const { goBack } = useBack("/today");
   const { facts, addFact, removeFact } = useLearnedFacts();
+  const { views } = useEngine();
+  const established = (views?.today.depth ?? 0) >= ESTABLISHED_DEPTH;
   const [messages, setMessages] = useState<ChatMessage[]>([OPENING]);
   const [pending, setPending] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -93,17 +131,29 @@ function TalkPage() {
     const trimmed = text.trim();
     if (!trimmed || pending) return;
 
-    setMessages((prev) => [...prev, { id: `u-${Date.now()}`, role: "user", text: trimmed }]);
+    const userMessageId = `u-${Date.now()}`;
+    setMessages((prev) => [...prev, { id: userMessageId, role: "user", text: trimmed }]);
     setPending(true);
 
     window.setTimeout(() => {
       setMessages((prev) => [
         ...prev,
-        { id: `a-${Date.now()}`, role: "assistant", text: replyTo(trimmed) },
+        { id: `a-${Date.now()}`, role: "assistant", text: replyTo(trimmed, established) },
       ]);
-      addFact(trimmed.charAt(0).toUpperCase() + trimmed.slice(1));
+      // The reply shows either way — this only decides whether what she said
+      // is actually remembered as a fact, so a quiet storage failure doesn't
+      // read as a normal reply with nothing wrong.
+      const ok = addFact(trimmed.charAt(0).toUpperCase() + trimmed.slice(1));
+      setMessages((prev) =>
+        prev.map((m) => (m.id === userMessageId ? { ...m, factSaved: ok } : m)),
+      );
       setPending(false);
     }, 700);
+  };
+
+  const retryFact = (m: ChatMessage) => {
+    const ok = addFact(m.text.charAt(0).toUpperCase() + m.text.slice(1));
+    setMessages((prev) => prev.map((msg) => (msg.id === m.id ? { ...msg, factSaved: ok } : msg)));
   };
 
   const handleSubmit = (message: PromptInputMessage) => {
@@ -145,17 +195,27 @@ function TalkPage() {
       <Conversation className="max-h-[46vh] min-h-[180px]">
         <ConversationContent className="gap-5 px-6 pb-2">
           {messages.map((m) => (
-            <Message key={m.id} from={m.role}>
-              <MessageContent
-                className={
-                  m.role === "assistant"
-                    ? "bg-transparent p-0 text-[16px] leading-relaxed text-foreground"
-                    : "bg-foreground text-[15px] text-background"
-                }
-              >
-                <MessageResponse>{m.text}</MessageResponse>
-              </MessageContent>
-            </Message>
+            <div key={m.id}>
+              <Message from={m.role}>
+                <MessageContent
+                  className={
+                    m.role === "assistant"
+                      ? "bg-transparent p-0 text-[16px] leading-relaxed text-foreground"
+                      : "bg-foreground text-[15px] text-background"
+                  }
+                >
+                  <MessageResponse>{m.text}</MessageResponse>
+                </MessageContent>
+              </Message>
+              {m.factSaved === false && (
+                <p className="mt-1.5 text-right text-[12px] text-muted-foreground">
+                  Didn&apos;t save.{" "}
+                  <button type="button" onClick={() => retryFact(m)} className="text-accent">
+                    Try again
+                  </button>
+                </p>
+              )}
+            </div>
           ))}
           {pending && <Shimmer className="text-[15px] text-muted-foreground">Listening…</Shimmer>}
         </ConversationContent>

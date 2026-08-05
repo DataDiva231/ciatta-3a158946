@@ -30,6 +30,7 @@ import { Route as AuthenticatedTodayRouteImport } from './routes/_authenticated/
 import { Route as ApiTranscribeRouteImport } from './routes/api/transcribe'
 import { Route as AuthenticatedProfileIndexRouteImport } from './routes/_authenticated/profile.index'
 import { Route as AuthenticatedProfileEditRouteImport } from './routes/_authenticated/profile.edit'
+import { Route as ApiAuthSendEmailRouteImport } from './routes/api/auth/send-email'
 import { Route as AuthenticatedConnectionsProviderCallbackRouteImport } from './routes/_authenticated/connections.$provider.callback'
 import { Route as AuthenticatedProfileSettingsSectionRouteImport } from './routes/_authenticated/profile.settings.$section'
 import { Route as ApiPublicHealthSyncRouteImport } from './routes/api/public/health/sync'
@@ -145,6 +146,11 @@ const AuthenticatedProfileEditRoute =
     path: '/profile/edit',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiAuthSendEmailRoute = ApiAuthSendEmailRouteImport.update({
+  id: '/api/auth/send-email',
+  path: '/api/auth/send-email',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedConnectionsProviderCallbackRoute =
   AuthenticatedConnectionsProviderCallbackRouteImport.update({
     id: '/connections/$provider/callback',
@@ -193,6 +199,7 @@ export interface FileRoutesByFullPath {
   '/today': typeof AuthenticatedTodayRoute
   '/api/transcribe': typeof ApiTranscribeRoute
   '/profile/edit': typeof AuthenticatedProfileEditRoute
+  '/api/auth/send-email': typeof ApiAuthSendEmailRoute
   '/profile/': typeof AuthenticatedProfileIndexRoute
   '/connections/$provider/callback': typeof AuthenticatedConnectionsProviderCallbackRoute
   '/profile/settings/$section': typeof AuthenticatedProfileSettingsSectionRoute
@@ -220,6 +227,7 @@ export interface FileRoutesByTo {
   '/today': typeof AuthenticatedTodayRoute
   '/api/transcribe': typeof ApiTranscribeRoute
   '/profile/edit': typeof AuthenticatedProfileEditRoute
+  '/api/auth/send-email': typeof ApiAuthSendEmailRoute
   '/profile': typeof AuthenticatedProfileIndexRoute
   '/connections/$provider/callback': typeof AuthenticatedConnectionsProviderCallbackRoute
   '/profile/settings/$section': typeof AuthenticatedProfileSettingsSectionRoute
@@ -249,6 +257,7 @@ export interface FileRoutesById {
   '/_authenticated/today': typeof AuthenticatedTodayRoute
   '/api/transcribe': typeof ApiTranscribeRoute
   '/_authenticated/profile/edit': typeof AuthenticatedProfileEditRoute
+  '/api/auth/send-email': typeof ApiAuthSendEmailRoute
   '/_authenticated/profile/': typeof AuthenticatedProfileIndexRoute
   '/_authenticated/connections/$provider/callback': typeof AuthenticatedConnectionsProviderCallbackRoute
   '/_authenticated/profile/settings/$section': typeof AuthenticatedProfileSettingsSectionRoute
@@ -278,6 +287,7 @@ export interface FileRouteTypes {
     | '/today'
     | '/api/transcribe'
     | '/profile/edit'
+    | '/api/auth/send-email'
     | '/profile/'
     | '/connections/$provider/callback'
     | '/profile/settings/$section'
@@ -305,6 +315,7 @@ export interface FileRouteTypes {
     | '/today'
     | '/api/transcribe'
     | '/profile/edit'
+    | '/api/auth/send-email'
     | '/profile'
     | '/connections/$provider/callback'
     | '/profile/settings/$section'
@@ -333,6 +344,7 @@ export interface FileRouteTypes {
     | '/_authenticated/today'
     | '/api/transcribe'
     | '/_authenticated/profile/edit'
+    | '/api/auth/send-email'
     | '/_authenticated/profile/'
     | '/_authenticated/connections/$provider/callback'
     | '/_authenticated/profile/settings/$section'
@@ -350,6 +362,7 @@ export interface RootRouteChildren {
   TermsRoute: typeof TermsRoute
   WaitlistRoute: typeof WaitlistRoute
   ApiTranscribeRoute: typeof ApiTranscribeRoute
+  ApiAuthSendEmailRoute: typeof ApiAuthSendEmailRoute
   ApiPublicHealthSyncRoute: typeof ApiPublicHealthSyncRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
@@ -504,6 +517,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProfileEditRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/auth/send-email': {
+      id: '/api/auth/send-email'
+      path: '/api/auth/send-email'
+      fullPath: '/api/auth/send-email'
+      preLoaderRoute: typeof ApiAuthSendEmailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/connections/$provider/callback': {
       id: '/_authenticated/connections/$provider/callback'
       path: '/connections/$provider/callback'
@@ -592,6 +612,7 @@ const rootRouteChildren: RootRouteChildren = {
   TermsRoute: TermsRoute,
   WaitlistRoute: WaitlistRoute,
   ApiTranscribeRoute: ApiTranscribeRoute,
+  ApiAuthSendEmailRoute: ApiAuthSendEmailRoute,
   ApiPublicHealthSyncRoute: ApiPublicHealthSyncRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,

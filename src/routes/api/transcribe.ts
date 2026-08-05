@@ -4,7 +4,7 @@ import { requireUser } from "@/server/auth.server";
 
 /**
  * Voice memo transcription. The browser uploads a complete WAV; we forward it
- * to the Lovable AI gateway and stream the transcript straight back.
+ * to OpenAI's transcription API and stream the transcript straight back.
  */
 export const Route = createFileRoute("/api/transcribe")({
   server: {
@@ -32,8 +32,8 @@ export const Route = createFileRoute("/api/transcribe")({
           throw error;
         }
 
-        const key = process.env.LOVABLE_API_KEY;
-        if (!key) return new Response("Missing LOVABLE_API_KEY", { status: 500 });
+        const key = process.env["OPENAI_API_KEY"];
+        if (!key) return new Response("Missing OPENAI_API_KEY", { status: 500 });
 
         const form = await request.formData();
         const audio = form.get("audio");
@@ -53,11 +53,11 @@ export const Route = createFileRoute("/api/transcribe")({
 
 
         const upstream = new FormData();
-        upstream.append("model", "openai/gpt-4o-transcribe");
+        upstream.append("model", "gpt-4o-transcribe");
         upstream.append("file", audio, "memo.wav");
         upstream.append("stream", "true");
 
-        const response = await fetch("https://ai.gateway.lovable.dev/v1/audio/transcriptions", {
+        const response = await fetch("https://api.openai.com/v1/audio/transcriptions", {
           method: "POST",
           headers: { Authorization: `Bearer ${key}` },
           body: upstream,

@@ -4,23 +4,7 @@ import { useRouter } from "@tanstack/react-router";
 import { useBack } from "@/lib/use-back";
 
 import { useQuickAddEvents } from "@/lib/ciatta-store";
-
-/** Downscale a photo so Ciatta can keep a visual memory without hoarding megabytes. */
-async function makeThumbnail(file: File): Promise<string | null> {
-  try {
-    const bitmap = await createImageBitmap(file);
-    const scale = Math.min(1, 640 / Math.max(bitmap.width, bitmap.height));
-    const canvas = document.createElement("canvas");
-    canvas.width = Math.round(bitmap.width * scale);
-    canvas.height = Math.round(bitmap.height * scale);
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return null;
-    ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-    return canvas.toDataURL("image/jpeg", 0.7);
-  } catch {
-    return null;
-  }
-}
+import { fileToDataUrl } from "@/lib/image";
 
 function formatSize(bytes: number) {
   return bytes > 1024 * 1024
@@ -61,11 +45,12 @@ export function TeachUpload({
   const [preview, setPreview] = useState<string | null>(null);
   const [note, setNote] = useState("");
   const [saved, setSaved] = useState(false);
+  const [saveFailed, setSaveFailed] = useState(false);
 
   const pick = async (chosen: File | undefined) => {
     if (!chosen) return;
     setFile(chosen);
-    setPreview(chosen.type.startsWith("image/") ? await makeThumbnail(chosen) : null);
+    setPreview(chosen.type.startsWith("image/") ? await fileToDataUrl(chosen) : null);
   };
 
   const save = () => {
@@ -77,13 +62,18 @@ export function TeachUpload({
     if (note.trim()) metadata.Note = note.trim();
     if (preview) metadata.Thumbnail = preview;
 
-    addEvent({
+    const { saved: ok } = addEvent({
       category,
       value: note.trim() || (category === "Photo" ? "Photo" : file.name),
       timestamp: new Date().toISOString(),
       metadata,
     });
 
+    if (!ok) {
+      setSaveFailed(true);
+      return;
+    }
+    setSaveFailed(false);
     setSaved(true);
     window.setTimeout(() => router.navigate({ to: "/today" }), 1100);
   };
@@ -197,6 +187,11 @@ export function TeachUpload({
       >
         Share this
       </button>
+      {saveFailed && (
+        <p className="mt-3 text-center text-[13px] text-muted-foreground">
+          That didn&apos;t save. Try once more.
+        </p>
+      )}
 
     </div>
   );

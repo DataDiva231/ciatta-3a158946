@@ -1,5 +1,10 @@
 /**
- * Adaptive Teach suggestions.
+ * Adaptation (client-side) — what Teach surfaces next, not what it says.
+ *
+ * The counterpart to src/server/engine/adaptation.server.ts's Curiosity
+ * functions, running here because that's where Teach renders. Formerly
+ * teach-suggestions.ts; renamed as part of PHASE_3_MIGRATION_PLAN.md's A3,
+ * logic unchanged.
  *
  * Teach should never show the same list to every woman. These suggestions are
  * derived from cycle phase, what Ciatta has already been taught today, and how

@@ -3,6 +3,18 @@ import { useMemo } from "react";
 import { useCheckIns, useLearnedFacts, useMilestones, useQuickAddEvents } from "./ciatta-store";
 import { useJourney } from "./journey-data";
 import type { Discovery } from "./journey-data";
+import { useIdentity } from "./profile-store";
+
+/** How each life stage is described back to the person, in the same "I read your days against..." voice. */
+const LIFE_STAGE_RHYTHM: Record<string, string> = {
+  Cycling: "Cycling means I read your days against a roughly monthly rhythm rather than a flat one.",
+  "Trying to conceive":
+    "Trying to conceive means I pay closer attention to your fertile window than to the cycle as a whole.",
+  Pregnant: "Pregnant means I read your days against your pregnancy's timeline rather than a monthly rhythm.",
+  Postpartum: "Postpartum means I watch for recovery and a rhythm that's still settling, not a fixed cycle.",
+  Perimenopause: "Perimenopause means I read your days for shifts and irregularity rather than a fixed rhythm.",
+  Menopause: "Menopause means I read your days without expecting a monthly rhythm at all.",
+};
 
 export type Understanding = {
   id: string;
@@ -60,6 +72,8 @@ export type ProfileView = {
   story: string[];
   areas: Area[];
   snapshot: SnapshotRow[];
+  /** The area Ciatta is paying closest attention to right now. */
+  focus: string;
 
   sources: SourceRow[];
   timeline: TimelineStep[];
@@ -129,6 +143,7 @@ export function useProfile(): ProfileView {
   const { checkIns } = useCheckIns();
   const { facts } = useLearnedFacts();
   const { milestones } = useMilestones();
+  const { identity } = useIdentity();
 
   return useMemo(() => {
     const discoveries: Discovery[] = [
@@ -190,9 +205,10 @@ export function useProfile(): ProfileView {
       {
         id: "life-stage",
         label: "Life stage",
-        value: "Cycling",
-        detail:
-          "Your life stage tells me which rhythms to expect. Cycling means I read your days against a roughly monthly rhythm rather than a flat one.",
+        value: identity.lifeStage || "Not set",
+        detail: identity.lifeStage
+          ? `Your life stage tells me which rhythms to expect. ${LIFE_STAGE_RHYTHM[identity.lifeStage] ?? ""}`
+          : "You haven't told me your life stage yet, so I'm not reading your days against any particular rhythm. Set it from Edit profile whenever you're ready.",
         notes: [
           "Change this any time from Edit profile.",
           "If this is wrong, everything I understand will be a little off.",
@@ -347,9 +363,10 @@ export function useProfile(): ProfileView {
       story,
       areas,
       snapshot,
+      focus,
       sources,
       timeline,
       defaultPriorities: areas.map((a) => a.name),
     };
-  }, [journey, events, checkIns, facts, milestones]);
+  }, [journey, events, checkIns, facts, milestones, identity.lifeStage]);
 }

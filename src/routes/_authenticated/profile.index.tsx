@@ -426,7 +426,7 @@ function ProfilePage() {
   if (!profile.hydrated) return <ProfileSkeleton />;
 
   const since = profile.snapshot.find((s) => s.id === "learning-since")?.value ?? "Today";
-  const focus = profile.snapshot.find((s) => s.id === "next")?.value ?? "Recovery";
+  const { focus } = profile;
   // Profile is the relationship summary the engine holds; the local synthesis
   // stands in until it answers.
   const portrait =

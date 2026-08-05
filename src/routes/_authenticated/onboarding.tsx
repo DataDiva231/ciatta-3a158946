@@ -282,13 +282,16 @@ function OnboardingPage() {
   const commit = useCallback(
     (nextId: string) => {
       setDir(1);
-      setHistory((h) => {
-        const next = [...h, nextId];
-        save({ path: next });
-        return next;
-      });
+      // save() dispatches a global sync event other mounted components
+      // (e.g. ProductTour) listen for — it has to run outside the setHistory
+      // updater, since updater functions run during React's render phase and
+      // must stay pure. Doing it inside triggered "Cannot update a component
+      // while rendering a different component" for exactly that reason.
+      const next = [...history, nextId];
+      save({ path: next });
+      setHistory(next);
     },
-    [save],
+    [history, save],
   );
 
   const advance = useCallback(
@@ -316,11 +319,9 @@ function OnboardingPage() {
 
   const back = () => {
     setDir(-1);
-    setHistory((h) => {
-      const next = h.length > 1 ? h.slice(0, -1) : h;
-      save({ path: next });
-      return next;
-    });
+    const next = history.length > 1 ? history.slice(0, -1) : history;
+    save({ path: next });
+    setHistory(next);
   };
 
   /** Writes an answer and mirrors it onto the core profile fields. */

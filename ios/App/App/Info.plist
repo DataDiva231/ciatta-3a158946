@@ -24,6 +24,10 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSHealthShareUsageDescription</key>
+	<string>Ciatta reads the health data you allow — sleep, heart rate, cycle and reproductive health, activity, body measurements, and mindfulness — to build a private, ongoing picture of your body's patterns. This stays on your account and is never sold or shared.</string>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>Ciatta connects to your Arc earring over Bluetooth to stream its sensor readings into the app.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

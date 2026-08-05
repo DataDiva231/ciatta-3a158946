@@ -60,11 +60,11 @@ function EditProfile() {
       return;
     }
     setStatus("saving");
-    try {
-      save({ name: name.trim(), photo, lifeStage, goals, interests });
+    const ok = save({ name: name.trim(), photo, lifeStage, goals, interests });
+    if (ok) {
       setStatus("saved");
       setTimeout(() => router.history.back(), 550);
-    } catch {
+    } else {
       setStatus("error");
       setError("That didn't save. Try once more.");
     }

@@ -24,6 +24,22 @@ export type QuickAddStep = {
   options: QuickAddOption[];
 };
 
+/**
+ * Thumb-first ordering: the categories reached for most often come first, so
+ * the chip group reads the same way everywhere it appears (the full Quick
+ * Add page and the Quick Add sheet both sort by this).
+ */
+export const CATEGORY_ORDER = [
+  "Period Product",
+  "Flow",
+  "Symptoms",
+  "Sleep",
+  "Medication",
+  "Nutrition",
+  "Activity",
+  "Something Else",
+];
+
 export const CATEGORY_STEP: QuickAddStep = {
   key: "category",
   title: "Quick Add",

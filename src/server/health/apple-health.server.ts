@@ -119,9 +119,12 @@ function hoursAndMinutes(hours: number): string {
 
 /**
  * Canonical units expected from the bridge:
- * sleep — hours, heart rate / resting heart rate — bpm, hrv — ms,
- * steps — count, walking distance — km, active energy — kcal,
- * workouts — minutes, menstrual cycle — flow level 0–3.
+ * sleep/exercise minutes/standing time/mindful minutes — sleep is hours,
+ * the rest are minutes; heart rate metrics — bpm, hrv — ms,
+ * temperatures — °C, steps/flights — count, walking distance — km,
+ * active energy — kcal, weight — kg, percentages (blood oxygen, body
+ * fat) — 0-100, water — liters, blood pressure — mmHg, glucose — mg/dL,
+ * VO2 max — mL/(kg·min), menstrual cycle — flow level 0–3.
  */
 function describe(sample: AppleHealthSample): { category: string; value: string } | null {
   switch (sample.metric) {
@@ -133,12 +136,44 @@ function describe(sample: AppleHealthSample): { category: string; value: string 
       return { category: "Resting heart rate", value: `${round(sample.value)} bpm` };
     case "hrv":
       return { category: "Heart rate variability", value: `${round(sample.value)} ms` };
+    case "walking_heart_rate_average":
+      return { category: "Walking heart rate", value: `${round(sample.value)} bpm avg` };
+    case "vo2_max":
+      return { category: "VO₂ max", value: `${round(sample.value, 1)} mL/kg/min` };
+    case "respiratory_rate":
+      return { category: "Respiratory rate", value: `${round(sample.value)} breaths/min` };
+    case "blood_oxygen":
+      return { category: "Blood oxygen", value: `${round(sample.value)}% SpO₂` };
     case "steps":
       return { category: "Steps", value: `${round(sample.value)} steps` };
     case "walking_distance":
       return { category: "Movement", value: `${round(sample.value, 2)} km walked` };
     case "active_energy":
       return { category: "Activity", value: `${round(sample.value)} kcal active` };
+    case "exercise_minutes":
+      return { category: "Exercise", value: `${round(sample.value)} min` };
+    case "standing_time":
+      return { category: "Standing", value: `${round(sample.value)} min` };
+    case "flights_climbed":
+      return { category: "Flights climbed", value: `${round(sample.value)} flights` };
+    case "body_weight":
+      return { category: "Body weight", value: `${round(sample.value, 1)} kg` };
+    case "body_fat_percentage":
+      return { category: "Body fat", value: `${round(sample.value, 1)}%` };
+    case "water_intake":
+      return { category: "Water intake", value: `${round(sample.value, 2)} L` };
+    case "blood_pressure_systolic":
+      return { category: "Blood pressure", value: `${round(sample.value)} mmHg systolic` };
+    case "blood_pressure_diastolic":
+      return { category: "Blood pressure", value: `${round(sample.value)} mmHg diastolic` };
+    case "blood_glucose":
+      return { category: "Blood glucose", value: `${round(sample.value)} mg/dL` };
+    case "basal_body_temperature":
+      return { category: "Basal body temperature", value: `${round(sample.value, 1)}°C` };
+    case "wrist_temperature":
+      return { category: "Wrist temperature", value: `${round(sample.value, 1)}°C` };
+    case "mindful_minutes":
+      return { category: "Mindfulness", value: `${round(sample.value)} min` };
     case "workouts": {
       const kind = sample.context?.["workoutType"] ?? "Workout";
       return { category: "Workout", value: `${kind}, ${Math.max(1, round(sample.value))} min` };

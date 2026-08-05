@@ -6,11 +6,7 @@ import { QuickAddSheet } from "@/components/ciatta/quick-add-sheet";
 
 import { useQuickAddEvents } from "@/lib/ciatta-store";
 import { haptic } from "@/lib/haptics";
-import {
-  buildTeachSuggestions,
-  confidenceLine,
-  type TeachSuggestion,
-} from "@/lib/teach-suggestions";
+import { buildTeachSuggestions, confidenceLine, type TeachSuggestion } from "@/lib/adaptation";
 import { useEngine } from "@/lib/use-engine";
 
 export const Route = createFileRoute("/_authenticated/teach")({
@@ -51,6 +47,11 @@ function TeachPage() {
     ? [...local].sort((a, b) => rank(wanted, a.category) - rank(wanted, b.category))
     : local;
   const [saved, setSaved] = useState(false);
+  const [saveFailed, setSaveFailed] = useState(false);
+  const [pendingShare, setPendingShare] = useState<{
+    text: string;
+    attachments?: { name: string; dataUrl: string | null }[];
+  } | null>(null);
   /** Quick Add lives inside this screen: a sheet over the current question. */
   const [sheet, setSheet] = useState<{
     category?: string;
@@ -63,14 +64,24 @@ function TeachPage() {
 
   const share = (text: string, attachments?: { name: string; dataUrl: string | null }[]) => {
     const thumbnail = attachments?.find((a) => a.dataUrl)?.dataUrl;
-    addEvent({
+    const { saved: ok } = addEvent({
       category: "Note",
       value: text,
       timestamp: new Date().toISOString(),
       metadata: { Note: text, ...(thumbnail ? { Thumbnail: thumbnail } : {}) },
     });
+    if (!ok) {
+      setPendingShare({ text, attachments });
+      setSaveFailed(true);
+      return;
+    }
+    setSaveFailed(false);
     setSaved(true);
     window.setTimeout(() => router.navigate({ to: "/today" }), 1400);
+  };
+
+  const retryShare = () => {
+    if (pendingShare) share(pendingShare.text, pendingShare.attachments);
   };
 
   /** A Quick Add is just another answer: confirm it, then move the conversation on. */
@@ -78,6 +89,24 @@ function TeachPage() {
     setConfirmed(summary);
     window.setTimeout(() => setConfirmed(null), 2400);
   };
+
+  if (saveFailed) {
+    return (
+      <div className="animate-dissolve flex min-h-[70vh] flex-col items-center justify-center px-8 text-center">
+        <h1 className="font-serif text-[28px] leading-tight">That didn&apos;t save.</h1>
+        <p className="mt-3 text-[15px] leading-relaxed text-muted-foreground">
+          Try once more — what you shared is still right here.
+        </p>
+        <button
+          type="button"
+          onClick={retryShare}
+          className="mt-8 w-full max-w-[19rem] rounded-full bg-foreground px-6 py-[15px] text-[15px] font-medium text-background transition-all duration-200 active:scale-[0.99]"
+        >
+          Try again
+        </button>
+      </div>
+    );
+  }
 
   if (saved) {
     return (

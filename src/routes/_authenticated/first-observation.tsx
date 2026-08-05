@@ -57,6 +57,11 @@ function FirstObservationPage() {
   const [stage, setStage] = useState<Stage>("invite");
   const [sheet, setSheet] = useState(false);
   const [line, setLine] = useState(0);
+  const [saveFailed, setSaveFailed] = useState(false);
+  const [pendingNote, setPendingNote] = useState<{
+    text: string;
+    attachments?: { name: string; dataUrl: string | null }[];
+  } | null>(null);
 
   // The orb visibly works while the engine runs the learning loop.
   useEffect(() => {
@@ -78,6 +83,23 @@ function FirstObservationPage() {
     haptic("tap");
     setSheet(false);
     setStage("processing");
+  };
+
+  const submitNote = (text: string, attachments?: { name: string; dataUrl: string | null }[]) => {
+    const thumbnail = attachments?.find((a) => a.dataUrl)?.dataUrl;
+    const { saved: ok } = addEvent({
+      category: "Note",
+      value: text,
+      timestamp: new Date().toISOString(),
+      metadata: { Note: text, ...(thumbnail ? { Thumbnail: thumbnail } : {}) },
+    });
+    if (!ok) {
+      setPendingNote({ text, attachments });
+      setSaveFailed(true);
+      return;
+    }
+    setSaveFailed(false);
+    shared();
   };
 
   if (stage === "invite") {
@@ -151,17 +173,20 @@ function FirstObservationPage() {
           <Composer
             label="Or tell me in your own words"
             placeholder="Tell me anything about today..."
-            onSubmit={(text, attachments) => {
-              const thumbnail = attachments?.find((a) => a.dataUrl)?.dataUrl;
-              addEvent({
-                category: "Note",
-                value: text,
-                timestamp: new Date().toISOString(),
-                metadata: { Note: text, ...(thumbnail ? { Thumbnail: thumbnail } : {}) },
-              });
-              shared();
-            }}
+            onSubmit={(text, attachments) => submitNote(text, attachments)}
           />
+          {saveFailed && (
+            <div className="mt-3 text-center">
+              <p className="text-[13px] text-muted-foreground">That didn&apos;t save. Try once more.</p>
+              <button
+                type="button"
+                onClick={() => pendingNote && submitNote(pendingNote.text, pendingNote.attachments)}
+                className="mt-2 text-[13px] font-medium text-accent"
+              >
+                Try again
+              </button>
+            </div>
+          )}
         </div>
 
         <QuickAddSheet open={sheet} onClose={() => setSheet(false)} onLogged={() => shared()} />

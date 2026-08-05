@@ -15,11 +15,21 @@
 		504EC30F1FED79650016851F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 504EC30E1FED79650016851F /* Assets.xcassets */; };
 		504EC3121FED79650016851F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 504EC3101FED79650016851F /* LaunchScreen.storyboard */; };
 		50B271D11FEDC1A000F3C39B /* public in Resources */ = {isa = PBXBuildFile; fileRef = 50B271D01FEDC1A000F3C39B /* public */; };
+		71E240E3046BD85B9ED9D80F /* CiattaHealthTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B9696B43359468C1BA46E90 /* CiattaHealthTypes.swift */; };
+		8AA385D88D6EF1612E278B19 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07E177F2EB80F66EABB23DA1 /* HealthKit.framework */; };
 		9582B6832FE993A70072D4E8 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9582B6822FE993A50072D4E8 /* SceneDelegate.swift */; };
+		A414F1A34190B720CA7831E1 /* CiattaBluetoothPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20C823B417AA6814C29DEE30 /* CiattaBluetoothPlugin.swift */; };
+		B0246C450548324D4FB1DEA4 /* CiattaHealthPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25478CCEB04ACB52BA97761D /* CiattaHealthPlugin.swift */; };
+		B7787228E37ED340CA796F3B /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E3153A5ED0DA2F98B9F8F6 /* ViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		07E177F2EB80F66EABB23DA1 /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = System/Library/Frameworks/HealthKit.framework; sourceTree = SDKROOT; };
+		20C823B417AA6814C29DEE30 /* CiattaBluetoothPlugin.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CiattaBluetoothPlugin.swift; sourceTree = "<group>"; };
+		25478CCEB04ACB52BA97761D /* CiattaHealthPlugin.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CiattaHealthPlugin.swift; sourceTree = "<group>"; };
+		2DADF34AC97A99AEE14468B2 /* App.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; path = App.entitlements; sourceTree = "<group>"; };
 		2FAD9762203C412B000D30F8 /* config.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = config.xml; sourceTree = "<group>"; };
+		4B9696B43359468C1BA46E90 /* CiattaHealthTypes.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CiattaHealthTypes.swift; sourceTree = "<group>"; };
 		50379B222058CBB4000EE86E /* capacitor.config.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = capacitor.config.json; sourceTree = "<group>"; };
 		504EC3041FED79650016851F /* App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = App.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		504EC3071FED79650016851F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -28,6 +38,7 @@
 		504EC3111FED79650016851F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		504EC3131FED79650016851F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		50B271D01FEDC1A000F3C39B /* public */ = {isa = PBXFileReference; lastKnownFileType = folder; path = public; sourceTree = "<group>"; };
+		80E3153A5ED0DA2F98B9F8F6 /* ViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		9582B6822FE993A50072D4E8 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		958DCC722DB07C7200EA8C5F /* debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = debug.xcconfig; path = ../debug.xcconfig; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
@@ -38,6 +49,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4D22ABE92AF431CB00220026 /* CapApp-SPM in Frameworks */,
+				8AA385D88D6EF1612E278B19 /* HealthKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -50,6 +62,7 @@
 				958DCC722DB07C7200EA8C5F /* debug.xcconfig */,
 				504EC3061FED79650016851F /* App */,
 				504EC3051FED79650016851F /* Products */,
+				CE6A3872EEA5DCA74F8CB9C8 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -73,8 +86,21 @@
 				504EC3131FED79650016851F /* Info.plist */,
 				2FAD9762203C412B000D30F8 /* config.xml */,
 				50B271D01FEDC1A000F3C39B /* public */,
+				25478CCEB04ACB52BA97761D /* CiattaHealthPlugin.swift */,
+				4B9696B43359468C1BA46E90 /* CiattaHealthTypes.swift */,
+				2DADF34AC97A99AEE14468B2 /* App.entitlements */,
+				80E3153A5ED0DA2F98B9F8F6 /* ViewController.swift */,
+				20C823B417AA6814C29DEE30 /* CiattaBluetoothPlugin.swift */,
 			);
 			path = App;
+			sourceTree = "<group>";
+		};
+		CE6A3872EEA5DCA74F8CB9C8 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				07E177F2EB80F66EABB23DA1 /* HealthKit.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -160,6 +186,10 @@
 			files = (
 				504EC3081FED79650016851F /* AppDelegate.swift in Sources */,
 				9582B6832FE993A70072D4E8 /* SceneDelegate.swift in Sources */,
+				B0246C450548324D4FB1DEA4 /* CiattaHealthPlugin.swift in Sources */,
+				71E240E3046BD85B9ED9D80F /* CiattaHealthTypes.swift in Sources */,
+				B7787228E37ED340CA796F3B /* ViewController.swift in Sources */,
+				A414F1A34190B720CA7831E1 /* CiattaBluetoothPlugin.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -299,8 +329,10 @@
 			baseConfigurationReference = 958DCC722DB07C7200EA8C5F /* debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = App/App.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 8WDZ75627S;
 				INFOPLIST_FILE = App/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -321,8 +353,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = App/App.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 8WDZ75627S;
 				INFOPLIST_FILE = App/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (

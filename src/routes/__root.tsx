@@ -15,9 +15,15 @@ import "../styles.css";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { TabBar } from "../components/ciatta/tab-bar";
 import { ProductTour } from "../components/ciatta/product-tour";
+import { OfflineBanner } from "../components/ciatta/offline-banner";
 
+import { registerCiattaBluetoothPlugin } from "../lib/native/ciatta-bluetooth-plugin";
+import { registerCiattaHealthPlugin } from "../lib/native/ciatta-health-plugin";
 import { useAppearance } from "../lib/use-appearance";
 import { supabase } from "@/integrations/supabase/client";
+
+registerCiattaHealthPlugin();
+registerCiattaBluetoothPlugin();
 
 function NotFoundComponent() {
   return (
@@ -196,6 +202,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <div className="flex min-h-screen justify-center bg-background">
         <div className="relative flex min-h-screen w-full max-w-[430px] flex-col bg-background">
+          <OfflineBanner />
           {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
           <div className="flex-1">
             <Outlet />
