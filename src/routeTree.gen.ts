@@ -23,6 +23,7 @@ import { Route as AuthenticatedEngineTraceRouteImport } from './routes/_authenti
 import { Route as AuthenticatedFirstObservationRouteImport } from './routes/_authenticated/first-observation'
 import { Route as AuthenticatedJourneyRouteImport } from './routes/_authenticated/journey'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
+import { Route as AuthenticatedPairRouteImport } from './routes/_authenticated/pair'
 import { Route as AuthenticatedQuickAddRouteImport } from './routes/_authenticated/quick-add'
 import { Route as AuthenticatedTalkRouteImport } from './routes/_authenticated/talk'
 import { Route as AuthenticatedTeachRouteImport } from './routes/_authenticated/teach'
@@ -109,6 +110,11 @@ const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
   path: '/onboarding',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPairRoute = AuthenticatedPairRouteImport.update({
+  id: '/pair',
+  path: '/pair',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedQuickAddRoute = AuthenticatedQuickAddRouteImport.update({
   id: '/quick-add',
   path: '/quick-add',
@@ -193,6 +199,7 @@ export interface FileRoutesByFullPath {
   '/first-observation': typeof AuthenticatedFirstObservationRoute
   '/journey': typeof AuthenticatedJourneyRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/pair': typeof AuthenticatedPairRoute
   '/quick-add': typeof AuthenticatedQuickAddRoute
   '/talk': typeof AuthenticatedTalkRoute
   '/teach': typeof AuthenticatedTeachRoute
@@ -221,6 +228,7 @@ export interface FileRoutesByTo {
   '/first-observation': typeof AuthenticatedFirstObservationRoute
   '/journey': typeof AuthenticatedJourneyRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/pair': typeof AuthenticatedPairRoute
   '/quick-add': typeof AuthenticatedQuickAddRoute
   '/talk': typeof AuthenticatedTalkRoute
   '/teach': typeof AuthenticatedTeachRoute
@@ -251,6 +259,7 @@ export interface FileRoutesById {
   '/_authenticated/first-observation': typeof AuthenticatedFirstObservationRoute
   '/_authenticated/journey': typeof AuthenticatedJourneyRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
+  '/_authenticated/pair': typeof AuthenticatedPairRoute
   '/_authenticated/quick-add': typeof AuthenticatedQuickAddRoute
   '/_authenticated/talk': typeof AuthenticatedTalkRoute
   '/_authenticated/teach': typeof AuthenticatedTeachRoute
@@ -281,6 +290,7 @@ export interface FileRouteTypes {
     | '/first-observation'
     | '/journey'
     | '/onboarding'
+    | '/pair'
     | '/quick-add'
     | '/talk'
     | '/teach'
@@ -309,6 +319,7 @@ export interface FileRouteTypes {
     | '/first-observation'
     | '/journey'
     | '/onboarding'
+    | '/pair'
     | '/quick-add'
     | '/talk'
     | '/teach'
@@ -338,6 +349,7 @@ export interface FileRouteTypes {
     | '/_authenticated/first-observation'
     | '/_authenticated/journey'
     | '/_authenticated/onboarding'
+    | '/_authenticated/pair'
     | '/_authenticated/quick-add'
     | '/_authenticated/talk'
     | '/_authenticated/teach'
@@ -468,6 +480,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/pair': {
+      id: '/_authenticated/pair'
+      path: '/pair'
+      fullPath: '/pair'
+      preLoaderRoute: typeof AuthenticatedPairRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/quick-add': {
       id: '/_authenticated/quick-add'
       path: '/quick-add'
@@ -570,6 +589,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedFirstObservationRoute: typeof AuthenticatedFirstObservationRoute
   AuthenticatedJourneyRoute: typeof AuthenticatedJourneyRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
+  AuthenticatedPairRoute: typeof AuthenticatedPairRoute
   AuthenticatedQuickAddRoute: typeof AuthenticatedQuickAddRoute
   AuthenticatedTalkRoute: typeof AuthenticatedTalkRoute
   AuthenticatedTeachRoute: typeof AuthenticatedTeachRoute
@@ -588,6 +608,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedFirstObservationRoute: AuthenticatedFirstObservationRoute,
   AuthenticatedJourneyRoute: AuthenticatedJourneyRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
+  AuthenticatedPairRoute: AuthenticatedPairRoute,
   AuthenticatedQuickAddRoute: AuthenticatedQuickAddRoute,
   AuthenticatedTalkRoute: AuthenticatedTalkRoute,
   AuthenticatedTeachRoute: AuthenticatedTeachRoute,
