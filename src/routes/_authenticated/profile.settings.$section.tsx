@@ -212,6 +212,7 @@ function ConnectedSources() {
         );
       })}
     </Card>
+    </>
   );
 }
 
