@@ -158,6 +158,23 @@ function ConnectedSources() {
     useSources();
 
   return (
+    <>
+    <Card>
+      <Link
+        to="/pair"
+        className="flex items-center justify-between gap-4 px-4 py-4"
+      >
+        <span className="min-w-0">
+          <span className="block text-[15px]">Ciatta earring</span>
+          <span className="mt-0.5 block text-[13px] leading-relaxed text-muted-foreground">
+            Pair over Bluetooth for continuous temperature, heart rate and rhythm.
+          </span>
+        </span>
+        <span aria-hidden="true" className="shrink-0 text-[18px] text-muted-foreground">
+          {"\u203A"}
+        </span>
+      </Link>
+    </Card>
     <Card>
       {SOURCES.map((descriptor) => {
         const state =
@@ -195,6 +212,7 @@ function ConnectedSources() {
         );
       })}
     </Card>
+    </>
   );
 }
 
